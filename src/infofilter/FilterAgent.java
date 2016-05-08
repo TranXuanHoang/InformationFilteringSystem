@@ -6,7 +6,7 @@ import learn.KMapNet;
 public class FilterAgent extends CIAgent {
 	//TODO
 	protected String[] keywords;
-	//protected KMapNet
+	protected KMapNet clusterNet;
 	
 	public static final int USE_KEYWORDS = 0;
 	public static final int USE_CLUSTERS = 1;
