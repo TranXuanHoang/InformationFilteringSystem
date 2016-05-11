@@ -216,7 +216,7 @@ public class KMapNet implements Serializable {
 		computeOutputs();
 		selectWinner();
 
-		return 0;
+		return winner;
 	}
 
 	/**

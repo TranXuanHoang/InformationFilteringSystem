@@ -12,9 +12,7 @@ import java.io.Serializable;
 import java.util.Vector;
 
 public abstract class CIAgent implements CIAgentEventListener, Serializable {
-	/**
-	 * Serial version.
-	 */
+	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
 	public static final int DEFAULT_SLEEPTIME = 15000; // 15 seconds
@@ -210,14 +208,14 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	}
 
 	/**
-	 * Sends a trace event to all register listeners.
+	 * Sends a trace event to all registered listeners.
 	 * @param msg the message portion of the trace event.
 	 */
 	public void trace(String msg) {
 		// create a data event
 		CIAgentEvent event = new CIAgentEvent(this, "trace", msg);
 
-		// send it ot any registered listeners
+		// send it to any registered listeners
 		notifyCIAgentEventListeners(event);
 	}
 

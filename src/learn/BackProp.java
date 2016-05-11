@@ -378,7 +378,7 @@ public class BackProp implements Serializable {
 	 * provided instead of using the constructor so that the
 	 * network's architecture can be changed without creating a
 	 * new object.
-	 * @param numIn the number of inputs.
+	 * @param numIn the number of input units.
 	 * @param numHidden the number of hidden elements.
 	 * @param numOut the number of output units.
 	 */

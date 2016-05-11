@@ -4,7 +4,7 @@ import java.util.EventObject;
 
 /**
  * The <code>CIAgentEvent</code> class defines common events that
- * are sent by intelligent agent.
+ * are sent by intelligent agents.
  * 
  * @author Tran Xuan Hoang
  */
