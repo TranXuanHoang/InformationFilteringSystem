@@ -8,27 +8,21 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
-/**
- * The <code>FilterAgentBeanInfo</code> class defines the bean
- * information for the <code>FilterAgent</code>.
- * 
- * @author Tran Xuan Hoang
- */
-public class FilterAgentBeanInfo extends SimpleBeanInfo {
+public class URLReaderAgentBeanInfo extends SimpleBeanInfo {
 	Class<URLReaderAgent> beanClass = URLReaderAgent.class;
 	String iconColor16x16Filename;
 	String iconColor32x32Filename;
 	String iconMono16x16Filename;
 	String iconMono32x32Filename;
-	private final static Class<FilterAgentCustomizer> customizer =
-			FilterAgentCustomizer.class;
+	private final static Class<URLReaderAgentCustomizer> customizer =
+			URLReaderAgentCustomizer.class;
 
 	/**
-	 * Creates a <code>FilterAgentBeanInfo</code> object.
+	 * Creates a <code>URLReaderAgentBeanInfo</code> object.
 	 * This no-argument constructor is used within
 	 * editing and activation frameworks of JavaBeans.
 	 */
-	public FilterAgentBeanInfo() {
+	public URLReaderAgentBeanInfo() {
 	}
 
 	/**
@@ -40,7 +34,7 @@ public class FilterAgentBeanInfo extends SimpleBeanInfo {
 	public BeanDescriptor getBeanDescriptor() {
 		BeanDescriptor des = new BeanDescriptor(beanClass, customizer);
 
-		des.setValue("DisplayName", "FilterAgent");
+		des.setValue("DisplayName", "URLReaderAgent");
 
 		return des;
 	}
@@ -114,4 +108,4 @@ public class FilterAgentBeanInfo extends SimpleBeanInfo {
 			return null;
 		}
 	}
-} // end class FilterAgentBeanInfo
+} // end class URLReaderAgentBeanInfo
