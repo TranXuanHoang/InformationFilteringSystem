@@ -53,6 +53,7 @@ public class CIAgentBeanInfo extends SimpleBeanInfo {
 	 * @return the image of icon if it exists, <code>null</code>
 	 * otherwise.
 	 */
+	@Override
 	public Image getIcon(int icondKind) {
 		switch (icondKind) {
 		case BeanInfo.ICON_COLOR_16x16:
@@ -76,6 +77,7 @@ public class CIAgentBeanInfo extends SimpleBeanInfo {
 	 * Retrieves additional bean information.
 	 * @return an array of <code>BeanInfo</code> objects.
 	 */
+	@Override
 	public BeanInfo[] getAdditionalBeanInfo() {
 		Class<?> superclass = beanClass.getSuperclass();
 

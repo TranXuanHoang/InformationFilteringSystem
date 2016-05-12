@@ -267,6 +267,7 @@ public class FilterAgent extends CIAgent {
 	 * Processes agent event.
 	 * @param e the agent event to be processed.
 	 */
+	@Override
 	public void processCIAgentEvent(CIAgentEvent e) {
 		trace(name + ": CIAgentEvent received by " + name +
 				" from " + e.getSource() +
