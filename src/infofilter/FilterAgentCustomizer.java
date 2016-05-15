@@ -21,10 +21,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 /**
- * The <code>FilterAgentCustomizer</code> class implements the customizer dialog
- * box allowing user to add, change or remove keywords. The customizer dialog
- * box also allows user to signal filter agent start training neural networks
- * and create the file of profile of training data.
+ * The <code>FilterAgentCustomizer</code> class implements the
+ * customizer dialog box allowing user to add, change or remove
+ * keywords. The customizer dialog box also allows user to signal
+ * filter agent start training neural networks and create the
+ * file of profile of training data.
  * 
  * @author Tran Xuan Hoang
  */
@@ -44,15 +45,11 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	}
 
 	/**
-	 * Creates a <code>FilterAgentCustomizer</code> object with the given frame,
-	 * title and modality.
-	 * 
-	 * @param frame
-	 *            the frame for displaying this customizer.
-	 * @param title
-	 *            title of the <code>frame</code>.
-	 * @param modal
-	 *            boolean flag that indicates the modality.
+	 * Creates a <code>FilterAgentCustomizer</code> object with the
+	 * given frame, title and modality.
+	 * @param frame the frame for displaying this customizer.
+	 * @param title title of the <code>frame</code>.
+	 * @param modal boolean flag that indicates the modality.
 	 */
 	public FilterAgentCustomizer(Frame frame, String title, boolean modal) {
 		super(frame, title, modal);
@@ -67,9 +64,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 
 	/**
 	 * Initializes the GUI controls for the customizer dialog box.
-	 * 
-	 * @throws Exception
-	 *             if any error occurs during initialization.
+	 * @throws Exception if any error occurs during initialization.
 	 */
 	private void createGUI() throws Exception {
 		JLabel jLabel1 = new JLabel("Keyword");
@@ -138,9 +133,6 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 			}
 		});
 
-		JPanel panel1 = new JPanel(new BorderLayout());
-		panel1.setPreferredSize(new Dimension(400, 400));
-
 		JPanel jPanel1 = new JPanel();
 		jPanel1.setLayout(null);
 
@@ -163,16 +155,16 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 		jPanel2.add(trainNNButton);
 		jPanel2.add(cancelButton);
 
-		panel1.add(jPanel1, BorderLayout.CENTER);
-		panel1.add(jPanel2, BorderLayout.SOUTH);
-		getContentPane().add(panel1);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setPreferredSize(new Dimension(400, 400));
+		panel.add(jPanel1, BorderLayout.CENTER);
+		panel.add(jPanel2, BorderLayout.SOUTH);
+		getContentPane().add(panel);
 	}
 
 	/**
 	 * Sets the object to be customized.
-	 * 
-	 * @param obj
-	 *            the object to be customized.
+	 * @param obj the object to be customized.
 	 */
 	@Override
 	public void setObject(Object obj) {
@@ -188,7 +180,14 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 		// TODO
 	}
 	
+	private void setKeywords(String[] keys) {
+		//TODO
+	}
 	
+	private String[] getKeywords() {
+		//TODO
+		return null; 
+	}
 
 	protected void keywordListMouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -216,6 +215,6 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	}
 
 	private void trainNNButtonActionPerformed(ActionEvent e) {
-
+		//TODO
 	}
 } // end class FilterAgentCustomizer
