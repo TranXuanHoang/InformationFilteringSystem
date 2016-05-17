@@ -475,6 +475,36 @@ public class FilterAgent extends CIAgent {
 	}
 
 	/**
+	 * Generates the <code>infofilter.dfn</code> text file, which
+	 * defines the layout of the user profile data file. The
+	 * {@link DataSet} class reads a <code>.dfn</code> file when
+	 * it loads a file for training neural networks or decision
+	 * trees. The file contains pairs of data types and field names.
+	 */
+	protected void writeProfileDataDefinition() {
+		try {
+			FileWriter writer = new FileWriter("infofilter.dfn");
+			BufferedWriter out = new BufferedWriter(writer);
+
+			for (int i = 0; i < keywords.length; i++) {
+				out.write("continuous ");
+				out.write(keywords[i]);
+				out.newLine();
+			}
+
+			// user rating value
+			out.write("continuous ClassField");
+			out.newLine();
+
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			trace("Error: FilterAgent couldn't create "
+					+ "infofilter.dfn file");
+		}
+	}
+
+	/**
 	 * Appends the filter profile record of an article to the
 	 * <code>infofilter.dat</code> file.<br>
 	 * The {@link NewsArticle#getProfileString()} method formats

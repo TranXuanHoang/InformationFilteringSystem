@@ -29,7 +29,7 @@ public class URLReaderAgentCustomizer extends JDialog implements Customizer, CIA
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 	
-	URLReaderAgent agent;  // the agent bean we are customizing
+	URLReaderAgent agent; // the agent bean we are customizing
 	
 	/**
 	 * Creates a <code>URLReaderAgentCustomizer</code> object.
@@ -77,8 +77,7 @@ public class URLReaderAgentCustomizer extends JDialog implements Customizer, CIA
 		urlComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
+				// currently do nothing
 			}
 		});
 		urlComboBox.addItem("http://aima.cs.berkeley.edu/") ;
@@ -92,8 +91,7 @@ public class URLReaderAgentCustomizer extends JDialog implements Customizer, CIA
 		paramsComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
+				// currently do nothing
 			}
 		});
 		String sampleParms = "?" + "&dmon=" + "JUL" + "&dday=" +
@@ -105,8 +103,7 @@ public class URLReaderAgentCustomizer extends JDialog implements Customizer, CIA
 		queryButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
+				queryButtonActionPerformed(e);
 			}
 		});
 
@@ -114,8 +111,7 @@ public class URLReaderAgentCustomizer extends JDialog implements Customizer, CIA
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
+				dispose();
 			}
 		});
 
@@ -164,5 +160,10 @@ public class URLReaderAgentCustomizer extends JDialog implements Customizer, CIA
 
 	public void setDataOnBean() {
 		// TODO
+	}
+
+	private void queryButtonActionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 } // end class URLReaderAgentCustomizer
