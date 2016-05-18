@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -32,7 +33,7 @@ import javax.swing.JTextField;
 public class FilterAgentCustomizer extends JDialog implements Customizer {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
-	
+
 	JTextField keywordTextField;
 	JList<String> keywordList;
 
@@ -192,7 +193,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 		agent.setKeywords(getKeywords());
 		agent.writeProfileDataDefinition();
 	}
-	
+
 	/**
 	 * Sets the keywords given by user on the <code>JList</code>
 	 * GUI component and make a copy of these keywords for later
@@ -202,17 +203,17 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 */
 	private void setKeywords(String[] keys) {
 		keywords = new Vector<>();
-		
+
 		for (int i = 0; i < keys.length; i++) {
 			keywords.addElement(keys[i]);
 		}
-		
+
 		// make a copy of original data
 		originalKeywords = new Vector<>(keywords);
-		
+
 		keywordList.setListData(keywords);
 	}
-	
+
 	/**
 	 * Retrieves the keywords given by user on the <code>JList</code>
 	 * GUI component.
@@ -220,11 +221,11 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 */
 	private String[] getKeywords() {
 		String[] keys = new String[keywords.size()];
-		
+
 		for (int i = 0; i < keys.length; i++) {
 			keys[i] = keywords.elementAt(i);
 		}
-		
+
 		return keys;
 	}
 
@@ -235,34 +236,95 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 */
 	protected void keywordListMouseClicked(MouseEvent e) {
 		int index = keywordList.getSelectedIndex();
-		
+
 		if (index > 0) {
 			keywordTextField.setText(keywords.get(index));
 		}
 	}
 
+	/**
+	 * Adds an additional keyword when the <b>Add</b> button is pressed.
+	 * @param e the event generated when the <b>Add</b> button is pressed.
+	 */
 	private void addButtonActionPerformed(ActionEvent e) {
 		String keyword = keywordTextField.getText().trim();
-		keywords.addElement(keyword);
-		keywordList.setListData(keywords);
+
+		if (keyword != null && keyword.length() > 0) {
+			keywords.addElement(keyword);
+			keywordList.setListData(keywords);
+			keywordTextField.setText("");
+		}
 	}
 
+	/**
+	 * Changes a keyword when the <b>Change</b> button is pressed.
+	 * @param e the event generated when the <b>Change</b> button
+	 * is pressed.
+	 */
 	private void changeButtonActionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		int index = keywordList.getSelectedIndex();
 
+		if (index > 0) {
+			String value = keywordTextField.getText().trim();
+
+			keywords.setElementAt(value, index);
+			keywordList.setListData(keywords);
+		}
 	}
 
+	/**
+	 * Removes a keyword from when the <b>Remove</b> button is pressed.
+	 * @param e the event generated when the <b>Remove</b> button
+	 * is pressed.
+	 */
 	private void removeButtonActionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		int index = keywordList.getSelectedIndex();
 
+		if (index > 0) {
+			keywords.removeElementAt(index);
+			keywordList.setListData(keywords);
+		}
 	}
 
+	/**
+	 * Creates a profile when the <b>Create Profile</b> button
+	 * is pressed.
+	 * @param e the event generated when the <b>Create Profile</b>
+	 * button is pressed.
+	 */
 	private void createProfileButtonActionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		// confirm user's option to avoid data loss
+		int option = JOptionPane.showConfirmDialog(this,
+				"This will erase the existing profile data and\n" +
+						"any network training will be lost.\n" +
+						"Are you sure you want to do this?",
+						"Create Filter Profire",
+						JOptionPane.YES_NO_OPTION);
 
+		// change keywords, clear neural networks, create profile
+		if (option == JOptionPane.YES_OPTION) {
+			setDataOnBean();
+			dispose();
+		}
 	}
 
+	/**
+	 * Signals the filter agent to start training the neural
+	 * networks on its own thread.
+	 * @param e the event generated when the
+	 * <b>Train Neural Networks</b> button is pressed.
+	 */
 	private void trainNNButtonActionPerformed(ActionEvent e) {
-		//TODO
+		int option = JOptionPane.showConfirmDialog(this,
+				"This will reset the current neural networks and\n" +
+						"start training them again.\n" +
+						"Are you sure you want to do this?",
+						"Traing Neural Networks",
+						JOptionPane.YES_NO_OPTION);
+
+		if (option == JOptionPane.YES_NO_OPTION) {
+			agent.buildRatingNet();
+			agent.buildClusterNet();
+		}
 	}
 } // end class FilterAgentCustomizer
