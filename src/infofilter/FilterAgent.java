@@ -73,6 +73,12 @@ public class FilterAgent extends CIAgent {
 	public static final String NEUTRAL_RATING = "Neutral";
 	public static final String MILDLY_RATING = "Mildly interesting";
 	public static final String INTERESTING_RATING = "Interesting";
+	public static final String[] RATINGS = {
+			USELESS_RATING,
+			NOTVERY_RATING,
+			NEUTRAL_RATING,
+			MILDLY_RATING,
+			INTERESTING_RATING};
 
 	/**
 	 * Creates a <code>FilterAgent</code> with default name
