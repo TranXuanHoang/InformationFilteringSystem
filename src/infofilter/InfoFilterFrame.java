@@ -89,9 +89,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected Object[][] data;
 	
 	/** List of downloaded articles. */
-	protected Vector<NewsArticle> articles = new Vector<>();
-	protected FilterAgent filterAgent = new FilterAgent();
-	protected URLReaderAgent urlReaderAgent = new URLReaderAgent();
+	protected Vector<NewsArticle> articles;
+	protected FilterAgent filterAgent;
+	protected URLReaderAgent urlReaderAgent;
 	
 	/** Currently selected article. */
 	NewsArticle currentArt;
@@ -121,10 +121,44 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		}
 	}
 	
+	/**
+	 * Initializes the underlying data including the reference to
+	 * the set of articles, the filter agent, the URL reader agent.
+	 */
 	private void initializeUnderlyingData() {
-		//TODO
+		// check if a serialized FilterAgent exists
+		try {
+			FilterAgent tmpFilterAgent = FilterAgent.restoreFromFile(
+							FilterAgent.fileName);
+			
+			if (tmpFilterAgent != null) {
+				filterAgent = tmpFilterAgent;
+			}
+		} catch (Exception e) {
+			// no error, just catch any exception
+		}
+		
+		articles = new Vector<>();
+		
+		filterAgent = new FilterAgent();
+		filterAgent.infoFilter = this;
+		filterAgent.addCIAgentEventListener(this); // for trace msgs
+		filterAgent.initialize();
+		filterAgent.startAgentProcessing(); // start filter agent thread
+		
+		urlReaderAgent = new URLReaderAgent();
+		urlReaderAgent.addCIAgentEventListener(this);
+		urlReaderAgent.initialize();
+		urlReaderAgent.startAgentProcessing(); // start it running
+		
+		openFileDialog = new FileDialog(this, "Open", FileDialog.LOAD);
+		saveFileDialog = new FileDialog(this, "Save", FileDialog.SAVE);
 	}
 	
+	/**
+	 * Initializes the GUI of the information filtering system.
+	 * @throws Exception if any errors occur during initialization.
+	 */
 	private void initializeGUI() throws Exception {
 		menuBar1 = new JMenuBar();
 		menuBar1.add(menuFile);
@@ -499,16 +533,45 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		updateTable();
 	}
 
+	/**
+	 * Handles three types of action events:
+	 * <ul>
+	 * <li>trace: display trace message
+	 * <li>status: display status of agent
+	 * <li>addArticle: score article using current filter type
+	 * </ul>
+	 * @param e the event to be processed.
+	 */
 	@Override
 	public void processCIAgentEvent(CIAgentEvent e) {
-		// TODO Auto-generated method stub
-
+		//Object source = e.getSource();
+		Object arg = e.getArgObject();
+		Object action = e.getAction();
+		
+		if (action != null) {
+			if (action.equals("trace")) {
+				if ((arg != null) && (arg instanceof String)) {
+					trace((String) arg);
+				}
+			} else if (action.equals("addArticle")) {
+				// score the article sent by another agent
+				addArticle((NewsArticle) arg);
+			} else if (action.equals("status")) {
+				filterAgentStatusLabel.setText(
+						"FilterAgent Status: " + (String) arg);
+			}
+		}
 	}
 
+	/**
+	 * Just calls the {@link #processCIAgentEvent(CIAgentEvent)}
+	 * method because the <code>InforFilterFrame</code> does not
+	 * process asynchronous events.
+	 * @param e the event to be processed.
+	 */
 	@Override
 	public void postCIAgentEvent(CIAgentEvent e) {
-		// TODO Auto-generated method stub
-
+		processCIAgentEvent(e);
 	}
 
 	/**
@@ -527,8 +590,45 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useFeedbackCheckBoxMenuItem.setEnabled(true);
 	}
 	
+	/**
+	 * Scores a single article and adds it to the table.
+	 * @param art the article to be scored and added.
+	 */
+	protected void addArticle(NewsArticle art) {
+		// add the article to the vector of all downloaded articles
+		articles.addElement(art);
+		
+		// score the article
+		filterAgent.score(art, filterType);
+		
+		// update the GUI table
+		refreshTable();
+		
+		// display article in the text area, set cursor at beginning
+		articleTextArea.setText(art.getBody());
+		articleTextArea.setCaretPosition(0);
+		
+		// enable menu items so that user can add the article to
+		// the profile if desired
+		addArticleMenuItem.setEnabled(true);
+		addAllMenuItem.setEnabled(true);
+		saveArticleMenuItem.setEnabled(true);
+	}
+	
+	/**
+	 * Filters the set of articles by scoring and sorting them,
+	 * then uses {@link #refreshTable()} method to update the
+	 * GUI table again.
+	 */
 	public void filterArticles() {
-		//TODO
+		filterAgent.score(articles, filterType);
+		articles = insertionSort(articles);
+		
+		refreshTable();
+		
+		if (articles.size() > 0) {
+			currentArt = articles.firstElement();
+		}
 	}
 	
 	/**
@@ -558,6 +658,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		}
 		
 		return out;
+	}
+	
+	/**
+	 * Displays a message in the bottom text area.
+	 * @param msg the message to be displayed.
+	 */
+	synchronized void trace(String msg) {
+		articleTextArea.append(msg + "\n");
 	}
 	
 	/**

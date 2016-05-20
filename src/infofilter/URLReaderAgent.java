@@ -81,7 +81,7 @@ public class URLReaderAgent extends CIAgent {
 	}
 
 	/**
-	 * Handles two kind of action events:
+	 * Handles two kinds of action events:
 	 * <ul>
 	 * <li>trace: show out event's information
 	 * <li>getURLText: download web page's contents

@@ -62,6 +62,8 @@ public class FilterAgent extends CIAgent {
 	 * has been trained. */
 	protected boolean ratingNetTrained;
 
+	/** The name of the file that is used to save the serialized
+	 * object of a filter agent. */
 	public static final String fileName = "filterAgent.ser";
 
 	public static final int USE_KEYWORDS = 0;
