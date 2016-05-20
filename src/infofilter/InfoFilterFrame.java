@@ -7,6 +7,7 @@ import java.awt.FileDialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -515,7 +516,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * neural network was trained.
 	 */
 	public void clusterNetTrained() {
-		//TODO
+		useClustersCheckBoxMenuItem.setEnabled(true);
 	}
 	
 	/**
@@ -523,6 +524,55 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * neural network was trained.
 	 */
 	public void ratingNetTrained() {
+		useFeedbackCheckBoxMenuItem.setEnabled(true);
+	}
+	
+	public void filterArticles() {
 		//TODO
+	}
+	
+	/**
+	 * Sorts a set of articles in descending order with respect to
+	 * their scores of the corresponding filter type.
+	 * @param articles the set of articles to be sorted<br>
+	 * <b>Note:</b> the order of elements of this vector will be
+	 * preserved after the invocation of this method.
+	 * @return a vector of articles sorted in descending order.
+	 */
+	Vector<NewsArticle> insertionSort(Vector<NewsArticle> articles) {
+		int size = articles.size();
+		Vector<NewsArticle> out = new Vector<>(articles);
+		
+		for (int i = 1; i < size; i++) {
+			NewsArticle ai = out.get(i);
+			
+			for (int j = 0; j <= i - 1; j++) {
+				NewsArticle aj = out.get(j);
+				
+				if (ai.getScore(filterType) > aj.getScore(filterType)) {
+					out.remove(i);
+					out.insertElementAt(aj, j);
+					break;
+				}
+			}
+		}
+		
+		return out;
+	}
+	
+	/**
+	 * Processes window events and is overridden to exit when
+	 * window closes.
+	 * @param e the WindowEvent to be processed.
+	 */
+	@Override
+	protected void processWindowEvent(WindowEvent e) {
+		super.processWindowEvent(e);
+
+		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+			System.exit(0);
+		} else if (e.getID() == WindowEvent.WINDOW_ACTIVATED) {
+			e.getWindow().repaint();
+		}
 	}
 } // end class InfoFilterFrame
