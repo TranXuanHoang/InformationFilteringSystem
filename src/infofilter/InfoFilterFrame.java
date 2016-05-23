@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -176,8 +177,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		resetMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				resetMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -185,8 +185,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		downloadURLMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				downloadURLMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -195,8 +194,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		saveArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				saveArticleMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -204,8 +202,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		loadArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				loadArticleMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -213,8 +210,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		exitMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				System.exit(0);
 			}
 		});
 		
@@ -231,8 +227,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		keywordsMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				keywordsMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -241,8 +236,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		addArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				addArticleMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -251,8 +245,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		addAllMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				addAllMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -265,8 +258,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		cutMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				cutMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -278,8 +270,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useKeywordsCheckBoxMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				useKeywordsCheckBoxMenuItem_actionPerformed(e);
 			}
 		});
 
@@ -290,8 +281,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useFeedbackCheckBoxMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				useFeedbackCheckBoxMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -302,8 +292,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useClustersCheckBoxMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				useClustersCheckBoxMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -320,8 +309,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		aboutMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				aboutMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -355,7 +343,75 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		setSize(500, 395);
 		setTitle(titleBarText + " - Using Keywords");
 	}
+
+	protected void useClustersCheckBoxMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void useFeedbackCheckBoxMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void useKeywordsCheckBoxMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void cutMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void addAllMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void addArticleMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void keywordsMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void loadArticleMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void saveArticleMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void downloadURLMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void resetMenuItem_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 	
+	protected void aboutMenuItem_actionPerformed(ActionEvent e) {
+		AboutDialog about = new AboutDialog(this,
+				"About Information Filtering Application", true);
+		Dimension aboutSize = about.getSize();
+		Dimension frameSize = this.getSize();
+		Point frameLoc = this.getLocationOnScreen();
+		
+		about.setLocation(
+				frameLoc.x + (frameSize.width - aboutSize.width) / 2,
+				frameLoc.y + (frameSize.height - aboutSize.height) / 2);
+		about.setVisible(true);
+	}
+
 	/**
 	 * Defines the GUI, model and event handling for the table of
 	 * articles.

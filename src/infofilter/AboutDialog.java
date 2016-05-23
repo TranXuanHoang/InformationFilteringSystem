@@ -53,7 +53,7 @@ public class AboutDialog extends JDialog {
 	 */
 	void createGUI() throws Exception {
 		JPanel contentPanel = new JPanel();
-		setBounds(100, 100, 350, 220);
+		setBounds(100, 100, 350, 207);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,16 +65,19 @@ public class AboutDialog extends JDialog {
 		label1.setBounds(9, 21, 316, 18);
 
 		JLabel label2 = new JLabel("Japan Advanced Institute of Science and Technology");
+		label2.setFont(new Font("Calibri", Font.PLAIN, 12));
 		label2.setHorizontalAlignment(SwingConstants.CENTER);
 		label2.setBounds(17, 49, 300, 18);
 
 		JLabel label3 = new JLabel("Email: hoangtx@jaist.ac.jp");
+		label3.setFont(new Font("Calibri", Font.PLAIN, 12));
 		label3.setHorizontalAlignment(SwingConstants.CENTER);
 		label3.setForeground(Color.BLUE);
 		label3.setBounds(87, 72, 160, 18);
 
 
 		JLabel label4 = new JLabel("(c) Copyright Hoang T. X. 2016");
+		label4.setFont(new Font("Calibri", Font.PLAIN, 12));
 		label4.setHorizontalAlignment(SwingConstants.CENTER);
 		label4.setBounds(67, 93, 200, 18);
 
@@ -95,8 +98,7 @@ public class AboutDialog extends JDialog {
 		panel2.add(label4);
 
 		JPanel panel1 = new JPanel(new BorderLayout());
-		panel1.setMinimumSize(new Dimension(450, 170));
-		panel1.setPreferredSize(new Dimension(450, 170));
+		panel1.setPreferredSize(new Dimension(334, 170));
 		panel1.add(panel2, BorderLayout.CENTER);
 		getContentPane().add(panel1);
 	}
