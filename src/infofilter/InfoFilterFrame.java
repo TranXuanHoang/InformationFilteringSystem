@@ -114,8 +114,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
 		try {
-			initializeGUI();
 			initializeUnderlyingData();
+			initializeGUI();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -160,17 +160,17 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @throws Exception if any errors occur during initialization.
 	 */
 	private void initializeGUI() throws Exception {
+		menuFile = new JMenu("File");
+		jMenu1 = new JMenu("Profile");
+		jMenu2 = new JMenu("Edit");
+		jMenu3 = new JMenu("Filter");
+		jMenu5 = new JMenu("Help");
 		menuBar1 = new JMenuBar();
 		menuBar1.add(menuFile);
 		menuBar1.add(jMenu1);
 		menuBar1.add(jMenu2);
 		menuBar1.add(jMenu3);
 		menuBar1.add(jMenu5);
-		menuFile = new JMenu("File");
-		jMenu1 = new JMenu("Profile");
-		jMenu2 = new JMenu("Edit");
-		jMenu3 = new JMenu("Filter");
-		jMenu5 = new JMenu("Help");
 		
 		resetMenuItem = new JMenuItem("Clear All");
 		resetMenuItem.addActionListener(new ActionListener() {
@@ -330,8 +330,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		jLabel1 = new JLabel("Articles");
 		filterAgentStatusLabel = new JLabel("FilterAgent status:");
 		
-		articleTable.setPreferredSize(new Dimension(500, 300));
-		
 		jPanel1.setLayout(new GridLayout());
 	    jPanel1.setMinimumSize(new Dimension(500, 200));
 	    jPanel1.add(jLabel1);
@@ -339,6 +337,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	    
 	    jScrollPane1 = new JScrollPane();
 	    setUpTheTable();
+	    articleTable.setPreferredSize(new Dimension(500, 300));
 	    jScrollPane1.getViewport().add(articleTable);
 	    jPanel2.setLayout(new GridLayout());
 	    jPanel2.setPreferredSize(new Dimension(500, 100));
