@@ -39,7 +39,7 @@ public class CIAgentTimer implements Runnable, Serializable {
 	/**
 	 * Used to check timer variables.
 	 */
-	private boolean debug = true;
+	private boolean debug = false;
 
 	transient private Thread runnit = new Thread(this);
 

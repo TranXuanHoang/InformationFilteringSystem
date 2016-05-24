@@ -54,7 +54,9 @@ public class NewsArticle {
 
 	/**
 	 * Constructs a new article object with specified ID.
-	 * @param id the identifier of the article.
+	 * @param id the identifier of the article (file path if the
+	 * <code>NewsArticle</code> object is create to load article
+	 * in personal computer).
 	 */
 	public NewsArticle(String id) {
 		this.id = id;
@@ -63,10 +65,11 @@ public class NewsArticle {
 	/**
 	 * Reads an article from the given file.
 	 * @param fileName the name of the file to be read.
+	 * @param directory the directory that contains the file to be read.
 	 */
-	public void readArticle(String fileName) {
+	public void readArticle(String fileName, String directory) {
 		try {
-			File f = new File(fileName);
+			File f = new File(directory + fileName);
 			FileInputStream in = new FileInputStream(f);
 			int size = (int) f.length();
 			byte[] data = new byte[size];
@@ -74,7 +77,7 @@ public class NewsArticle {
 			in.read(data);
 			subject = "Subject: " + fileName;
 			body = new String(data);
-			id = fileName;
+			id = directory + fileName;
 			in.close();
 		} catch (IOException e) {
 			System.out.println("Error: couldn't read article from " + fileName);
@@ -84,16 +87,18 @@ public class NewsArticle {
 	/**
 	 * Writes an article to the given file.
 	 * @param fileName the name of the file to be written.
+	 * @param directory the directory where the file will be
+	 * written into.
 	 */
-	public void writeArticle(String fileName) {
-		String contents = subject + " " + body;
+	public void writeArticle(String fileName, String directory) {
+		String contents = body;
 		int size = (int) contents.length();
 		byte data[] = new byte[size];
 
 		data = contents.getBytes();
 
 		try {
-			File f = new File(fileName);
+			File f = new File(directory + fileName);
 			FileOutputStream out = new FileOutputStream(f);
 
 			out.write(data);

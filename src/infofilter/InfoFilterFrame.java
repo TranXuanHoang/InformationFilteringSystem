@@ -151,9 +151,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		urlReaderAgent.addCIAgentEventListener(this);
 		urlReaderAgent.initialize();
 		urlReaderAgent.startAgentProcessing(); // start it running
-		
-		openFileDialog = new FileDialog(this, "Open", FileDialog.LOAD);
-		saveFileDialog = new FileDialog(this, "Save", FileDialog.SAVE);
 	}
 	
 	/**
@@ -190,7 +187,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 		
 		saveArticleMenuItem = new JMenuItem("Save Article...");
-		saveArticleMenuItem.setEnabled(false);
+		saveArticleMenuItem.setEnabled(true);//TODO
 		saveArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -344,47 +341,13 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		setTitle(titleBarText + " - Using Keywords");
 	}
 
-	protected void useClustersCheckBoxMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void useFeedbackCheckBoxMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void useKeywordsCheckBoxMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	protected void cutMenuItem_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	protected void addAllMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void addArticleMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	protected void keywordsMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void loadArticleMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void saveArticleMenuItem_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -395,10 +358,92 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	}
 
 	protected void resetMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Reset action is requested");
+		articles.clear();
+		refreshTable();
+		articleTextArea.setText("");
+		addArticleMenuItem.setEnabled(false);
+		addAllMenuItem.setEnabled(false);
+		saveArticleMenuItem.setEnabled(false);
 	}
 	
+	/**
+	 * Loads and scores an article from a personal computer.
+	 * @param e the event generated when the <b>Load Article...</b>
+	 * menu item is selected.
+	 */
+	protected void loadArticleMenuItem_actionPerformed(ActionEvent e) {
+		openFileDialog = new FileDialog(this, "Open", FileDialog.LOAD);
+		openFileDialog.setVisible(true);
+		
+		String directory = openFileDialog.getDirectory();
+		String fileName = openFileDialog.getFile();
+		
+		if (fileName != null) {
+			NewsArticle article = new NewsArticle(directory + fileName);
+			
+			article.readArticle(fileName, directory);
+			articles.addElement(article);
+			filterAgent.score(article, filterType);
+			
+			refreshTable();
+			articleTextArea.setText(article.getBody());
+			articleTextArea.setCaretPosition(0);
+		}
+	}
+
+	/**
+	 * Saves an article to a personal computer for later uses.
+	 * @param e the event generated when the <b>Save Article...</b>
+	 * menu item is selected.
+	 */
+	protected void saveArticleMenuItem_actionPerformed(ActionEvent e) {
+		saveFileDialog = new FileDialog(this, "Save", FileDialog.SAVE);
+		saveFileDialog.setVisible(true);
+		
+		String directory = saveFileDialog.getDirectory();
+		String fileName = saveFileDialog.getFile();
+		
+		if (fileName != null) {
+			int index = articleTable.getSelectedRow();
+			
+			if (index != -1) {
+				NewsArticle article = articles.elementAt(index);
+				article.writeArticle(fileName, directory);
+			}
+		}
+	}
+
+	protected void addArticleMenuItem_actionPerformed(ActionEvent e) {
+		// open the profile data file and append the profile
+		// record of the currently selected article
+		filterAgent.addArticleToProfile(currentArt);
+	}
+
+	protected void addAllMenuItem_actionPerformed(ActionEvent e) {
+		// open the profile data file and append the profile and
+		// append profile records of all downloaded articles
+		filterAgent.addAllArticlesToProfile(articles);
+	}
+
+	protected void useKeywordsCheckBoxMenuItem_actionPerformed(ActionEvent e) {
+		filterType = FilterAgent.USE_KEYWORDS;
+		filterArticles();
+		this.setTitle(titleBarText + " - Using Keywords");
+	}
+	
+	protected void useFeedbackCheckBoxMenuItem_actionPerformed(ActionEvent e) {
+		filterType = FilterAgent.USE_PREDICTED_RATING;
+		filterArticles();
+		this.setTitle(titleBarText + " - Using Backpropagation Neural Network");
+	}
+
+	protected void useClustersCheckBoxMenuItem_actionPerformed(ActionEvent e) {
+		filterType = FilterAgent.USE_CLUSTERS;
+		filterArticles();
+		this.setTitle(titleBarText + " - Using Kohonen Map Neural Network");
+	}
+
 	protected void aboutMenuItem_actionPerformed(ActionEvent e) {
 		AboutDialog about = new AboutDialog(this,
 				"About Information Filtering Application", true);
