@@ -37,7 +37,7 @@ public class CIAgentBeanInfo extends SimpleBeanInfo {
 			PropertyDescriptor _name = new PropertyDescriptor(
 					"name", beanClass, "getName", "setName");
 			PropertyDescriptor _state = new PropertyDescriptor(
-					"state", beanClass, "getState", "setState");
+					"state", beanClass, "getState", null);
 
 			return new PropertyDescriptor[] {_name, _state};
 		} catch (IntrospectionException e) {

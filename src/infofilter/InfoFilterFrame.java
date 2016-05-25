@@ -9,12 +9,14 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.beans.Customizer;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -165,8 +167,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		jMenu5 = new JMenu("Help");
 		menuBar1 = new JMenuBar();
 		menuBar1.add(menuFile);
-		menuBar1.add(jMenu1);
 		menuBar1.add(jMenu2);
+		menuBar1.add(jMenu1);
 		menuBar1.add(jMenu3);
 		menuBar1.add(jMenu5);
 		
@@ -186,20 +188,20 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 		
-		saveArticleMenuItem = new JMenuItem("Save Article...");
-		saveArticleMenuItem.setEnabled(true);//TODO
-		saveArticleMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveArticleMenuItem_actionPerformed(e);
-			}
-		});
-		
 		loadArticleMenuItem = new JMenuItem("Load Article...");
 		loadArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				loadArticleMenuItem_actionPerformed(e);
+			}
+		});
+		
+		saveArticleMenuItem = new JMenuItem("Save Article...");
+		saveArticleMenuItem.setEnabled(false);
+		saveArticleMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveArticleMenuItem_actionPerformed(e);
 			}
 		});
 		
@@ -214,9 +216,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuFile.add(resetMenuItem);
 	    menuFile.addSeparator();
 	    menuFile.add(downloadURLMenuItem);
-	    menuFile.addSeparator();
-	    menuFile.add(saveArticleMenuItem);
 	    menuFile.add(loadArticleMenuItem);
+	    menuFile.add(saveArticleMenuItem);
 	    menuFile.addSeparator();
 	    menuFile.add(exitMenuItem);
 		
@@ -352,11 +353,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		
 	}
 
-	protected void downloadURLMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	protected void resetMenuItem_actionPerformed(ActionEvent e) {
 		System.out.println("Reset action is requested");
 		articles.clear();
@@ -366,7 +362,45 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		addAllMenuItem.setEnabled(false);
 		saveArticleMenuItem.setEnabled(false);
 	}
-	
+
+	/**
+	 * Opens the <code>URLReaderAgent</code> customizer and allow
+	 * the user to download articles from web pages.
+	 * @param e the event generated when the <b>Download URL...</b>
+	 * menu item is selected.
+	 */
+	protected void downloadURLMenuItem_actionPerformed(ActionEvent e) {
+		Class<?> customizerClass = urlReaderAgent.getCustomizerClass();
+		
+		if (customizerClass == null) {
+			trace("Error: cannot find URLReaderAgent customizer class");
+			return;
+		}
+		
+		// found a customizer, now open it
+		Customizer customizer = null;
+		
+		try {
+			customizer = (Customizer) customizerClass.newInstance();
+			customizer.setObject(urlReaderAgent);
+		} catch (Exception ex) {
+			trace("Error: opening URLReaderAgent customizer - " +
+					ex.toString());
+		}
+		
+		JDialog dlg = (JDialog) customizer;
+		
+		// center the dialog
+		Dimension dlgSize = dlg.getSize();
+		Dimension frameSize = this.getSize();
+		Point frameLoc = this.getLocationOnScreen();
+		
+		dlg.setLocation(
+				frameLoc.x + (frameSize.width - dlgSize.width) / 2,
+				frameLoc.y + (frameSize.height - dlgSize.height) / 2);
+		dlg.setVisible(true);
+	}
+
 	/**
 	 * Loads and scores an article from a personal computer.
 	 * @param e the event generated when the <b>Load Article...</b>

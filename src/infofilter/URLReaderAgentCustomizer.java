@@ -156,7 +156,7 @@ implements Customizer, CIAgentEventListener {
 		if (action != null) {
 			if (action.equals("trace")) {
 				System.out.println(
-						"Processing event from" + source +
+						"Processing event from " + source +
 						", with the argument: " + arg +
 						", and the action: " + action);
 			} else if (action.equals("addURLText")) {
@@ -210,6 +210,8 @@ implements Customizer, CIAgentEventListener {
 	 */
 	public void setDataOnBean() {
 		String name = nameTextField.getText().trim();
+
+		System.out.println("Test " + agent + ", " + name);
 		agent.setName(name);
 
 		try {
