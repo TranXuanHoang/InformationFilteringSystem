@@ -121,7 +121,6 @@ public class LearnFrame extends JFrame implements Runnable {
 		jPanel1.add(dataSetFileNameLabel);
 		dataSetFileNameLabel.setText("<none>");
 		jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
-		//jPanel1.setAlignmentX(LEFT_ALIGNMENT);
 		this.getContentPane().add(jPanel1, BorderLayout.NORTH);
 
 		jScrollPane1.getViewport().add(dataTextArea);

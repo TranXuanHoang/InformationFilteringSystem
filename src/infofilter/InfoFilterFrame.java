@@ -2,8 +2,10 @@ package infofilter;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -12,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.beans.Customizer;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBoxMenuItem;
@@ -27,6 +30,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -61,9 +66,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 	JMenuItem aboutMenuItem;
 
-	JPanel jPanel1 = new JPanel();
-	JPanel jPanel2 = new JPanel();
-	JLabel jLabel1;
+	JPanel jPanel1;
+	JPanel jPanel2;
 	JLabel filterAgentStatusLabel;
 	JScrollPane jScrollPane1;
 	JScrollPane jScrollPane2;
@@ -77,7 +81,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JCheckBoxMenuItem useClustersCheckBoxMenuItem;
 	JCheckBoxMenuItem useFeedbackCheckBoxMenuItem;
 
-	String titleBarText = "CIAgent InfoFilter Application";
+	String titleBarText = "Information Filtering Application";
 
 	protected static final int NUM_COLS = 3;
 	protected static final int COL_SUBJECT_ID = 0;
@@ -93,7 +97,11 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 	/** List of downloaded articles. */
 	protected Vector<NewsArticle> articles;
+	
+	/** The agent that filters articles. */
 	protected FilterAgent filterAgent;
+	
+	/** The agent that allows user to download article. */
 	protected URLReaderAgent urlReaderAgent;
 
 	/** Currently selected article. */
@@ -313,33 +321,43 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		menuHelp.add(aboutMenuItem);
 
-		jLabel1 = new JLabel("Articles");
 		filterAgentStatusLabel = new JLabel("FilterAgent status:");
 
-		jPanel1.setLayout(new GridLayout());
-		jPanel1.setMinimumSize(new Dimension(500, 200));
-		jPanel1.add(jLabel1);
+		jPanel1 = new JPanel(new GridLayout());
+		jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
 		jPanel1.add(filterAgentStatusLabel);
 
 		setUpTheTable();
 		articleTable.setPreferredSize(new Dimension(500, 300));
 		jScrollPane1 = new JScrollPane();
+		jScrollPane1.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createLineBorder(Color.BLUE),
+				"Articles",
+				TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION ,
+				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane1.getViewport().add(articleTable);
-		jPanel2.setLayout(new GridLayout());
-		jPanel2.setPreferredSize(new Dimension(500, 100));
-		jPanel2.add(jScrollPane1);
 
 		articleTextArea = new JTextArea();
+		articleTextArea.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		jScrollPane2 = new JScrollPane();
-		jScrollPane2.setPreferredSize(new Dimension(500, 200));
+		jScrollPane2.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createLineBorder(Color.BLUE),
+				"Contents of the Selected Article",
+				TitledBorder.LEFT,
+				TitledBorder.DEFAULT_POSITION ,
+				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane2.getViewport().add(articleTextArea);
+
+		jPanel2 = new JPanel(new GridLayout(2, 1, 10, 10));
+		jPanel2.add(jScrollPane1);
+		jPanel2.add(jScrollPane2);
 
 		setJMenuBar(menuBar);
 		setLayout(new BorderLayout());
-		add(jPanel1, BorderLayout.NORTH);
+		add(jPanel1, BorderLayout.SOUTH);
 		add(jPanel2, BorderLayout.CENTER);
-		add(jScrollPane2, BorderLayout.SOUTH);
-		setSize(500, 395);
+		setSize(800, 600);
 		setTitle(titleBarText + " - Using Keywords");
 	}
 
