@@ -39,35 +39,35 @@ import ciagent.CIAgentEventListener;
 public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
-	
-	JMenuBar menuBar1;
+
+	JMenuBar menuBar;
 	JMenu menuFile;
-	JMenu jMenu1;
-	JMenu jMenu2;
-	JMenu jMenu3;
-	JMenu jMenu5;
-	
+	JMenu menuProfile;
+	JMenu menuEdit;
+	JMenu menuFilter;
+	JMenu menuHelp;
+
 	JMenuItem resetMenuItem;
 	JMenuItem downloadURLMenuItem;
 	JMenuItem saveArticleMenuItem;
 	JMenuItem loadArticleMenuItem;
 	JMenuItem exitMenuItem;
-	
+
 	JMenuItem keywordsMenuItem;
 	JMenuItem addArticleMenuItem;
 	JMenuItem addAllMenuItem;
 
-	JMenuItem cutMenuItem;
-	
+	JMenuItem deleteMenuItem;
+
 	JMenuItem aboutMenuItem;
-	
+
 	JPanel jPanel1 = new JPanel();
 	JPanel jPanel2 = new JPanel();
 	JLabel jLabel1;
 	JLabel filterAgentStatusLabel;
-	JScrollPane jScrollPane3;
 	JScrollPane jScrollPane1;
-	JTextArea articleTextArea = new JTextArea();
+	JScrollPane jScrollPane2;
+	JTextArea articleTextArea;
 	ButtonGroup useButtonGroup;
 	FileDialog openFileDialog;
 	FileDialog saveFileDialog;
@@ -76,9 +76,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JCheckBoxMenuItem useKeywordsCheckBoxMenuItem;
 	JCheckBoxMenuItem useClustersCheckBoxMenuItem;
 	JCheckBoxMenuItem useFeedbackCheckBoxMenuItem;
-	
+
 	String titleBarText = "CIAgent InfoFilter Application";
-	
+
 	protected static final int NUM_COLS = 3;
 	protected static final int COL_SUBJECT_ID = 0;
 	protected static final int COL_SCORE_ID = 1;
@@ -88,18 +88,18 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	private static final String COL_RATING = "Rating";
 	protected String[] columnNameList =
 		{COL_SUBJECT, COL_SCORE, COL_RATING};
-	
+
 	protected Object[][] data;
-	
+
 	/** List of downloaded articles. */
 	protected Vector<NewsArticle> articles;
 	protected FilterAgent filterAgent;
 	protected URLReaderAgent urlReaderAgent;
-	
+
 	/** Currently selected article. */
 	NewsArticle currentArt;
 	boolean scored = false; // true if articles were scored
-	
+
 	/**
 	 * Type of filtering:<br>
 	 * <ul>
@@ -109,7 +109,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * </ul>
 	 */
 	int filterType = 0;
-	
+
 	/**
 	 * Constructs a frame for the information filtering agent.
 	 */
@@ -123,7 +123,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Initializes the underlying data including the reference to
 	 * the set of articles, the filter agent, the URL reader agent.
@@ -132,46 +132,46 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		// check if a serialized FilterAgent exists
 		try {
 			FilterAgent tmpFilterAgent = FilterAgent.restoreFromFile(
-							FilterAgent.fileName);
-			
+					FilterAgent.fileName);
+
 			if (tmpFilterAgent != null) {
 				filterAgent = tmpFilterAgent;
 			}
 		} catch (Exception e) {
 			// no error, just catch any exception
 		}
-		
+
 		articles = new Vector<>();
-		
+
 		filterAgent = new FilterAgent();
 		filterAgent.infoFilter = this;
 		filterAgent.addCIAgentEventListener(this); // for trace msgs
 		filterAgent.initialize();
 		filterAgent.startAgentProcessing(); // start filter agent thread
-		
+
 		urlReaderAgent = new URLReaderAgent();
 		urlReaderAgent.addCIAgentEventListener(this);
 		urlReaderAgent.initialize();
 		urlReaderAgent.startAgentProcessing(); // start it running
 	}
-	
+
 	/**
 	 * Initializes the GUI of the information filtering system.
 	 * @throws Exception if any errors occur during initialization.
 	 */
 	private void initializeGUI() throws Exception {
 		menuFile = new JMenu("File");
-		jMenu1 = new JMenu("Profile");
-		jMenu2 = new JMenu("Edit");
-		jMenu3 = new JMenu("Filter");
-		jMenu5 = new JMenu("Help");
-		menuBar1 = new JMenuBar();
-		menuBar1.add(menuFile);
-		menuBar1.add(jMenu2);
-		menuBar1.add(jMenu1);
-		menuBar1.add(jMenu3);
-		menuBar1.add(jMenu5);
-		
+		menuEdit = new JMenu("Edit");
+		menuProfile = new JMenu("Profile");
+		menuFilter = new JMenu("Filter");
+		menuHelp = new JMenu("Help");
+		menuBar = new JMenuBar();
+		menuBar.add(menuFile);
+		menuBar.add(menuEdit);
+		menuBar.add(menuProfile);
+		menuBar.add(menuFilter);
+		menuBar.add(menuHelp);
+
 		resetMenuItem = new JMenuItem("Clear All");
 		resetMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -179,7 +179,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				resetMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		downloadURLMenuItem = new JMenuItem("Dowload URL...");
 		downloadURLMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -187,7 +187,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				downloadURLMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		loadArticleMenuItem = new JMenuItem("Load Article...");
 		loadArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -195,7 +195,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				loadArticleMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		saveArticleMenuItem = new JMenuItem("Save Article...");
 		saveArticleMenuItem.setEnabled(false);
 		saveArticleMenuItem.addActionListener(new ActionListener() {
@@ -204,7 +204,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				saveArticleMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		exitMenuItem = new JMenuItem("Exit");
 		exitMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -212,15 +212,15 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				System.exit(0);
 			}
 		});
-		
+
 		menuFile.add(resetMenuItem);
-	    menuFile.addSeparator();
-	    menuFile.add(downloadURLMenuItem);
-	    menuFile.add(loadArticleMenuItem);
-	    menuFile.add(saveArticleMenuItem);
-	    menuFile.addSeparator();
-	    menuFile.add(exitMenuItem);
-		
+		menuFile.addSeparator();
+		menuFile.add(downloadURLMenuItem);
+		menuFile.add(loadArticleMenuItem);
+		menuFile.add(saveArticleMenuItem);
+		menuFile.addSeparator();
+		menuFile.add(exitMenuItem);
+
 		keywordsMenuItem = new JMenuItem("Customize...");
 		keywordsMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -228,7 +228,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				keywordsMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		addArticleMenuItem = new JMenuItem("Add Article");
 		addArticleMenuItem.setEnabled(false);
 		addArticleMenuItem.addActionListener(new ActionListener() {
@@ -237,7 +237,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				addArticleMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		addAllMenuItem = new JMenuItem("Add All Articles");
 		addAllMenuItem.setEnabled(false);
 		addAllMenuItem.addActionListener(new ActionListener() {
@@ -246,22 +246,22 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				addAllMenuItem_actionPerformed(e);
 			}
 		});
-		
-		jMenu1.add(keywordsMenuItem);
-	    jMenu1.addSeparator();
-	    jMenu1.add(addArticleMenuItem);
-	    jMenu1.add(addAllMenuItem);
-		
-		cutMenuItem = new JMenuItem("Cut");
-		cutMenuItem.addActionListener(new ActionListener() {
+
+		menuProfile.add(keywordsMenuItem);
+		menuProfile.addSeparator();
+		menuProfile.add(addArticleMenuItem);
+		menuProfile.add(addAllMenuItem);
+
+		deleteMenuItem = new JMenuItem("Delete");
+		deleteMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cutMenuItem_actionPerformed(e);
+				deleteMenuItem_actionPerformed(e);
 			}
 		});
-		
-		jMenu2.add(cutMenuItem);
-		
+
+		menuEdit.add(deleteMenuItem);
+
 		useKeywordsCheckBoxMenuItem =
 				new JCheckBoxMenuItem("Using Keywords");
 		useKeywordsCheckBoxMenuItem.setSelected(true);
@@ -272,8 +272,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 
-		useFeedbackCheckBoxMenuItem =
-				new JCheckBoxMenuItem("Using Feedback");
+		useFeedbackCheckBoxMenuItem = new JCheckBoxMenuItem(
+				"Using Back Propagation Neural Network");
 		useFeedbackCheckBoxMenuItem.setEnabled(
 				filterAgent.isRatingNetTrained() ? true : false);
 		useFeedbackCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -282,9 +282,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				useFeedbackCheckBoxMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		useClustersCheckBoxMenuItem =
-				new JCheckBoxMenuItem("Using Clusters");
+				new JCheckBoxMenuItem("Using Kohonen Map");
 		useClustersCheckBoxMenuItem.setEnabled(
 				filterAgent.isClusterNetTrained() ? true : false);
 		useClustersCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -293,16 +293,16 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				useClustersCheckBoxMenuItem_actionPerformed(e);
 			}
 		});
-		
+
 		useButtonGroup = new ButtonGroup();
 		useButtonGroup.add(useKeywordsCheckBoxMenuItem);
-	    useButtonGroup.add(useClustersCheckBoxMenuItem);
-	    useButtonGroup.add(useFeedbackCheckBoxMenuItem);
-	    
-	    jMenu3.add(useKeywordsCheckBoxMenuItem);
-	    jMenu3.add(useClustersCheckBoxMenuItem);
-	    jMenu3.add(useFeedbackCheckBoxMenuItem);
-		
+		useButtonGroup.add(useClustersCheckBoxMenuItem);
+		useButtonGroup.add(useFeedbackCheckBoxMenuItem);
+
+		menuFilter.add(useKeywordsCheckBoxMenuItem);
+		menuFilter.add(useClustersCheckBoxMenuItem);
+		menuFilter.add(useFeedbackCheckBoxMenuItem);
+
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -310,49 +310,45 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				aboutMenuItem_actionPerformed(e);
 			}
 		});
-		
-		jMenu5.add(aboutMenuItem);
-		
+
+		menuHelp.add(aboutMenuItem);
+
 		jLabel1 = new JLabel("Articles");
 		filterAgentStatusLabel = new JLabel("FilterAgent status:");
-		
+
 		jPanel1.setLayout(new GridLayout());
-	    jPanel1.setMinimumSize(new Dimension(500, 200));
-	    jPanel1.add(jLabel1);
-	    jPanel1.add(filterAgentStatusLabel);
-	    
-	    jScrollPane1 = new JScrollPane();
-	    setUpTheTable();
-	    articleTable.setPreferredSize(new Dimension(500, 300));
-	    jScrollPane1.getViewport().add(articleTable);
-	    jPanel2.setLayout(new GridLayout());
-	    jPanel2.setPreferredSize(new Dimension(500, 100));
-	    jPanel2.add(jScrollPane1);
-	    
-	    jScrollPane3 = new JScrollPane();
-		jScrollPane3.setPreferredSize(new Dimension(500, 200));
-	    jScrollPane3.getViewport().add(articleTextArea);
-	    
-	    setJMenuBar(menuBar1);
+		jPanel1.setMinimumSize(new Dimension(500, 200));
+		jPanel1.add(jLabel1);
+		jPanel1.add(filterAgentStatusLabel);
+
+		setUpTheTable();
+		articleTable.setPreferredSize(new Dimension(500, 300));
+		jScrollPane1 = new JScrollPane();
+		jScrollPane1.getViewport().add(articleTable);
+		jPanel2.setLayout(new GridLayout());
+		jPanel2.setPreferredSize(new Dimension(500, 100));
+		jPanel2.add(jScrollPane1);
+
+		articleTextArea = new JTextArea();
+		jScrollPane2 = new JScrollPane();
+		jScrollPane2.setPreferredSize(new Dimension(500, 200));
+		jScrollPane2.getViewport().add(articleTextArea);
+
+		setJMenuBar(menuBar);
 		setLayout(new BorderLayout());
 		add(jPanel1, BorderLayout.NORTH);
 		add(jPanel2, BorderLayout.CENTER);
-		add(jScrollPane3, BorderLayout.SOUTH);
+		add(jScrollPane2, BorderLayout.SOUTH);
 		setSize(500, 395);
 		setTitle(titleBarText + " - Using Keywords");
 	}
 
-
-	protected void cutMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void keywordsMenuItem_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	/**
+	 * Resets the information filtering application when the
+	 * <b>Clear All</b> menu item is selected.
+	 * @param e the event generated when the <b>Clear All</b>
+	 * menu item is selected.
+	 */
 	protected void resetMenuItem_actionPerformed(ActionEvent e) {
 		System.out.println("Reset action is requested");
 		articles.clear();
@@ -371,30 +367,31 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 */
 	protected void downloadURLMenuItem_actionPerformed(ActionEvent e) {
 		Class<?> customizerClass = urlReaderAgent.getCustomizerClass();
-		
+
 		if (customizerClass == null) {
 			trace("Error: cannot find URLReaderAgent customizer class");
 			return;
 		}
-		
+
 		// found a customizer, now open it
 		Customizer customizer = null;
-		
+
 		try {
 			customizer = (Customizer) customizerClass.newInstance();
 			customizer.setObject(urlReaderAgent);
 		} catch (Exception ex) {
 			trace("Error: opening URLReaderAgent customizer - " +
 					ex.toString());
+			return;
 		}
-		
+
 		JDialog dlg = (JDialog) customizer;
-		
+
 		// center the dialog
 		Dimension dlgSize = dlg.getSize();
 		Dimension frameSize = this.getSize();
 		Point frameLoc = this.getLocationOnScreen();
-		
+
 		dlg.setLocation(
 				frameLoc.x + (frameSize.width - dlgSize.width) / 2,
 				frameLoc.y + (frameSize.height - dlgSize.height) / 2);
@@ -409,17 +406,17 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected void loadArticleMenuItem_actionPerformed(ActionEvent e) {
 		openFileDialog = new FileDialog(this, "Open", FileDialog.LOAD);
 		openFileDialog.setVisible(true);
-		
+
 		String directory = openFileDialog.getDirectory();
 		String fileName = openFileDialog.getFile();
-		
+
 		if (fileName != null) {
 			NewsArticle article = new NewsArticle(directory + fileName);
-			
+
 			article.readArticle(fileName, directory);
 			articles.addElement(article);
 			filterAgent.score(article, filterType);
-			
+
 			refreshTable();
 			articleTextArea.setText(article.getBody());
 			articleTextArea.setCaretPosition(0);
@@ -434,18 +431,90 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected void saveArticleMenuItem_actionPerformed(ActionEvent e) {
 		saveFileDialog = new FileDialog(this, "Save", FileDialog.SAVE);
 		saveFileDialog.setVisible(true);
-		
+
 		String directory = saveFileDialog.getDirectory();
 		String fileName = saveFileDialog.getFile();
-		
+
 		if (fileName != null) {
 			int index = articleTable.getSelectedRow();
-			
+
 			if (index != -1) {
 				NewsArticle article = articles.elementAt(index);
 				article.writeArticle(fileName, directory);
 			}
 		}
+	}
+
+	/**
+	 * Deletes the article selected by user from the table of all
+	 * loaded and downloaded articles.
+	 * @param e the event generated when the <b>Delete</b> button
+	 * is selected.
+	 */
+	protected void deleteMenuItem_actionPerformed(ActionEvent e) {
+		int selectedRow = articleTable.getSelectedRow();
+
+		if (selectedRow == -1 || articles.size() == 0) {
+			return; // nothing is selected
+		}
+
+		articles.removeElementAt(selectedRow);
+		currentArt = null;
+		articleTextArea.setText(""); // clear the display area
+		refreshTable(); // update the table model and refresh display
+		selectedRow = articleTable.getSelectedRow();
+
+		if (selectedRow < articles.size()) {
+			currentArt = articles.elementAt(selectedRow);
+			articleTextArea.setText(currentArt.getBody());
+			articleTextArea.setCaretPosition(0);
+		} else if (articles.size() == 0) {
+			addArticleMenuItem.setEnabled(false);
+			addAllMenuItem.setEnabled(false);
+			saveArticleMenuItem.setEnabled(false);
+		}
+	}
+
+	/**
+	 * Opens a dialog box allowing user to <b>Add</b>, <b>Change</b>,
+	 * <b>Remove</b> keywords that are used to score articles. The
+	 * customizer dialog box also allows user to create a <code>
+	 * .dfn</code> profile data file that defines all fields of
+	 * each input record.
+	 * @param e the event generated when the <b>Customize</b> menu
+	 * item is selected.
+	 */
+	protected void keywordsMenuItem_actionPerformed(ActionEvent e) {
+		Class<?> customizerClass = filterAgent.getCustomizerClass();
+
+		if (customizerClass == null) {
+			trace("Error: cannot find FilterAgent customizer class");
+			return;
+		}
+
+		// found a customizer, now open it
+		Customizer customizer = null;
+
+		try {
+			customizer = (Customizer) customizerClass.newInstance();
+			customizer.setObject(filterAgent);
+		} catch (Exception ex) {
+			System.out.println("Error: opening customizer - " +
+					ex.toString());
+			return;
+		}
+
+		JDialog dlg = (JDialog) customizer;
+
+		// center the dialog
+		Dimension dlgSize = dlg.getSize();
+		Dimension frameSize = this.getSize();
+		Point frameLoc = this.getLocationOnScreen();
+
+		dlg.setLocation(
+				frameLoc.x + (frameSize.width - dlgSize.width) / 2,
+				frameLoc.y + (frameSize.height - dlgSize.height) / 2);
+		dlg.setVisible(true);
 	}
 
 	protected void addArticleMenuItem_actionPerformed(ActionEvent e) {
@@ -460,31 +529,55 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		filterAgent.addAllArticlesToProfile(articles);
 	}
 
+	/**
+	 * Scores all loaded/downloaded articles by counting the
+	 * frequencies of keywords.
+	 * @param e the event generated when the <b>Using Keywords</b>
+	 * menu item is selected.
+	 */
 	protected void useKeywordsCheckBoxMenuItem_actionPerformed(ActionEvent e) {
 		filterType = FilterAgent.USE_KEYWORDS;
 		filterArticles();
 		this.setTitle(titleBarText + " - Using Keywords");
 	}
-	
+
+	/**
+	 * Scores all loaded/downloaded articles using the back
+	 * propagation neural network.
+	 * @param e the event generated when the <b>Using Back
+	 * Propagation Neural Network</b> menu item is selected.
+	 */
 	protected void useFeedbackCheckBoxMenuItem_actionPerformed(ActionEvent e) {
 		filterType = FilterAgent.USE_PREDICTED_RATING;
 		filterArticles();
 		this.setTitle(titleBarText + " - Using Backpropagation Neural Network");
 	}
 
+	/**
+	 * Scores all loaded/downloaded articles using the Kohonen map
+	 * neural network.
+	 * @param e the event generated when the <b>Using Kohonen Map</b>
+	 * menu item is selected.
+	 */
 	protected void useClustersCheckBoxMenuItem_actionPerformed(ActionEvent e) {
 		filterType = FilterAgent.USE_CLUSTERS;
 		filterArticles();
 		this.setTitle(titleBarText + " - Using Kohonen Map Neural Network");
 	}
 
+	/**
+	 * Shows a dialog box that contains general information about
+	 * the information filtering application.
+	 * @param e the event generated when the <b>About</b> menu
+	 * item is selected.
+	 */
 	protected void aboutMenuItem_actionPerformed(ActionEvent e) {
 		AboutDialog about = new AboutDialog(this,
 				"About Information Filtering Application", true);
 		Dimension aboutSize = about.getSize();
 		Dimension frameSize = this.getSize();
 		Point frameLoc = this.getLocationOnScreen();
-		
+
 		about.setLocation(
 				frameLoc.x + (frameSize.width - aboutSize.width) / 2,
 				frameLoc.y + (frameSize.height - aboutSize.height) / 2);
@@ -498,7 +591,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected void setUpTheTable() {
 		// get data from the set of downloaded articles
 		data = getTableData();
-		
+
 		// create a model of the data
 		articleTableModel = new AbstractTableModel() {
 			/** Serial version. */
@@ -508,7 +601,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			public Object getValueAt(int row, int col) {
 				return data[row][col];
 			}
-			
+
 			@Override
 			public void setValueAt(Object value, int row, int col) {
 				switch (col) {
@@ -519,34 +612,34 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				case COL_RATING_ID:
 					String userRating = ((String) value).trim();
 					data[row][col] = userRating;
-					
+
 					if (currentArt != null) {
 						currentArt.setUserRating(userRating);
 					}
 					break;
 				}
 			}
-			
+
 			@Override
 			public int getRowCount() {
 				return data.length;
 			}
-			
+
 			@Override
 			public int getColumnCount() {
 				return columnNameList.length;
 			}
-			
+
 			@Override
 			public String getColumnName(int colID) {
 				return columnNameList[colID];
 			}
-			
+
 			@Override
 			public Class<?> getColumnClass(int colID) {
 				return getValueAt(0, colID).getClass();
 			}
-			
+
 			@Override
 			public boolean isCellEditable(int row, int col) {
 				switch (col) {
@@ -560,13 +653,13 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				}
 			}
 		}; // end create a model of the data
-		
+
 		articleTable = new JTable(articleTableModel);
 		articleTable.getColumn(COL_SUBJECT).setPreferredWidth(200);
 		articleTable.getColumn(COL_SCORE).setPreferredWidth(30);
 		articleTable.getColumn(COL_RATING).setPreferredWidth(30);
 		articleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		// handle the table's row selection events
 		ListSelectionModel rowSM = articleTable.getSelectionModel();
 		rowSM.addListSelectionListener(new ListSelectionListener() {
@@ -576,16 +669,16 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				if (e.getValueIsAdjusting()) {
 					return;
 				}
-				
+
 				ListSelectionModel m = (ListSelectionModel) e.getSource();
-				
+
 				if (!m.isSelectionEmpty()) {
 					int selectedRow = m.getMinSelectionIndex();
-					
+
 					if (articles.size() > 0) {
 						currentArt = articles.get(selectedRow);
 						articleTextArea.setText(currentArt.body);
-						
+
 						// move cursor to the beginning of body
 						articleTextArea.setCaretPosition(0);
 					} else {
@@ -594,14 +687,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				}
 			}
 		}); // end handle the table's row selection events
-		
+
 		JComboBox<String> userRatings =
 				new JComboBox<>(FilterAgent.RATINGS);
 		articleTable.getColumnModel().getColumn(COL_RATING_ID).
 		setCellEditor(new DefaultCellEditor(userRatings));
 		articleTable.setCellSelectionEnabled(true);
 	}
-	
+
 	/**
 	 * Retrieves the subjects, scores and user ratings of downloaded
 	 * articles.
@@ -610,34 +703,34 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 */
 	private Object[][] getTableData() {
 		Object[][] table;
-		
+
 		if (articles == null) {
 			return null;
 		}
-		
+
 		if (articles.size() == 0) {
 			table = new Object[1][NUM_COLS];
-			
+
 			table[0][0] = "";
 			table[0][1] = "";
 			table[0][2] = "";
-			
+
 			return table;
 		} else {
 			table = new Object[articles.size()][NUM_COLS];
-			
+
 			for (int i = 0; i < articles.size(); i++) {
 				NewsArticle article = articles.elementAt(i);
-				
+
 				table[i][0] = article.getSubject();
 				table[i][1] = String.valueOf(article.getScore(filterType));
 				table[i][2] = article.getUserRating();
 			}
-			
+
 			return table;
 		}
 	}
-	
+
 	/**
 	 * Changes the contents of the <b>Score</b> column in the table.
 	 */
@@ -645,22 +738,22 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		for (int i = 0; i < articles.size(); i++) {
 			NewsArticle article = articles.get(i);
 			String score = String.valueOf(article.getScore(filterType));
-			
+
 			data[i][COL_SCORE_ID] = score;
 		}
 	}
-	
+
 	/**
 	 * Updates the table data and sends an event to refresh the
 	 * table's GUI.
 	 */
 	private void updateTable() {
 		updateTableData();
-		
+
 		TableModelEvent e = new TableModelEvent(articleTableModel);
 		articleTable.tableChanged(e);
 	}
-	
+
 	/** Refresh the table of articles with changed data. */
 	private void refreshTable() {
 		data = getTableData();
@@ -681,7 +774,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		//Object source = e.getSource();
 		Object arg = e.getArgObject();
 		Object action = e.getAction();
-		
+
 		if (action != null) {
 			if (action.equals("trace")) {
 				if ((arg != null) && (arg instanceof String)) {
@@ -715,7 +808,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	public void clusterNetTrained() {
 		useClustersCheckBoxMenuItem.setEnabled(true);
 	}
-	
+
 	/**
 	 * Enables using feedback for filtering after the back propagation
 	 * neural network was trained.
@@ -723,7 +816,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	public void ratingNetTrained() {
 		useFeedbackCheckBoxMenuItem.setEnabled(true);
 	}
-	
+
 	/**
 	 * Scores a single article and adds it to the table.
 	 * @param art the article to be scored and added.
@@ -731,24 +824,24 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected void addArticle(NewsArticle art) {
 		// add the article to the vector of all downloaded articles
 		articles.addElement(art);
-		
+
 		// score the article
 		filterAgent.score(art, filterType);
-		
+
 		// update the GUI table
 		refreshTable();
-		
+
 		// display article in the text area, set cursor at beginning
 		articleTextArea.setText(art.getBody());
 		articleTextArea.setCaretPosition(0);
-		
+
 		// enable menu items so that user can add the article to
 		// the profile if desired
 		addArticleMenuItem.setEnabled(true);
 		addAllMenuItem.setEnabled(true);
 		saveArticleMenuItem.setEnabled(true);
 	}
-	
+
 	/**
 	 * Filters the set of articles by scoring and sorting them,
 	 * then uses {@link #refreshTable()} method to update the
@@ -757,14 +850,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	public void filterArticles() {
 		filterAgent.score(articles, filterType);
 		articles = insertionSort(articles);
-		
+
 		refreshTable();
-		
+
 		if (articles.size() > 0) {
 			currentArt = articles.firstElement();
 		}
 	}
-	
+
 	/**
 	 * Sorts a set of articles in descending order with respect to
 	 * their scores of the corresponding filter type.
@@ -776,13 +869,13 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	Vector<NewsArticle> insertionSort(Vector<NewsArticle> articles) {
 		int size = articles.size();
 		Vector<NewsArticle> out = new Vector<>(articles);
-		
+
 		for (int i = 1; i < size; i++) {
 			NewsArticle ai = out.get(i);
-			
+
 			for (int j = 0; j <= i - 1; j++) {
 				NewsArticle aj = out.get(j);
-				
+
 				if (ai.getScore(filterType) > aj.getScore(filterType)) {
 					out.remove(i);
 					out.insertElementAt(aj, j);
@@ -790,10 +883,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				}
 			}
 		}
-		
+
 		return out;
 	}
-	
+
 	/**
 	 * Displays a message in the bottom text area.
 	 * @param msg the message to be displayed.
@@ -801,7 +894,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	synchronized void trace(String msg) {
 		articleTextArea.append(msg + "\n");
 	}
-	
+
 	/**
 	 * Processes window events and is overridden to exit when
 	 * window closes.
