@@ -210,8 +210,6 @@ implements Customizer, CIAgentEventListener {
 	 */
 	public void setDataOnBean() {
 		String name = nameTextField.getText().trim();
-
-		System.out.println("Test " + agent + ", " + name);
 		agent.setName(name);
 
 		try {

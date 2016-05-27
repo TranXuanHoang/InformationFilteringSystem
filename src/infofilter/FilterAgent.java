@@ -366,6 +366,8 @@ public class FilterAgent extends CIAgent {
 		} else if (sum < 4) {
 			article.setUserRating(NEUTRAL_RATING);
 		} else if (sum < 6) {
+			article.setUserRating(MILDLY_RATING);
+		} else {
 			article.setUserRating(INTERESTING_RATING);
 		}
 	}

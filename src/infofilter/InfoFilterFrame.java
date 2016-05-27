@@ -20,6 +20,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -79,7 +80,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JScrollPane jScrollPane2;
 	private TableModel articleTableModel;
 	JTable articleTable;
-	JTextArea articleTextArea;
+//	JTextArea articleTextArea;
+	JEditorPane articleEditorPane;
 
 	JPanel jPanel1;
 	JLabel filterAgentStatusLabel;
@@ -341,8 +343,11 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane1.getViewport().add(articleTable);
 
-		articleTextArea = new JTextArea();
-		articleTextArea.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+//		articleTextArea = new JTextArea();
+//		articleTextArea.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		articleEditorPane = new JEditorPane();
+		articleEditorPane.setContentType("text/html");
+		articleEditorPane.setFont(new Font("Times New Roman", Font.PLAIN, 40));
 		jScrollPane2 = new JScrollPane();
 		jScrollPane2.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createLineBorder(Color.BLUE),
@@ -350,7 +355,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				TitledBorder.LEFT,
 				TitledBorder.DEFAULT_POSITION ,
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
-		jScrollPane2.getViewport().add(articleTextArea);
+		jScrollPane2.getViewport().add(/*articleTextArea*/articleEditorPane);
 
 		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				jScrollPane1, jScrollPane2);
@@ -389,7 +394,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		System.out.println("Reset action is requested");
 		articles.clear();
 		refreshTable();
-		articleTextArea.setText("");
+//		articleTextArea.setText("");
+		articleEditorPane.setText("");
 		addArticleMenuItem.setEnabled(false);
 		addAllMenuItem.setEnabled(false);
 		saveArticleMenuItem.setEnabled(false);
@@ -455,8 +461,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			filterAgent.score(article, filterType);
 
 			refreshTable();
-			articleTextArea.setText(article.getBody());
-			articleTextArea.setCaretPosition(0);
+//			articleTextArea.setText(article.getBody());
+//			articleTextArea.setCaretPosition(0);
+			articleEditorPane.setText(article.getBody());
+			articleEditorPane.setCaretPosition(0);
 		}
 	}
 
@@ -498,7 +506,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		articles.removeElementAt(selectedRow);
 		currentArt = null;
-		articleTextArea.setText(""); // clear the display area
+//		articleTextArea.setText(""); // clear the display area
+		articleEditorPane.setText("");
 		refreshTable(); // update the table model and refresh display
 
 		if (articles.size() == 0) {
@@ -710,10 +719,12 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 					if (articles.size() > 0) {
 						currentArt = articles.get(selectedRow);
-						articleTextArea.setText(currentArt.body);
+//						articleTextArea.setText(currentArt.body);
+						articleEditorPane.setText(currentArt.getBody());
+						articleEditorPane.setCaretPosition(0);
 
 						// move cursor to the beginning of body
-						articleTextArea.setCaretPosition(0);
+//						articleTextArea.setCaretPosition(0);
 					} else {
 						currentArt = null;
 					}
@@ -851,8 +862,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	}
 
 	/**
-	 * Scores a single article and adds it to the table.
-	 * @param art the article to be scored and added.
+	 * Scores a single article downloaded from the Internet and
+	 * adds it to the table.
+	 * @param art the article downloaded from the Internet which
+	 * will be scored and added to the table.
 	 */
 	protected void addArticle(NewsArticle art) {
 		// add the article to the vector of all downloaded articles
@@ -865,8 +878,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		refreshTable();
 
 		// display article in the text area, set cursor at beginning
-		articleTextArea.setText(art.getBody());
-		articleTextArea.setCaretPosition(0);
+//		articleTextArea.setText(art.getBody());
+//		articleTextArea.setCaretPosition(0);
+		articleEditorPane.setText(art.getBody());
+		articleEditorPane.setCaretPosition(0);
 
 		// enable menu items so that user can add the article to
 		// the profile if desired
@@ -925,7 +940,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @param msg the message to be displayed.
 	 */
 	synchronized void trace(String msg) {
-		articleTextArea.append(msg + "\n");
+//		articleTextArea.append(msg + "\n");
+//		articleEditorPane.setText(articleEditorPane.getText() + msg + "\n");
 	}
 
 	/**
