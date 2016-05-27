@@ -57,31 +57,32 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 	JMenuItem resetMenuItem;
 	JMenuItem downloadURLMenuItem;
-	JMenuItem saveArticleMenuItem;
 	JMenuItem loadArticleMenuItem;
+	JMenuItem saveArticleMenuItem;
 	JMenuItem exitMenuItem;
+
+	JMenuItem deleteMenuItem;
 
 	JMenuItem keywordsMenuItem;
 	JMenuItem addArticleMenuItem;
 	JMenuItem addAllMenuItem;
 
-	JMenuItem deleteMenuItem;
-
-	JMenuItem aboutMenuItem;
-
-	JPanel jPanel1;
-	JLabel filterAgentStatusLabel;
-	JScrollPane jScrollPane1;
-	JScrollPane jScrollPane2;
-	JTextArea articleTextArea;
-	ButtonGroup useButtonGroup;
-	FileDialog openFileDialog;
-	FileDialog saveFileDialog;
-	JTable articleTable;
-	private TableModel articleTableModel = null; 
 	JCheckBoxMenuItem useKeywordsCheckBoxMenuItem;
 	JCheckBoxMenuItem useClustersCheckBoxMenuItem;
 	JCheckBoxMenuItem useFeedbackCheckBoxMenuItem;
+	ButtonGroup useButtonGroup;
+
+	JMenuItem aboutMenuItem;
+
+	JSplitPane splitPane;
+	JScrollPane jScrollPane1;
+	JScrollPane jScrollPane2;
+	private TableModel articleTableModel;
+	JTable articleTable;
+	JTextArea articleTextArea;
+
+	JPanel jPanel1;
+	JLabel filterAgentStatusLabel;
 
 	String titleBarText = "Information Filtering Application";
 
@@ -170,6 +171,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @throws Exception if any errors occur during initialization.
 	 */
 	private void initializeGUI() throws Exception {
+		// set size before to allow set up the split pane's divider
+		setSize(700, 500);
+
 		menuFile = new JMenu("File");
 		menuEdit = new JMenu("Edit");
 		menuProfile = new JMenu("Profile");
@@ -231,6 +235,16 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuFile.addSeparator();
 		menuFile.add(exitMenuItem);
 
+		deleteMenuItem = new JMenuItem("Delete");
+		deleteMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteMenuItem_actionPerformed(e);
+			}
+		});
+
+		menuEdit.add(deleteMenuItem);
+
 		keywordsMenuItem = new JMenuItem("Customize...");
 		keywordsMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -262,16 +276,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuProfile.add(addArticleMenuItem);
 		menuProfile.add(addAllMenuItem);
 
-		deleteMenuItem = new JMenuItem("Delete");
-		deleteMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				deleteMenuItem_actionPerformed(e);
-			}
-		});
-
-		menuEdit.add(deleteMenuItem);
-
 		useKeywordsCheckBoxMenuItem =
 				new JCheckBoxMenuItem("Using Keywords");
 		useKeywordsCheckBoxMenuItem.setSelected(true);
@@ -293,8 +297,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 
-		useClustersCheckBoxMenuItem =
-				new JCheckBoxMenuItem("Using Kohonen Map");
+		useClustersCheckBoxMenuItem = new JCheckBoxMenuItem(
+				"Using Kohonen Map Neural Network");
 		useClustersCheckBoxMenuItem.setEnabled(
 				filterAgent.isClusterNetTrained() ? true : false);
 		useClustersCheckBoxMenuItem.addActionListener(new ActionListener() {
@@ -306,12 +310,12 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		useButtonGroup = new ButtonGroup();
 		useButtonGroup.add(useKeywordsCheckBoxMenuItem);
-		useButtonGroup.add(useClustersCheckBoxMenuItem);
 		useButtonGroup.add(useFeedbackCheckBoxMenuItem);
+		useButtonGroup.add(useClustersCheckBoxMenuItem);
 
 		menuFilter.add(useKeywordsCheckBoxMenuItem);
-		menuFilter.add(useClustersCheckBoxMenuItem);
 		menuFilter.add(useFeedbackCheckBoxMenuItem);
+		menuFilter.add(useClustersCheckBoxMenuItem);
 
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.addActionListener(new ActionListener() {
@@ -323,17 +327,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		menuHelp.add(aboutMenuItem);
 
-		filterAgentStatusLabel = new JLabel("FilterAgent status:");
-
-		jPanel1 = new JPanel(new GridLayout());
-		jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
-		jPanel1.add(filterAgentStatusLabel);
-
 		setUpTheTable();
 		articleTable.getTableHeader().setFont(
 				new Font("Calibri", Font.BOLD, 14));
 		articleTable.getTableHeader().setForeground(new Color(200, 70, 70));
-		//articleTable.setPreferredSize(new Dimension(500, 300));
 		articleTable.setFont(new Font("Calibri", Font.PLAIN, 14));
 		jScrollPane1 = new JScrollPane();
 		jScrollPane1.setBorder(BorderFactory.createTitledBorder(
@@ -355,20 +352,12 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane2.getViewport().add(articleTextArea);
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				jScrollPane1, jScrollPane2);
-		splitPane.setOneTouchExpandable(true);
-
-		setTitle(titleBarText + " - Using Keywords");
-		setJMenuBar(menuBar);
-		setLayout(new BorderLayout());
-		add(jPanel1, BorderLayout.SOUTH);
-		add(splitPane, BorderLayout.CENTER);
-		setSize(700, 500);
-
-		splitPane.setDividerLocation((int) (this.getHeight() * 0.8) / 2);
-		splitPane.setDividerSize(10);
 		splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation((int) (this.getHeight() * 0.4));
+		splitPane.setDividerSize(10);
 		BasicSplitPaneDivider divider =
 				((BasicSplitPaneUI) splitPane.getUI()).getDivider();
 		divider.setBorder(null);
@@ -376,6 +365,18 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				(int) (this.getHeight() * 0.5 / 2));
 		jScrollPane1.setMinimumSize(minimumSize);
 		jScrollPane2.setMinimumSize(minimumSize);
+
+		filterAgentStatusLabel = new JLabel("FilterAgent status:");
+		filterAgentStatusLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
+		jPanel1 = new JPanel(new GridLayout());
+		jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
+		jPanel1.add(filterAgentStatusLabel);
+
+		setTitle(titleBarText + " - Using Keywords");
+		setJMenuBar(menuBar);
+		setLayout(new BorderLayout());
+		add(splitPane, BorderLayout.CENTER);
+		add(jPanel1, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -439,7 +440,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * menu item is selected.
 	 */
 	protected void loadArticleMenuItem_actionPerformed(ActionEvent e) {
-		openFileDialog = new FileDialog(this, "Open", FileDialog.LOAD);
+		FileDialog openFileDialog = new FileDialog(
+				this, "Open", FileDialog.LOAD);
 		openFileDialog.setVisible(true);
 
 		String directory = openFileDialog.getDirectory();
@@ -464,7 +466,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * menu item is selected.
 	 */
 	protected void saveArticleMenuItem_actionPerformed(ActionEvent e) {
-		saveFileDialog = new FileDialog(this, "Save", FileDialog.SAVE);
+		FileDialog saveFileDialog = new FileDialog(
+				this, "Save", FileDialog.SAVE);
 		saveFileDialog.setVisible(true);
 
 		String directory = saveFileDialog.getDirectory();
@@ -497,16 +500,11 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		currentArt = null;
 		articleTextArea.setText(""); // clear the display area
 		refreshTable(); // update the table model and refresh display
-		selectedRow = articleTable.getSelectedRow();
 
-		if (selectedRow < articles.size()) {
-			currentArt = articles.elementAt(selectedRow);
-			articleTextArea.setText(currentArt.getBody());
-			articleTextArea.setCaretPosition(0);
-		} else if (articles.size() == 0) {
+		if (articles.size() == 0) {
+			saveArticleMenuItem.setEnabled(false);
 			addArticleMenuItem.setEnabled(false);
 			addAllMenuItem.setEnabled(false);
-			saveArticleMenuItem.setEnabled(false);
 		}
 	}
 
