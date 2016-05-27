@@ -27,6 +27,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
@@ -35,6 +36,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
@@ -47,8 +50,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 	JMenuBar menuBar;
 	JMenu menuFile;
-	JMenu menuProfile;
 	JMenu menuEdit;
+	JMenu menuProfile;
 	JMenu menuFilter;
 	JMenu menuHelp;
 
@@ -67,7 +70,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JMenuItem aboutMenuItem;
 
 	JPanel jPanel1;
-	JPanel jPanel2;
 	JLabel filterAgentStatusLabel;
 	JScrollPane jScrollPane1;
 	JScrollPane jScrollPane2;
@@ -97,10 +99,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 	/** List of downloaded articles. */
 	protected Vector<NewsArticle> articles;
-	
+
 	/** The agent that filters articles. */
 	protected FilterAgent filterAgent;
-	
+
 	/** The agent that allows user to download article. */
 	protected URLReaderAgent urlReaderAgent;
 
@@ -328,7 +330,11 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		jPanel1.add(filterAgentStatusLabel);
 
 		setUpTheTable();
-		articleTable.setPreferredSize(new Dimension(500, 300));
+		articleTable.getTableHeader().setFont(
+				new Font("Calibri", Font.BOLD, 14));
+		articleTable.getTableHeader().setForeground(new Color(200, 70, 70));
+		//articleTable.setPreferredSize(new Dimension(500, 300));
+		articleTable.setFont(new Font("Calibri", Font.PLAIN, 14));
 		jScrollPane1 = new JScrollPane();
 		jScrollPane1.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createLineBorder(Color.BLUE),
@@ -349,16 +355,27 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane2.getViewport().add(articleTextArea);
 
-		jPanel2 = new JPanel(new GridLayout(2, 1, 10, 10));
-		jPanel2.add(jScrollPane1);
-		jPanel2.add(jScrollPane2);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				jScrollPane1, jScrollPane2);
+		splitPane.setOneTouchExpandable(true);
 
+		setTitle(titleBarText + " - Using Keywords");
 		setJMenuBar(menuBar);
 		setLayout(new BorderLayout());
 		add(jPanel1, BorderLayout.SOUTH);
-		add(jPanel2, BorderLayout.CENTER);
-		setSize(800, 600);
-		setTitle(titleBarText + " - Using Keywords");
+		add(splitPane, BorderLayout.CENTER);
+		setSize(700, 500);
+
+		splitPane.setDividerLocation((int) (this.getHeight() * 0.8) / 2);
+		splitPane.setDividerSize(10);
+		splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		BasicSplitPaneDivider divider =
+				((BasicSplitPaneUI) splitPane.getUI()).getDivider();
+		divider.setBorder(null);
+		Dimension minimumSize = new Dimension(this.getWidth(),
+				(int) (this.getHeight() * 0.5 / 2));
+		jScrollPane1.setMinimumSize(minimumSize);
+		jScrollPane2.setMinimumSize(minimumSize);
 	}
 
 	/**
