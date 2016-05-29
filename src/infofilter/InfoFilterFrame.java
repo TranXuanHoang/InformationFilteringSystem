@@ -30,7 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -80,7 +79,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JScrollPane jScrollPane2;
 	private TableModel articleTableModel;
 	JTable articleTable;
-//	JTextArea articleTextArea;
 	JEditorPane articleEditorPane;
 
 	JPanel jPanel1;
@@ -343,11 +341,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane1.getViewport().add(articleTable);
 
-//		articleTextArea = new JTextArea();
-//		articleTextArea.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		articleEditorPane = new JEditorPane();
 		articleEditorPane.setContentType("text/html");
-		articleEditorPane.setFont(new Font("Times New Roman", Font.PLAIN, 40));
+		articleEditorPane.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		articleEditorPane.setEditable(false);
 		jScrollPane2 = new JScrollPane();
 		jScrollPane2.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createLineBorder(Color.BLUE),
@@ -355,7 +352,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				TitledBorder.LEFT,
 				TitledBorder.DEFAULT_POSITION ,
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
-		jScrollPane2.getViewport().add(/*articleTextArea*/articleEditorPane);
+		jScrollPane2.getViewport().add(articleEditorPane);
 
 		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				jScrollPane1, jScrollPane2);
@@ -394,8 +391,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		System.out.println("Reset action is requested");
 		articles.clear();
 		refreshTable();
-//		articleTextArea.setText("");
-		articleEditorPane.setText("");
+		articleEditorPane.setText("<html></html>");
+
 		addArticleMenuItem.setEnabled(false);
 		addAllMenuItem.setEnabled(false);
 		saveArticleMenuItem.setEnabled(false);
@@ -461,8 +458,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			filterAgent.score(article, filterType);
 
 			refreshTable();
-//			articleTextArea.setText(article.getBody());
-//			articleTextArea.setCaretPosition(0);
 			articleEditorPane.setText(article.getBody());
 			articleEditorPane.setCaretPosition(0);
 		}
@@ -506,8 +501,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		articles.removeElementAt(selectedRow);
 		currentArt = null;
-//		articleTextArea.setText(""); // clear the display area
-		articleEditorPane.setText("");
+
+		articleEditorPane.setText("<html></html>");
 		refreshTable(); // update the table model and refresh display
 
 		if (articles.size() == 0) {
@@ -719,12 +714,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 					if (articles.size() > 0) {
 						currentArt = articles.get(selectedRow);
-//						articleTextArea.setText(currentArt.body);
+
 						articleEditorPane.setText(currentArt.getBody());
 						articleEditorPane.setCaretPosition(0);
-
-						// move cursor to the beginning of body
-//						articleTextArea.setCaretPosition(0);
 					} else {
 						currentArt = null;
 					}
@@ -877,9 +869,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		// update the GUI table
 		refreshTable();
 
-		// display article in the text area, set cursor at beginning
-//		articleTextArea.setText(art.getBody());
-//		articleTextArea.setCaretPosition(0);
+		// display article in editor pane, set cursor at beginning
 		articleEditorPane.setText(art.getBody());
 		articleEditorPane.setCaretPosition(0);
 
@@ -940,8 +930,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @param msg the message to be displayed.
 	 */
 	synchronized void trace(String msg) {
-//		articleTextArea.append(msg + "\n");
-//		articleEditorPane.setText(articleEditorPane.getText() + msg + "\n");
+		// RECONSIDER
+		// articleTextArea.append(msg + "\n");
+		// articleEditorPane.setText(articleEditorPane.getText() + msg + "\n");
 	}
 
 	/**
