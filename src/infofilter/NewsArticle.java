@@ -7,14 +7,36 @@ import java.io.IOException;
 
 /**
  * The <code>NewsArticle</code> class defines all of the information
- * about a single article save in personal computer or web page
- * source.
+ * about a single article that is saved in personal computer or
+ * loaded from a web page source.
  * 
  * @author Tran Xuan Hoang
  */
 public class NewsArticle {
-	/** ID of each article. */
+	/** ID of each article. The absolute file path if the article
+	 * is read from a file (text/PDF/MS Word/HTML) in a computer.
+	 * The URL if the article is downloaded from a web page. */
 	protected String id;
+
+	/** Indicates what type of source (text file, PDF file, MS
+	 * Word file, HTML, or web page) this <code>NewsArticle</code>
+	 * object is created from. */
+	protected int type;
+
+	/** Indicates the article is read from a text file. */
+	public static final int FROM_TEXT_FILE = 0;
+
+	/** Indicates the article is read from a PDF file. */
+	public static final int FROM_PDF_FILE = 1;
+
+	/** Indicates the article is read from a word file. */
+	public static final int FROM_MS_WORD_FILE = 2;
+
+	/** Indicates the article is read from a HTML file. */
+	public static final int FROM_HTML_FILE = 3;
+
+	/** Indicates the article is read from a web page. */
+	public static final int FROM_WEB_PAGE = 4;
 
 	/** Subject of the article that is parsed out of the header
 	 * information or the web page URL. */
@@ -58,29 +80,32 @@ public class NewsArticle {
 	 * <code>NewsArticle</code> object is create to load article
 	 * in personal computer).
 	 */
-	public NewsArticle(String id) {
+	public NewsArticle(String id, int type) {
 		this.id = id;
+		this.type = type;
 	}
 
 	/**
-	 * Reads an article from the given file.
+	 * Reads an article from a <b>text</b> or <b>HTML</b> file.
 	 * @param fileName the name of the file to be read.
 	 * @param directory the directory that contains the file to be read.
+	 * @return the text contents of the file.
 	 */
-	public void readArticle(String fileName, String directory) {
+	public static String readArticle(String filePath) {
 		try {
-			File f = new File(directory + fileName);
+			File f = new File(filePath);
 			FileInputStream in = new FileInputStream(f);
 			int size = (int) f.length();
 			byte[] data = new byte[size];
 
 			in.read(data);
-			subject = "Subject: " + fileName;
-			body = new String(data);
-			id = directory + fileName;
+			String body = new String(data);
 			in.close();
+
+			return body;
 		} catch (IOException e) {
-			System.out.println("Error: couldn't read article from " + fileName);
+			System.out.println("Error: couldn't read article from " + filePath);
+			return "";
 		}
 	}
 
@@ -110,6 +135,84 @@ public class NewsArticle {
 	}
 
 	/**
+	 * Retrieves the ID of the article.
+	 * @return
+	 * <ul>
+	 * <li>The absolute path if the article is read from a file in
+	 * personal computer.
+	 * <li>The URL if the article is downloaded from a web page.
+	 * </ul>
+	 */
+	public String getID() {
+		return this.id;
+	}
+
+	/**
+	 * Sets the id for the article.
+	 * @param id the String id to be set as the id of the article.
+	 */
+	public void setID(String id) {
+		this.id = id;
+	}
+
+	/**
+	 * Finds out the type of the file based on the given file path.
+	 * @param filePath the absolute path (directory + file name) or
+	 * the name of the file whose type is determined.
+	 * @return <ul>
+	 * <li><code>{@value #FROM_TEXT_FILE}</code>: text file
+	 * <li><code>{@value #FROM_PDF_FILE}</code>: PDF file
+	 * <li><code>{@value #FROM_MS_WORD_FILE}</code>: MS Word file
+	 * <li><code>{@value #FROM_HTML_FILE}</code>: HTML file
+	 * <li><code>-1</code>: none of the above
+	 * </ul>
+	 */
+	public static int typeOfFile(String filePath) {
+		if (filePath.endsWith(".txt")) {
+			return FROM_TEXT_FILE;
+		} else if (filePath.endsWith(".pdf")) {
+			return FROM_PDF_FILE;
+		} else if (filePath.endsWith(".docx") || filePath.endsWith(".doc")) {
+			return FROM_MS_WORD_FILE;
+		} else if (filePath.endsWith(".html")) {
+			return FROM_HTML_FILE;
+		} else {
+			return -1;
+		}
+	}
+
+	/**
+	 * Retrieves the type of the article (text file, PDF file, MS
+	 * Word file, HTML file, or web page).
+	 * @return
+	 * <ul>
+	 * <li>{@link #FROM_TEXT_FILE}
+	 * <li>{@link #FROM_PDF_FILE}
+	 * <li>{@link #FROM_MS_WORD_FILE}
+	 * <li>{@link #FROM_HTML_FILE}
+	 * <li>{@link #FROM_WEB_PAGE}
+	 * </ul>
+	 */
+	public int getType() {
+		return this.type;
+	}
+
+	/**
+	 * Sets the type of file from which the article is read.
+	 * @param type one of the following type:
+	 * <ul>
+	 * <li>{@link #FROM_TEXT_FILE}
+	 * <li>{@link #FROM_PDF_FILE}
+	 * <li>{@link #FROM_MS_WORD_FILE}
+	 * <li>{{@link #FROM_HTML_FILE}
+	 * <li>{@link #FROM_WEB_PAGE}
+	 * </ul>
+	 */
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	/**
 	 * Retrieves the subject of the article.
 	 * @return the subject of the article.
 	 */
@@ -118,11 +221,41 @@ public class NewsArticle {
 	}
 
 	/**
-	 * Sets the subject of the article.
-	 * @param subject the subject of the article to be set.
+	 * Sets the subject of the article. The file name without the
+	 * file extension
+	 * @param fileNameOrURL the file name (not the absolute path)
+	 * of the file or the URL from which the article is read.
+	 * @param type the type of the article (@see {@link #type}).
 	 */
-	public void setSubject(String subject) {
-		this.subject = subject;
+	public void setSubject(String fileNameOrURL, int type) {
+		int lastIndex = -1;
+
+		switch (type) {
+		case FROM_TEXT_FILE:
+			lastIndex = fileNameOrURL.lastIndexOf(".txt");
+			break;
+		case FROM_PDF_FILE:
+			lastIndex = fileNameOrURL.lastIndexOf(".pdf");
+			break;
+		case FROM_MS_WORD_FILE:
+			lastIndex = fileNameOrURL.lastIndexOf(".doc");
+			break;
+		case FROM_HTML_FILE:
+			lastIndex = fileNameOrURL.lastIndexOf(".html");
+			break;
+		case FROM_WEB_PAGE:
+			lastIndex = fileNameOrURL.length();
+			break;
+		default:
+			lastIndex = -1;
+		}
+
+		if (lastIndex == -1) {
+			System.out.println("Error: cannot set the article's "
+					+ "subject" + fileNameOrURL);
+		} else {
+			this.subject = fileNameOrURL.substring(0, lastIndex);
+		}
 	}
 
 	/**

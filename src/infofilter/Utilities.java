@@ -21,21 +21,21 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
  * @author Tran Xuan Hoang
  */
 public class Utilities {
-//	public static void main(String[] args) {
-//		String pdfFilePath = "C:\\Users\\jaist\\Desktop\\Deep learning.pdf";
-//		String link = "https://en.wikipedia.org/wiki/Artificial_neural_network";
-//		String wordFilePath = "C:\\Users\\jaist\\Desktop\\Final Examination.docx";
-//
-//		//String content = getContentsOfPDFFile(pdfFilePath);
-//		//System.out.println(content);
-//
-//		//String contentOfWordFile = getContentsOfWordFile(wordFilePath);
-//		//System.out.println(contentOfWordFile);
-//
-//		//viewFileUsingSystemApp(filePath);
-//		//openWebPageUsingSystemBrowser(link);
-//		//viewFileUsingSystemApp(wordFilePath);
-//	}
+	//	public static void main(String[] args) {
+	//		String pdfFilePath = "C:\\Users\\jaist\\Desktop\\Deep learning.pdf";
+	//		String link = "https://en.wikipedia.org/wiki/Artificial_neural_network";
+	//		String wordFilePath = "C:\\Users\\jaist\\Desktop\\Final Examination.docx";
+	//
+	//		//String content = getContentsOfPDFFile(pdfFilePath);
+	//		//System.out.println(content);
+	//
+	//		//String contentOfWordFile = getContentsOfWordFile(wordFilePath);
+	//		//System.out.println(contentOfWordFile);
+	//
+	//		//viewFileUsingSystemApp(filePath);
+	//		//openWebPageUsingSystemBrowser(link);
+	//		//viewFileUsingSystemApp(wordFilePath);
+	//	}
 
 	/**
 	 * Opens a file using the system application (application
@@ -93,6 +93,7 @@ public class Utilities {
 			if (!document.isEncrypted()) {
 				PDFTextStripper extractor = new PDFTextStripper();
 				contents = extractor.getText(document);
+				document.close();
 			}
 
 			return contents;

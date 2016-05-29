@@ -113,8 +113,11 @@ public class URLReaderAgent extends CIAgent {
 
 				// send text back to the event
 				if (text != null) {
-					NewsArticle article = new NewsArticle("URL");
-					article.setSubject("URL: " + url.toString());
+					NewsArticle article = new NewsArticle(
+							url.toString(),
+							NewsArticle.FROM_WEB_PAGE);
+
+					article.setSubject(url.toString(), NewsArticle.FROM_WEB_PAGE);
 					article.setBody(text);
 					sendArticleToListeners(article);
 				}

@@ -449,11 +449,43 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		String directory = openFileDialog.getDirectory();
 		String fileName = openFileDialog.getFile();
+		String filePath = directory + fileName;
 
 		if (fileName != null) {
-			NewsArticle article = new NewsArticle(directory + fileName);
+			int type = NewsArticle.typeOfFile(fileName);
+			NewsArticle article = new NewsArticle(filePath, type);
 
-			article.readArticle(fileName, directory);
+			switch (type) {
+			case NewsArticle.FROM_TEXT_FILE:
+				String text = NewsArticle.readArticle(filePath);
+				article.setBody(text);
+				article.setSubject(fileName, type);
+				break;
+
+			case NewsArticle.FROM_PDF_FILE:
+				String pdf = Utilities.getContentsOfPDFFile(filePath);
+				article.setBody(pdf);
+				article.setSubject(fileName, type);
+				break;
+
+			case NewsArticle.FROM_MS_WORD_FILE:
+				String msword = Utilities.getContentsOfWordFile(filePath);
+				article.setBody(msword);
+				article.setSubject(fileName, type);
+				break;
+
+			case NewsArticle.FROM_HTML_FILE:
+				String html = NewsArticle.readArticle(filePath);
+				article.setBody(html);
+				article.setSubject(fileName, type);
+				break;
+
+			default:
+				System.out.println("Error: the type of the selected"
+						+ " file is not allowed to be read.");
+				return;
+			}
+
 			articles.addElement(article);
 			filterAgent.score(article, filterType);
 
