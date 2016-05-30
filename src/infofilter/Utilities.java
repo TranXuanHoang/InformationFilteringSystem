@@ -119,7 +119,7 @@ public class Utilities {
 	}
 
 	/**
-	 * Extracts the text contents of a MS Word file.
+	 * Extracts the text contents of a PowerPoint .pptx file.
 	 * @param filePath the abstract path of the PPTX file to be extracted.
 	 * @return the entire text contents of the PPTX file.
 	 */
