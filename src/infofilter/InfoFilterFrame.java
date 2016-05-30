@@ -10,6 +10,8 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.Customizer;
 import java.util.Vector;
@@ -391,7 +393,12 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		System.out.println("Reset action is requested");
 		articles.clear();
 		refreshTable();
-		articleEditorPane.setText("<html></html>");
+
+		if (articleEditorPane.getContentType().equals("text/html")) {
+			articleEditorPane.setText("<html></html>");
+		} else {
+			articleEditorPane.setText("");
+		}
 
 		addArticleMenuItem.setEnabled(false);
 		addAllMenuItem.setEnabled(false);
@@ -460,24 +467,35 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				String text = NewsArticle.readArticle(filePath);
 				article.setBody(text);
 				article.setSubject(fileName, type);
+				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case NewsArticle.FROM_PDF_FILE:
 				String pdf = Utilities.getContentsOfPDFFile(filePath);
 				article.setBody(pdf);
 				article.setSubject(fileName, type);
+				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case NewsArticle.FROM_MS_WORD_FILE:
 				String msword = Utilities.getContentsOfWordFile(filePath);
 				article.setBody(msword);
 				article.setSubject(fileName, type);
+				articleEditorPane.setContentType("text/plain");
+				break;
+
+			case NewsArticle.FROM_PPTX_FILE:
+				String pptx = Utilities.getContentsOfPPTXFile(filePath);
+				article.setBody(pptx);
+				article.setSubject(fileName, type);
+				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case NewsArticle.FROM_HTML_FILE:
 				String html = NewsArticle.readArticle(filePath);
 				article.setBody(html);
 				article.setSubject(fileName, type);
+				articleEditorPane.setContentType("text/html");
 				break;
 
 			default:
@@ -534,7 +552,12 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		articles.removeElementAt(selectedRow);
 		currentArt = null;
 
-		articleEditorPane.setText("<html></html>");
+		if (articleEditorPane.getContentType().equals("text/html")) {
+			articleEditorPane.setText("<html></html>");
+		} else {
+			articleEditorPane.setText("");
+		}
+
 		refreshTable(); // update the table model and refresh display
 
 		if (articles.size() == 0) {
@@ -658,7 +681,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * articles.
 	 */
 	protected void setUpTheTable() {
-		// get data from the set of downloaded articles
+		// get data from the set of downloaded/loaded articles
 		data = getTableData();
 
 		// create a model of the data
@@ -729,7 +752,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		articleTable.getColumn(COL_RATING).setPreferredWidth(30);
 		articleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// handle the table's row selection events
+		// handle the table's row selection events (1-click event)
 		ListSelectionModel rowSM = articleTable.getSelectionModel();
 		rowSM.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -747,7 +770,21 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 					if (articles.size() > 0) {
 						currentArt = articles.get(selectedRow);
 
-						articleEditorPane.setText(currentArt.getBody());
+						if (currentArt.getType() == NewsArticle.FROM_WEB_PAGE) {
+							articleEditorPane.setContentType("text/html");
+							try {
+								articleEditorPane.setPage(currentArt.getID());
+							} catch (Exception exception) {
+								articleEditorPane.setText(currentArt.getBody());
+							}
+						} else if (currentArt.getType() == NewsArticle.FROM_HTML_FILE) {
+							articleEditorPane.setContentType("text/html");
+							articleEditorPane.setText(currentArt.getBody());
+						} else {
+							articleEditorPane.setContentType("text/plain");
+							articleEditorPane.setText(currentArt.getBody());
+						}
+
 						articleEditorPane.setCaretPosition(0);
 					} else {
 						currentArt = null;
@@ -755,6 +792,27 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				}
 			}
 		}); // end handle the table's row selection events
+
+		// handle the table row's double-click event (open file
+		// or web page using the system application.
+		articleTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int row = articleTable.rowAtPoint(e.getPoint());
+
+					if (articles != null && row >= 0 && row < articles.size()) {
+						NewsArticle art = articles.get(row);
+
+						if (art.type == NewsArticle.FROM_WEB_PAGE) {
+							Utilities.openWebPageUsingSystemBrowser(art.getID());
+						} else {
+							Utilities.viewFileUsingSystemApp(art.getID());
+						}
+					}
+				}
+			}
+		});
 
 		JComboBox<String> userRatings =
 				new JComboBox<>(FilterAgent.RATINGS);
@@ -892,7 +950,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * will be scored and added to the table.
 	 */
 	protected void addArticle(NewsArticle art) {
-		// add the article to the vector of all downloaded articles
+		// add the article to the vector of all
+		// downloaded and loaded articles
 		articles.addElement(art);
 
 		// score the article
@@ -902,7 +961,21 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		refreshTable();
 
 		// display article in editor pane, set cursor at beginning
-		articleEditorPane.setText(art.getBody());
+		if (currentArt.getType() == NewsArticle.FROM_WEB_PAGE) {
+			articleEditorPane.setContentType("text/html");
+			try {
+				articleEditorPane.setPage(currentArt.getID());
+			} catch (Exception exception) {
+				articleEditorPane.setText(currentArt.getBody());
+			}
+		} else if (currentArt.getType() == NewsArticle.FROM_HTML_FILE) {
+			articleEditorPane.setContentType("text/html");
+			articleEditorPane.setText(currentArt.getBody());
+		} else {
+			articleEditorPane.setContentType("text/plain");
+			articleEditorPane.setText(currentArt.getBody());
+		}
+
 		articleEditorPane.setCaretPosition(0);
 
 		// enable menu items so that user can add the article to

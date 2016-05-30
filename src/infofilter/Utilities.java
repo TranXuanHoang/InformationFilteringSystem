@@ -8,6 +8,8 @@ import java.net.URI;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
+import org.apache.poi.xslf.usermodel.XSLFSlideShow;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
@@ -21,22 +23,6 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
  * @author Tran Xuan Hoang
  */
 public class Utilities {
-	//	public static void main(String[] args) {
-	//		String pdfFilePath = "C:\\Users\\jaist\\Desktop\\Deep learning.pdf";
-	//		String link = "https://en.wikipedia.org/wiki/Artificial_neural_network";
-	//		String wordFilePath = "C:\\Users\\jaist\\Desktop\\Final Examination.docx";
-	//
-	//		//String content = getContentsOfPDFFile(pdfFilePath);
-	//		//System.out.println(content);
-	//
-	//		//String contentOfWordFile = getContentsOfWordFile(wordFilePath);
-	//		//System.out.println(contentOfWordFile);
-	//
-	//		//viewFileUsingSystemApp(filePath);
-	//		//openWebPageUsingSystemBrowser(link);
-	//		//viewFileUsingSystemApp(wordFilePath);
-	//	}
-
 	/**
 	 * Opens a file using the system application (application
 	 * installed in personal computer) that is registered for
@@ -128,6 +114,28 @@ public class Utilities {
 			System.out.println(
 					"Error: cannot extract text of the word file " +
 							filePath + e);
+			return "";
+		}
+	}
+
+	/**
+	 * Extracts the text contents of a MS Word file.
+	 * @param filePath the abstract path of the PPTX file to be extracted.
+	 * @return the entire text contents of the PPTX file.
+	 */
+	public static String getContentsOfPPTXFile(String filePath) {
+		try {
+			XSLFSlideShow slideShow =
+					new XSLFSlideShow(filePath);
+			XSLFPowerPointExtractor extractor = 
+					new XSLFPowerPointExtractor(slideShow);
+			String contents = extractor.getText();
+			extractor.close();
+
+			return contents;
+		} catch (Exception e) {
+			System.out.println("Error: cannot extract text of the "
+					+ "powerpoint file " + filePath + e);
 			return "";
 		}
 	}

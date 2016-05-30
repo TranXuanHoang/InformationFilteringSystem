@@ -32,11 +32,14 @@ public class NewsArticle {
 	/** Indicates the article is read from a word file. */
 	public static final int FROM_MS_WORD_FILE = 2;
 
+	/** Indicates the article is read from a power point .pptx file.*/
+	public static final int FROM_PPTX_FILE = 3;
+
 	/** Indicates the article is read from a HTML file. */
-	public static final int FROM_HTML_FILE = 3;
+	public static final int FROM_HTML_FILE = 4;
 
 	/** Indicates the article is read from a web page. */
-	public static final int FROM_WEB_PAGE = 4;
+	public static final int FROM_WEB_PAGE = 5;
 
 	/** Subject of the article that is parsed out of the header
 	 * information or the web page URL. */
@@ -163,6 +166,7 @@ public class NewsArticle {
 	 * <li><code>{@value #FROM_TEXT_FILE}</code>: text file
 	 * <li><code>{@value #FROM_PDF_FILE}</code>: PDF file
 	 * <li><code>{@value #FROM_MS_WORD_FILE}</code>: MS Word file
+	 * <li><code>{@value #FROM_PPTX_FILE}</code>: MS PowerPoint file
 	 * <li><code>{@value #FROM_HTML_FILE}</code>: HTML file
 	 * <li><code>-1</code>: none of the above
 	 * </ul>
@@ -174,6 +178,8 @@ public class NewsArticle {
 			return FROM_PDF_FILE;
 		} else if (filePath.endsWith(".docx") || filePath.endsWith(".doc")) {
 			return FROM_MS_WORD_FILE;
+		} else if (filePath.endsWith(".pptx")) {
+			return FROM_PPTX_FILE;
 		} else if (filePath.endsWith(".html")) {
 			return FROM_HTML_FILE;
 		} else {
@@ -189,6 +195,7 @@ public class NewsArticle {
 	 * <li>{@link #FROM_TEXT_FILE}
 	 * <li>{@link #FROM_PDF_FILE}
 	 * <li>{@link #FROM_MS_WORD_FILE}
+	 * <li>{@link #FROM_PPTX_FILE}
 	 * <li>{@link #FROM_HTML_FILE}
 	 * <li>{@link #FROM_WEB_PAGE}
 	 * </ul>
@@ -204,6 +211,7 @@ public class NewsArticle {
 	 * <li>{@link #FROM_TEXT_FILE}
 	 * <li>{@link #FROM_PDF_FILE}
 	 * <li>{@link #FROM_MS_WORD_FILE}
+	 * <li>{@link #FROM_PPTX_FILE}
 	 * <li>{{@link #FROM_HTML_FILE}
 	 * <li>{@link #FROM_WEB_PAGE}
 	 * </ul>
@@ -239,6 +247,9 @@ public class NewsArticle {
 			break;
 		case FROM_MS_WORD_FILE:
 			lastIndex = fileNameOrURL.lastIndexOf(".doc");
+			break;
+		case FROM_PPTX_FILE:
+			lastIndex = fileNameOrURL.lastIndexOf(".ppt");
 			break;
 		case FROM_HTML_FILE:
 			lastIndex = fileNameOrURL.lastIndexOf(".html");
