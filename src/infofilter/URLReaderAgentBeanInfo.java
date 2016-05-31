@@ -48,16 +48,13 @@ public class URLReaderAgentBeanInfo extends SimpleBeanInfo {
 		try {
 			PropertyDescriptor _url = new PropertyDescriptor(
 					"url", beanClass, "getURL", "setURL");
-			PropertyDescriptor _paramString = new PropertyDescriptor(
-					"paramString", beanClass,
-					"getParamString", "setParamString");
 			PropertyDescriptor _contents = new PropertyDescriptor(
 					"contents", beanClass, "getContents", null);
 			PropertyDescriptor _taskDescription = new PropertyDescriptor(
 					"taskDescription", beanClass,
 					"getTaskDescription", null);
 
-			return new PropertyDescriptor[] {_url, _paramString,
+			return new PropertyDescriptor[] {_url, /*paramString,*/
 					_contents, _taskDescription};
 		} catch (IntrospectionException e) {
 			e.printStackTrace();

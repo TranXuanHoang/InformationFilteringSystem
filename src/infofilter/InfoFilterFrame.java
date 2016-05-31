@@ -58,7 +58,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JMenu menuHelp;
 
 	JMenuItem resetMenuItem;
-	JMenuItem downloadURLMenuItem;
+	JMenuItem downloadArticleMenuItem;
 	JMenuItem loadArticleMenuItem;
 	JMenuItem saveArticleMenuItem;
 	JMenuItem exitMenuItem;
@@ -196,11 +196,11 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 
-		downloadURLMenuItem = new JMenuItem("Dowload URL...");
-		downloadURLMenuItem.addActionListener(new ActionListener() {
+		downloadArticleMenuItem = new JMenuItem("Dowload Article...");
+		downloadArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				downloadURLMenuItem_actionPerformed(e);
+				downloadArticleMenuItem_actionPerformed(e);
 			}
 		});
 
@@ -231,7 +231,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		menuFile.add(resetMenuItem);
 		menuFile.addSeparator();
-		menuFile.add(downloadURLMenuItem);
+		menuFile.add(downloadArticleMenuItem);
 		menuFile.add(loadArticleMenuItem);
 		menuFile.add(saveArticleMenuItem);
 		menuFile.addSeparator();
@@ -256,7 +256,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		addArticleMenuItem = new JMenuItem("Add Article");
-		addArticleMenuItem.setEnabled(false);
+		addArticleMenuItem.setEnabled(true);
 		addArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -265,7 +265,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		addAllMenuItem = new JMenuItem("Add All Articles");
-		addAllMenuItem.setEnabled(false);
+		addAllMenuItem.setEnabled(true);
 		addAllMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -411,7 +411,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @param e the event generated when the <b>Download URL...</b>
 	 * menu item is selected.
 	 */
-	protected void downloadURLMenuItem_actionPerformed(ActionEvent e) {
+	protected void downloadArticleMenuItem_actionPerformed(ActionEvent e) {
 		Class<?> customizerClass = urlReaderAgent.getCustomizerClass();
 
 		if (customizerClass == null) {
@@ -747,6 +747,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		}; // end create a model of the data
 
 		articleTable = new JTable(articleTableModel);
+		articleTable.setRowHeight(20);
 		articleTable.getColumn(COL_SUBJECT).setPreferredWidth(200);
 		articleTable.getColumn(COL_SCORE).setPreferredWidth(30);
 		articleTable.getColumn(COL_RATING).setPreferredWidth(30);
@@ -961,19 +962,19 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		refreshTable();
 
 		// display article in editor pane, set cursor at beginning
-		if (currentArt.getType() == NewsArticle.FROM_WEB_PAGE) {
+		if (art.getType() == NewsArticle.FROM_WEB_PAGE) {
 			articleEditorPane.setContentType("text/html");
 			try {
-				articleEditorPane.setPage(currentArt.getID());
+				articleEditorPane.setPage(art.getID());
 			} catch (Exception exception) {
-				articleEditorPane.setText(currentArt.getBody());
+				articleEditorPane.setText(art.getBody());
 			}
-		} else if (currentArt.getType() == NewsArticle.FROM_HTML_FILE) {
+		} else if (art.getType() == NewsArticle.FROM_HTML_FILE) {
 			articleEditorPane.setContentType("text/html");
-			articleEditorPane.setText(currentArt.getBody());
+			articleEditorPane.setText(art.getBody());
 		} else {
 			articleEditorPane.setContentType("text/plain");
-			articleEditorPane.setText(currentArt.getBody());
+			articleEditorPane.setText(art.getBody());
 		}
 
 		articleEditorPane.setCaretPosition(0);

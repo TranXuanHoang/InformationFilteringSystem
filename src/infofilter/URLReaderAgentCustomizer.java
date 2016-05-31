@@ -1,9 +1,10 @@
 package infofilter;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.Customizer;
@@ -11,11 +12,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import ciagent.CIAgentEvent;
 import ciagent.CIAgentEventListener;
@@ -32,9 +34,8 @@ implements Customizer, CIAgentEventListener {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
-	JTextField nameTextField;
-	JComboBox<String> urlComboBox;
-	JComboBox<String> paramsComboBox;
+	private final JPanel contentPanel = new JPanel();
+	private JTextField urlTextField;
 
 	URLReaderAgent agent; // the agent bean we are customizing
 
@@ -42,7 +43,7 @@ implements Customizer, CIAgentEventListener {
 	 * Creates a <code>URLReaderAgentCustomizer</code> object.
 	 */
 	public URLReaderAgentCustomizer() {
-		this(null, "URLReaderAgent Customizer", false);
+		this(null, "Download Article", true);
 	}
 
 	/**
@@ -68,79 +69,71 @@ implements Customizer, CIAgentEventListener {
 	 * @throws Exception if any error occurs during initialization.
 	 */
 	private void createGUI() throws Exception {
-		JLabel nameLabel = new JLabel("Name");
-		nameLabel.setBounds(new Rectangle(22, 20, 41, 17));
-		JLabel urlLabel = new JLabel("URL:");
-		urlLabel.setBounds(new Rectangle(23, 66, 106, 17));
-		JLabel paramsLabel = new JLabel("Parameter string:");
-		paramsLabel.setBounds(new Rectangle(19, 152, 143, 17));
+		setBounds(100, 100, 460, 200);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new BorderLayout(0, 0));
 
-		nameTextField = new JTextField();
-		nameTextField.setBounds(new Rectangle(110, 18, 139, 21));
+		JLabel downloadArticleLabel = new JLabel("Download Article from the Internet");
+		downloadArticleLabel.setFont(new Font("MS UI Gothic", Font.BOLD, 22));
+		downloadArticleLabel.setForeground(new Color(0, 0, 205));
+		downloadArticleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		downloadArticleLabel.setBorder(new EmptyBorder(10, 10, 20, 10));
+		contentPanel.add(downloadArticleLabel, BorderLayout.NORTH);
 
-		urlComboBox = new JComboBox<>();
-		urlComboBox.setEditable(true);
-		urlComboBox.setBounds(new Rectangle(19, 93, 368, 25));
-		urlComboBox.addActionListener(new ActionListener() {
-			@Override
+		JPanel centerPanel = new JPanel();
+		contentPanel.add(centerPanel, BorderLayout.CENTER);
+		centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		JLabel urlLabel = new JLabel("URL");
+		urlLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		urlLabel.setFont(new Font("MS UI Gothic", Font.BOLD, 14));
+		centerPanel.add(urlLabel);
+
+		urlTextField = new JTextField();
+		urlTextField.setToolTipText("Enter the URL of the article here");
+		urlTextField.setHorizontalAlignment(SwingConstants.LEFT);
+		urlTextField.setFont(new Font("Calibri", Font.PLAIN, 16));
+		centerPanel.add(urlTextField);
+		urlTextField.setColumns(25);
+
+		JPanel panel = new JPanel();
+		panel.setBorder(new EmptyBorder(10, 0, 15, 0));
+		contentPanel.add(panel, BorderLayout.SOUTH);
+
+		JButton downloadButton = new JButton("Download");
+		downloadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// currently do nothing
-			}
-		});
-		urlComboBox.addItem("http://aima.cs.berkeley.edu/") ;
-		urlComboBox.addItem("https://en.wikipedia.org/wiki/Artificial_neural_network") ;
-		urlComboBox.addItem("http://www.fipa.org") ;
-		urlComboBox.addItem("http://legacy.australianetwork.com/studyenglish/se_series1.htm");
+				// first get user data from the customizer dialog box and
+				// set values for properties of agent
+				try {
+					agent.setURL(new URL(urlTextField.getText()));
+				} catch (MalformedURLException ex) {
+					System.out.println(
+							"Error: The URL is not correctly specified.");
+				}
 
-		paramsComboBox = new JComboBox<>();
-		paramsComboBox.setEditable(true);
-		paramsComboBox.setBounds(new Rectangle(18, 190, 371, 24));
-		paramsComboBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// currently do nothing
-			}
-		});
-		String sampleParms = "?" + "&dmon=" + "JUL" + "&dday=" +
-				"1" + "&orig=" + "RST" + "&dest=" + "MCO" +
-				"&rmon=" + "JUL" + "&rday=" + "8";
-		paramsComboBox.addItem(sampleParms);
+				CIAgentEvent event = new CIAgentEvent(this, "getURLText", null);
+				agent.postCIAgentEvent(event); // ask agent to get url
 
-		JButton queryButton = new JButton("Download");
-		queryButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				queryButtonActionPerformed(e);
-			}
-		});
-
-		JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
+		downloadButton.setFont(new Font("Calibri", Font.PLAIN, 16));
+		panel.add(downloadButton);
+		getRootPane().setDefaultButton(downloadButton);
 
-		JPanel jPanel1 = new JPanel(null);
-		jPanel1.add(nameLabel);
-		jPanel1.add(nameTextField);
-		jPanel1.add(urlLabel);
-		jPanel1.add(urlComboBox);
-		jPanel1.add(paramsLabel);
-		jPanel1.add(paramsComboBox);
-
-		JPanel jPanel2 = new JPanel();
-		jPanel2.add(queryButton);
-		jPanel2.add(cancelButton);
-
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setMinimumSize(new Dimension(400, 300));
-		panel.setPreferredSize(new Dimension(400, 300));
-		panel.add(jPanel1, BorderLayout.CENTER);
-		panel.add(jPanel2, BorderLayout.SOUTH);
-
-		getContentPane().add(panel);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				dispose();
+			}
+		});
+		cancelButton.setFont(new Font("Calibri", Font.PLAIN, 16));
+		panel.add(cancelButton);
 	}
 
 	/**
@@ -182,61 +175,6 @@ implements Customizer, CIAgentEventListener {
 	@Override
 	public void setObject(Object obj) {
 		agent = (URLReaderAgent) obj;
-		getDataFromBean();
 		agent.addCIAgentEventListener(this);
-
-	}
-
-	/**
-	 * Gets data from <code>URLReaderAgent</code> bean and sets
-	 * <code>URLReaderAgentCustomizer</code> GUI.
-	 */
-	public void getDataFromBean() {
-		nameTextField.setText(agent.getName());
-		URL url = agent.getURL();
-
-		if (url == null) {
-			urlComboBox.setSelectedIndex(0); // select default
-		} else {
-			urlComboBox.setSelectedItem(url);
-		}
-
-		paramsComboBox.setSelectedItem(agent.getParamString());
-	}
-
-	/**
-	 * Takes data from <code>URLReaderAgentCustomizer</code> GUI
-	 * and sets properties on <code>URLReaderAgent</code> bean.
-	 */
-	public void setDataOnBean() {
-		String name = nameTextField.getText().trim();
-		agent.setName(name);
-
-		try {
-			String url = (String) urlComboBox.getSelectedItem();
-			agent.setURL(new URL(url));
-		} catch (MalformedURLException e) {
-			System.out.println(
-					"Error: The URL is not correctly specified.");
-		}
-
-		String paramString = (String) paramsComboBox.getSelectedItem();
-		agent.setParamString(paramString);
-	}
-
-	/**
-	 * Handles the event when the <b>Download</b> button is clicked.
-	 * @param e the event generated when the <b>Download</b>
-	 * button is pressed.
-	 */
-	private void queryButtonActionPerformed(ActionEvent e) {
-		// first get user data from the customizer dialog box and
-		// set values for properties of agent
-		setDataOnBean();
-
-		CIAgentEvent event = new CIAgentEvent(this, "getURLText", null);
-		agent.postCIAgentEvent(event); // ask agent to get url
-
-		dispose();
 	}
 } // end class URLReaderAgentCustomizer

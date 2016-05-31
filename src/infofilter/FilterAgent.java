@@ -71,7 +71,7 @@ public class FilterAgent extends CIAgent {
 	public static final int USE_PREDICTED_RATING = 2;
 
 	public static final String USELESS_RATING = "Useless";
-	public static final String NOTVERY_RATING = "Not very useful";
+	public static final String NOTVERY_RATING = "Almost useless";//"Not very useful";
 	public static final String NEUTRAL_RATING = "Neutral";
 	public static final String MILDLY_RATING = "Mildly interesting";
 	public static final String INTERESTING_RATING = "Interesting";
@@ -102,9 +102,13 @@ public class FilterAgent extends CIAgent {
 		ratingNetTrained = false;
 
 		// create the default keyword list
-		setKeywords(new String[] {"java", "agent", "fuzzy",
-				"intelligent", "neural", "network", "genetic",
-				"rule", "learning", "inferencing"});
+		setKeywords(new String[] {"writing", "revising",
+				"communication", "academic", "English",
+				"grammar", "vocabulary", "scientific", "research",
+				"logic", "epistemic", "modal", "dynamic", "fuzzy",
+				"intelligent", "agent", "neural", "network",
+				"deep", "learning", "probability", "theory",
+				"probabilistic", "reasoning"});
 	}
 
 	/**
@@ -359,13 +363,13 @@ public class FilterAgent extends CIAgent {
 		// do an automatic feedback pass automatically so that
 		// user doesn't have to do it for each article.
 		// user can override via feedback menu option
-		if (sum == 0) {
+		if (sum < 6) {
 			article.setUserRating(USELESS_RATING);
-		} else if (sum < 2) {
+		} else if (sum < 11) {
 			article.setUserRating(NOTVERY_RATING);
-		} else if (sum < 4) {
+		} else if (sum < 21) {
 			article.setUserRating(NEUTRAL_RATING);
-		} else if (sum < 6) {
+		} else if (sum < 61) {
 			article.setUserRating(MILDLY_RATING);
 		} else {
 			article.setUserRating(INTERESTING_RATING);
