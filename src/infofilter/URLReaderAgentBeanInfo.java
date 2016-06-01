@@ -8,6 +8,12 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
+/**
+ * The <code>URLReaderAgentBeanInfo</code> defines the bean
+ * information for the <code>URLReaderAgent</code>.
+ * 
+ * @author Tran Xuan Hoang
+ */
 public class URLReaderAgentBeanInfo extends SimpleBeanInfo {
 	Class<URLReaderAgent> beanClass = URLReaderAgent.class;
 	String iconColor16x16Filename;

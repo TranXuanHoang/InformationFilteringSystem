@@ -15,11 +15,12 @@ import java.beans.SimpleBeanInfo;
  * @author Tran Xuan Hoang
  */
 public class FilterAgentBeanInfo extends SimpleBeanInfo {
-	Class<URLReaderAgent> beanClass = URLReaderAgent.class;
 	String iconColor16x16Filename;
 	String iconColor32x32Filename;
 	String iconMono16x16Filename;
 	String iconMono32x32Filename;
+
+	Class<URLReaderAgent> beanClass = URLReaderAgent.class;
 	private final static Class<FilterAgentCustomizer> customizer =
 			FilterAgentCustomizer.class;
 

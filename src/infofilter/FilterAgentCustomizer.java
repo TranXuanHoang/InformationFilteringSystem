@@ -1,10 +1,10 @@
 package infofilter;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Rectangle;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.beans.Customizer;
 import java.util.Vector;
 
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -20,6 +21,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
 
 /**
  * The <code>FilterAgentCustomizer</code> class implements the
@@ -45,7 +50,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 * Creates a <code>FilterAgentCustomizer</code> object.
 	 */
 	public FilterAgentCustomizer() {
-		this(null, "FilterAgent Customizer", false);
+		this(null, "Keywords and Neural Networks Customizer", true);
 	}
 
 	/**
@@ -71,13 +76,92 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 * @throws Exception if any error occurs during initialization.
 	 */
 	private void createGUI() throws Exception {
-		JLabel jLabel1 = new JLabel("Keyword");
-		jLabel1.setBounds(new Rectangle(38, 34, 120, 17));
-		keywordTextField = new JTextField();
-		keywordTextField.setBounds(new Rectangle(37, 57, 208, 21));
+		setBounds(100, 100, 450, 470);
+		setResizable(false);
+		getContentPane().setLayout(new BorderLayout());
+		JPanel centerPanel = new JPanel();
+		centerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(centerPanel, BorderLayout.CENTER);
 
-		JScrollPane jScrollPane1 = new JScrollPane();
-		jScrollPane1.setBounds(new Rectangle(38, 91, 207, 228));
+		JLabel keywordLabel = new JLabel("Keyword");
+		keywordLabel.setForeground(Color.BLUE);
+		keywordLabel.setFont(new Font("Calibri", Font.PLAIN, 16));
+
+		keywordTextField = new JTextField();
+		keywordTextField.setFont(new Font("Calibri", Font.PLAIN, 14));
+		keywordTextField.setColumns(10);
+
+		JLabel listOfKeywordsLabel = new JLabel("List of Keywords for Scoring Articles");
+		listOfKeywordsLabel.setForeground(Color.BLUE);
+		listOfKeywordsLabel.setFont(new Font("Calibri", Font.PLAIN, 16));
+
+		JScrollPane scrollPane = new JScrollPane();
+
+		JPanel panel = new JPanel();
+		GroupLayout gl_centerPanel = new GroupLayout(centerPanel);
+		gl_centerPanel.setHorizontalGroup(
+				gl_centerPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_centerPanel.createSequentialGroup()
+						.addGap(21)
+						.addGroup(gl_centerPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_centerPanel.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(listOfKeywordsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(keywordLabel)
+										.addComponent(keywordTextField))
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 233, GroupLayout.PREFERRED_SIZE))
+						.addGap(29)
+						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(23, Short.MAX_VALUE))
+				);
+		gl_centerPanel.setVerticalGroup(
+				gl_centerPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_centerPanel.createSequentialGroup()
+						.addGap(26)
+						.addComponent(keywordLabel)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_centerPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_centerPanel.createSequentialGroup()
+										.addComponent(panel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addContainerGap())
+								.addGroup(gl_centerPanel.createSequentialGroup()
+										.addComponent(keywordTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addGap(18)
+										.addComponent(listOfKeywordsLabel)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE))))
+				);
+		panel.setLayout(new GridLayout(3, 1, 0, 40));
+
+		JButton addButton = new JButton("Add");
+		addButton.setToolTipText("Add keyword");
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addButtonActionPerformed(e);
+			}
+		});
+		addButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		panel.add(addButton);
+
+		JButton changeButton = new JButton("Change");
+		changeButton.setToolTipText("Change keyword");
+		changeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				changeButtonActionPerformed(e);
+			}
+		});
+		changeButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		panel.add(changeButton);
+
+		JButton removeButton = new JButton("Remove");
+		removeButton.setToolTipText("Remove keyword");
+		removeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				removeButtonActionPerformed(e);
+			}
+		});
+		removeButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		panel.add(removeButton);
+
 		keywordList = new JList<>();
 		keywordList.addMouseListener(new MouseAdapter() {
 			@Override
@@ -85,85 +169,44 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 				keywordListMouseClicked(e);
 			}
 		});
+		keywordList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		keywordList.setFont(new Font("Calibri", Font.PLAIN, 14));
+		scrollPane.setViewportView(keywordList);
+		centerPanel.setLayout(gl_centerPanel);
 
-		JButton addButton = new JButton("Add");
-		addButton.setBounds(new Rectangle(277, 91, 88, 27));
-		addButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				addButtonActionPerformed(e);
-			}
-		});
-
-		JButton changeButton = new JButton("Change");
-		changeButton.setBounds(new Rectangle(277, 147, 84, 27));
-		changeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				changeButtonActionPerformed(e);
-			}
-		});
-
-		JButton removeButton = new JButton("Remove");
-		removeButton.setBounds(new Rectangle(277, 211, 87, 27));
-		removeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				removeButtonActionPerformed(e);
-			}
-		});
+		JPanel southPanel = new JPanel();
+		southPanel.setLayout(new GridLayout(1, 3, 10, 10));
+		southPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+		getContentPane().add(southPanel, BorderLayout.SOUTH);
 
 		JButton createProfileButton = new JButton("Create Profile");
+		createProfileButton.setToolTipText("Create a new list of keywords as above");
 		createProfileButton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				createProfileButtonActionPerformed(e);
 			}
 		});
+		createProfileButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		southPanel.add(createProfileButton);
 
-		JButton trainNNButton = new JButton("Train NNs");
-		trainNNButton.addActionListener(new ActionListener() {
-			@Override
+		JButton trainNetworksButton = new JButton("Train Networks");
+		trainNetworksButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				trainNNButtonActionPerformed(e);
+				trainNetworksButtonActionPerformed(e);
 			}
 		});
+		trainNetworksButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		trainNetworksButton.setToolTipText("Train neural networks");
+		southPanel.add(trainNetworksButton);
 
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent arg0) {
 				dispose();
 			}
 		});
-
-		JPanel jPanel1 = new JPanel();
-		jPanel1.setLayout(null);
-
-		jPanel1.add(jLabel1);
-		jPanel1.add(keywordTextField);
-		jScrollPane1.getViewport().add(keywordList);
-		jPanel1.add(jScrollPane1);
-		jPanel1.add(addButton);
-		jPanel1.add(changeButton);
-		jPanel1.add(removeButton);
-
-		JPanel jPanel2 = new JPanel();
-		FlowLayout flowLayout1 = new FlowLayout();
-		flowLayout1.setHgap(15);
-		jPanel2.setLayout(flowLayout1);
-		jPanel2.setAlignmentX((float) 0.2);
-		jPanel2.setPreferredSize(new Dimension(573, 37));
-
-		jPanel2.add(createProfileButton);
-		jPanel2.add(trainNNButton);
-		jPanel2.add(cancelButton);
-
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setPreferredSize(new Dimension(400, 400));
-		panel.add(jPanel1, BorderLayout.CENTER);
-		panel.add(jPanel2, BorderLayout.SOUTH);
-		getContentPane().add(panel);
+		cancelButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		southPanel.add(cancelButton);
 	}
 
 	/**
@@ -237,7 +280,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	protected void keywordListMouseClicked(MouseEvent e) {
 		int index = keywordList.getSelectedIndex();
 
-		if (index > 0) {
+		if (index >= 0) {
 			keywordTextField.setText(keywords.get(index));
 		}
 	}
@@ -314,7 +357,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 * @param e the event generated when the
 	 * <b>Train Neural Networks</b> button is pressed.
 	 */
-	private void trainNNButtonActionPerformed(ActionEvent e) {
+	private void trainNetworksButtonActionPerformed(ActionEvent e) {
 		int option = JOptionPane.showConfirmDialog(this,
 				"This will reset the current neural networks and\n" +
 						"start training them again.\n" +

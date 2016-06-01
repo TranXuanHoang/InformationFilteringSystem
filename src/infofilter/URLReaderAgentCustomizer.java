@@ -78,7 +78,7 @@ implements Customizer, CIAgentEventListener {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
 		JLabel downloadArticleLabel = new JLabel("Download Article from the Internet");
-		downloadArticleLabel.setFont(new Font("MS UI Gothic", Font.BOLD, 22));
+		downloadArticleLabel.setFont(new Font("Calibri", Font.PLAIN, 22));
 		downloadArticleLabel.setForeground(new Color(0, 0, 205));
 		downloadArticleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		downloadArticleLabel.setBorder(new EmptyBorder(10, 10, 20, 10));
