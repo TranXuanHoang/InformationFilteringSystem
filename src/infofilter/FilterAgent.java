@@ -147,17 +147,7 @@ public class FilterAgent extends CIAgent {
 			return;
 		}
 
-		if (buildClusterNet) {
-			try {
-				status("Training Kohonen map neural network");
-				buildClusterNet = false;
-				trainClusterNet();
-				clusterNetTrained = true;
-				status("Kohonen map neural network was trained");
-			} catch (Exception e) {
-				status("Kohonen map neural network - No data" + e);
-			}
-		} else if (buildRatingNet) {
+		if (buildRatingNet) {
 			try {
 				status("Training back propagation neural network");
 				buildRatingNet = false;
@@ -167,6 +157,16 @@ public class FilterAgent extends CIAgent {
 				status("Back propagation neural network was trained");
 			} catch (Exception e) {
 				status("Back propagation neural network - No data" + e);
+			}
+		} else if (buildClusterNet) {
+			try {
+				status("Training Kohonen map neural network");
+				buildClusterNet = false;
+				trainClusterNet();
+				clusterNetTrained = true;
+				status("Kohonen map neural network was trained");
+			} catch (Exception e) {
+				status("Kohonen map neural network - No data" + e);
 			}
 		} else if (clusterNetTrained && ratingNetTrained) {
 			status("Neural networks were trained");

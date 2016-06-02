@@ -50,7 +50,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	 * Creates a <code>FilterAgentCustomizer</code> object.
 	 */
 	public FilterAgentCustomizer() {
-		this(null, "Keywords and Neural Networks Customizer", true);
+		this(null, "Keywords Customizer", true);
 	}
 
 	/**
@@ -175,29 +175,19 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 		centerPanel.setLayout(gl_centerPanel);
 
 		JPanel southPanel = new JPanel();
-		southPanel.setLayout(new GridLayout(1, 3, 10, 10));
-		southPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+		southPanel.setLayout(new GridLayout(1, 3, 50, 10));
+		southPanel.setBorder(new EmptyBorder(20, 50, 30, 50));
 		getContentPane().add(southPanel, BorderLayout.SOUTH);
 
-		JButton createProfileButton = new JButton("Create Profile");
-		createProfileButton.setToolTipText("Create a new list of keywords as above");
-		createProfileButton.addActionListener(new ActionListener() {
+		JButton saveKeywordsButton = new JButton("Save Keywords");
+		saveKeywordsButton.setToolTipText("Create a new list of keywords as above");
+		saveKeywordsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				createProfileButtonActionPerformed(e);
+				saveKeywordsButtonActionPerformed(e);
 			}
 		});
-		createProfileButton.setFont(new Font("Calibri", Font.PLAIN, 14));
-		southPanel.add(createProfileButton);
-
-		JButton trainNetworksButton = new JButton("Train Networks");
-		trainNetworksButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				trainNetworksButtonActionPerformed(e);
-			}
-		});
-		trainNetworksButton.setFont(new Font("Calibri", Font.PLAIN, 14));
-		trainNetworksButton.setToolTipText("Train neural networks");
-		southPanel.add(trainNetworksButton);
+		saveKeywordsButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		southPanel.add(saveKeywordsButton);
 
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
@@ -286,17 +276,42 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	}
 
 	/**
-	 * Adds an additional keyword when the <b>Add</b> button is pressed.
+	 * Adds additional keywords when the <b>Add</b> button is pressed.
+	 * User may enter more than one keyword into the <b>keyword text field</b>
+	 * by inserting a space in between consecutive keywords.
 	 * @param e the event generated when the <b>Add</b> button is pressed.
 	 */
 	private void addButtonActionPerformed(ActionEvent e) {
-		String keyword = keywordTextField.getText().trim();
+		String text = keywordTextField.getText().trim();
 
-		if (keyword != null && keyword.length() > 0) {
-			keywords.addElement(keyword);
+		if (text != null && text.length() > 0) {
+			String[] newKeywords = text.split(" ");
+
+			for (String newKeyword : newKeywords) {
+				addKeyword(newKeyword);
+			}
+
+			// update GUI
 			keywordList.setListData(keywords);
 			keywordTextField.setText("");
 		}
+	}
+
+	/**
+	 * Adds a new non-duplicate keyword to the list of keywords. This
+	 * method is called by {@link #addButtonActionPerformed(ActionEvent)}.
+	 * @param newKeyword the keyword to be added.
+	 */
+	private void addKeyword(String newKeyword) {
+		// check duplication of added keyword
+		for (String key : keywords) {
+			if (newKeyword.equalsIgnoreCase(key)) {
+				return;
+			}
+		}
+
+		// add new keyword if no duplication
+		keywords.addElement(newKeyword);
 	}
 
 	/**
@@ -307,11 +322,12 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	private void changeButtonActionPerformed(ActionEvent e) {
 		int index = keywordList.getSelectedIndex();
 
-		if (index > 0) {
+		if (index >= 0) {
 			String value = keywordTextField.getText().trim();
 
 			keywords.setElementAt(value, index);
 			keywordList.setListData(keywords);
+			keywordTextField.setText("");
 		}
 	}
 
@@ -323,22 +339,23 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	private void removeButtonActionPerformed(ActionEvent e) {
 		int index = keywordList.getSelectedIndex();
 
-		if (index > 0) {
+		if (index >= 0) {
 			keywords.removeElementAt(index);
 			keywordList.setListData(keywords);
+			keywordTextField.setText("");
 		}
 	}
 
 	/**
-	 * Creates a profile when the <b>Create Profile</b> button
+	 * Creates a profile when the <b>Save Keywords</b> button
 	 * is pressed.
-	 * @param e the event generated when the <b>Create Profile</b>
+	 * @param e the event generated when the <b>Save Keywords</b>
 	 * button is pressed.
 	 */
-	private void createProfileButtonActionPerformed(ActionEvent e) {
+	private void saveKeywordsButtonActionPerformed(ActionEvent e) {
 		// confirm user's option to avoid data loss
 		int option = JOptionPane.showConfirmDialog(this,
-				"This will erase the existing profile data and\n" +
+				"This will erase the existing list of keywords and\n" +
 						"any network training will be lost.\n" +
 						"Are you sure you want to do this?",
 						"Create Filter Profire",
@@ -346,28 +363,8 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 
 		// change keywords, clear neural networks, create profile
 		if (option == JOptionPane.YES_OPTION) {
-			setDataOnBean();
+			setDataOnBean(); //TODO check delete file .dat
 			dispose();
-		}
-	}
-
-	/**
-	 * Signals the filter agent to start training the neural
-	 * networks on its own thread.
-	 * @param e the event generated when the
-	 * <b>Train Neural Networks</b> button is pressed.
-	 */
-	private void trainNetworksButtonActionPerformed(ActionEvent e) {
-		int option = JOptionPane.showConfirmDialog(this,
-				"This will reset the current neural networks and\n" +
-						"start training them again.\n" +
-						"Are you sure you want to do this?",
-						"Traing Neural Networks",
-						JOptionPane.YES_NO_OPTION);
-
-		if (option == JOptionPane.YES_NO_OPTION) {
-			agent.buildRatingNet();
-			agent.buildClusterNet();
 		}
 	}
 } // end class FilterAgentCustomizer

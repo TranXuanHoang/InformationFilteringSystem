@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -53,7 +54,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JMenuBar menuBar;
 	JMenu menuFile;
 	JMenu menuEdit;
-	JMenu menuProfile;
+	JMenu menuKeywords;
 	JMenu menuFilter;
 	JMenu menuHelp;
 
@@ -69,6 +70,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JMenuItem addArticleMenuItem;
 	JMenuItem addAllMenuItem;
 
+	JMenuItem trainNeuralNetworksMenuItem;
 	JCheckBoxMenuItem useKeywordsCheckBoxMenuItem;
 	JCheckBoxMenuItem useClustersCheckBoxMenuItem;
 	JCheckBoxMenuItem useFeedbackCheckBoxMenuItem;
@@ -178,13 +180,13 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		menuFile = new JMenu("File");
 		menuEdit = new JMenu("Edit");
-		menuProfile = new JMenu("Profile");
+		menuKeywords = new JMenu("Keywords");
 		menuFilter = new JMenu("Filter");
 		menuHelp = new JMenu("Help");
 		menuBar = new JMenuBar();
 		menuBar.add(menuFile);
 		menuBar.add(menuEdit);
-		menuBar.add(menuProfile);
+		menuBar.add(menuKeywords);
 		menuBar.add(menuFilter);
 		menuBar.add(menuHelp);
 
@@ -273,10 +275,18 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 
-		menuProfile.add(keywordsMenuItem);
-		menuProfile.addSeparator();
-		menuProfile.add(addArticleMenuItem);
-		menuProfile.add(addAllMenuItem);
+		menuKeywords.add(keywordsMenuItem);
+		menuKeywords.addSeparator();
+		menuKeywords.add(addArticleMenuItem);
+		menuKeywords.add(addAllMenuItem);
+
+		trainNeuralNetworksMenuItem = new JMenuItem("Train Neural Networks");
+		trainNeuralNetworksMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				trainNeuralNetworksMenuItem_actionPerformed(e);
+			}
+		});
 
 		useKeywordsCheckBoxMenuItem =
 				new JCheckBoxMenuItem("Using Keywords");
@@ -315,6 +325,8 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useButtonGroup.add(useFeedbackCheckBoxMenuItem);
 		useButtonGroup.add(useClustersCheckBoxMenuItem);
 
+		menuFilter.add(trainNeuralNetworksMenuItem);
+		menuFilter.addSeparator();
 		menuFilter.add(useKeywordsCheckBoxMenuItem);
 		menuFilter.add(useFeedbackCheckBoxMenuItem);
 		menuFilter.add(useClustersCheckBoxMenuItem);
@@ -619,6 +631,32 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		// open the profile data file and append the profile and
 		// append profile records of all downloaded articles
 		filterAgent.addAllArticlesToProfile(articles);
+	}
+
+	/**
+	 * Trains the back propagation neural network and the Kohonen
+	 * map neural network (Signals the filter agent to start training
+	 * the neural networks on its own thread).
+	 * @param e the event generated when the <b>Train Neural Networks</b>
+	 * menu item is selected.
+	 */
+	protected void trainNeuralNetworksMenuItem_actionPerformed(ActionEvent e) {
+		if (filterAgent.clusterNetTrained && filterAgent.ratingNetTrained) {
+			int option = JOptionPane.showConfirmDialog(this,
+					"This will reset the current neural networks and\n" +
+							"start training them again.\n" +
+							"Are you sure you want to do this?",
+							"Traing Neural Networks",
+							JOptionPane.YES_NO_OPTION);
+
+			if (option == JOptionPane.YES_NO_OPTION) {
+				filterAgent.buildRatingNet();
+				filterAgent.buildClusterNet();
+			}
+		} else {
+			filterAgent.buildRatingNet();
+			filterAgent.buildClusterNet();
+		}
 	}
 
 	/**
