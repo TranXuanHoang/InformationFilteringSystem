@@ -212,7 +212,7 @@ public class NewsArticle {
 	 * <li>{@link #FROM_PDF_FILE}
 	 * <li>{@link #FROM_MS_WORD_FILE}
 	 * <li>{@link #FROM_PPTX_FILE}
-	 * <li>{{@link #FROM_HTML_FILE}
+	 * <li>{@link #FROM_HTML_FILE}
 	 * <li>{@link #FROM_WEB_PAGE}
 	 * </ul>
 	 */

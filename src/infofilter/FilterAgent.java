@@ -1,6 +1,7 @@
 package infofilter;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -515,6 +516,30 @@ public class FilterAgent extends CIAgent {
 		} catch (IOException e) {
 			trace("Error: FilterAgent couldn't create "
 					+ "infofilter.dfn file");
+		}
+	}
+
+	/**
+	 * Deletes the {@value infofilter.Constants#keywordCountsFileName}
+	 * when the new list of keywords is save to the file
+	 * {@value infofilter.Constants#keywordDefinitionsFileName}. The
+	 * deletion is necessary since both the keyword definitions file
+	 * and the keyword count file will be kept consistent with respect
+	 * to the number of fields in each record.
+	 */
+	protected void deleteKeywordCountsFile() {
+		try {
+			String currentDir = System.getProperty("user.dir");
+			File keywordCountsFile = new File(currentDir + "/" +
+					Constants.keywordCountsFileName);
+
+			if (keywordCountsFile.exists()) {
+				keywordCountsFile.delete();
+			}
+		} catch (Exception e) {
+			trace("Error: Cannot delete file " +
+					Constants.keywordCountsFileName +
+					" when the new list of keywords is saved");
 		}
 	}
 

@@ -361,9 +361,10 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 						"Create Filter Profire",
 						JOptionPane.YES_NO_OPTION);
 
-		// change keywords, clear neural networks, create profile
+		// change keywords, clear neural networks,
+		// create .dfn file, delete .dat file
 		if (option == JOptionPane.YES_OPTION) {
-			setDataOnBean(); //TODO check delete file .dat
+			setDataOnBean();
 			dispose();
 		}
 	}

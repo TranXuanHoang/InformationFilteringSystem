@@ -420,7 +420,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	/**
 	 * Opens the <code>URLReaderAgent</code> customizer and allow
 	 * the user to download articles from web pages.
-	 * @param e the event generated when the <b>Download URL...</b>
+	 * @param e the event generated when the <b>Download Article...</b>
 	 * menu item is selected.
 	 */
 	protected void downloadArticleMenuItem_actionPerformed(ActionEvent e) {
