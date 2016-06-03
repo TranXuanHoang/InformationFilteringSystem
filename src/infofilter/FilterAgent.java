@@ -3,6 +3,7 @@ package infofilter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,21 +48,11 @@ public class FilterAgent extends CIAgent {
 	/** The back propagation neural network for rating articles. */
 	protected BackProp ratingNet;
 
-	/** Indicates whether the Kohonen map neural network
-	 * will be built. */
-	protected boolean buildClusterNet;
+	/** Indicates whether the two neural networks will be built. */
+	protected boolean buildNeuralNetworks;
 
-	/** Indicates whether the Kohonen map neural network
-	 * has been trained. */
-	protected boolean clusterNetTrained;
-
-	/** Indicates whether the back propagation neural network
-	 * will be built. */
-	protected boolean buildRatingNet;
-
-	/** Indicates whether the back propagation neural network
-	 * has been trained. */
-	protected boolean ratingNetTrained;
+	/** Indicates whether the two neural networks have been trained. */
+	protected boolean neuralNetworksTrained;
 
 	/** The name of the file that is used to save the serialized
 	 * object of a filter agent. */
@@ -97,10 +88,8 @@ public class FilterAgent extends CIAgent {
 	 */
 	public FilterAgent(String name) {
 		super(name);
-		buildClusterNet = false;
-		clusterNetTrained = false;
-		buildRatingNet = false;
-		ratingNetTrained = false;
+		buildNeuralNetworks = false;
+		neuralNetworksTrained = false;
 
 		// create the default keyword list
 		setKeywords(new String[] {"writing", "revising",
@@ -143,81 +132,62 @@ public class FilterAgent extends CIAgent {
 	 */
 	@Override
 	public void processTimerPop() {
-		if (!buildClusterNet && !buildRatingNet) {
-			status("Idle");
-			return;
+		if (buildNeuralNetworks) {
+			buildNeuralNetworks = false;
+			trainNeuralNetworks();
 		}
 
-		if (buildRatingNet) {
-			try {
-				status("Training back propagation neural network");
-				buildRatingNet = false;
-				trainRatingNet();
-				infoFilter.ratingNetTrained();
-				ratingNetTrained = true;
-				status("Back propagation neural network was trained");
-			} catch (Exception e) {
-				status("Back propagation neural network - No data" + e);
-			}
-		} else if (buildClusterNet) {
-			try {
-				status("Training Kohonen map neural network");
-				buildClusterNet = false;
-				trainClusterNet();
-				clusterNetTrained = true;
-				status("Kohonen map neural network was trained");
-			} catch (Exception e) {
-				status("Kohonen map neural network - No data" + e);
-			}
-		} else if (clusterNetTrained && ratingNetTrained) {
-			status("Neural networks were trained");
+		if (!neuralNetworksTrained) {
+			displayERR("Neural networks have not been trained");
 		}
 	}
 
 	/**
-	 * Builds the Kohonen map neural network used by the cluster
-	 * filter. The <code>infofilter.dfn</code> and <code>
-	 * infofilter.dat</code> files are used as training data.
+	 * Trains two neural networks:
+	 * <ul>
+	 * <li>Back propagation neural network
+	 * <li>Kohonen map neural network
+	 * </ul>
 	 */
-	private void trainClusterNet() {
+	private void trainNeuralNetworks() {
 		// create a data set using infofilter.dfn/dat files
-		DataSet dataSet = new DataSet("ProfileData", "infofilter");
-		dataSet.loadDataFile();
+		try {
+			displayMSG("Load data file of keyword frequencies "
+					+ "and user ratings of training articles");
+			DataSet dataSet = new DataSet(
+					"ProfileData", Constants.keyworsdFileName);
+			dataSet.loadDataFile();
 
-		// create a Kohonen map neural network
-		clusterNet = new KMapNet("Kohonen Map Neural Network");
-		clusterNet.setDataSet(dataSet); //TODO redundant
-		clusterNet.setNumRecs(dataSet.getNumRecords());
-		clusterNet.setFieldsPerRec(dataSet.getFieldsPerRec());
-		clusterNet.setData(dataSet.getNormalizedData());
+			displayMSG("Training back propagation neural network");
+			trainRatingNet(dataSet);
+			displayMSG("Back propagation neural network was trained");
 
-		// configure the Kohonen map neural network to have as many
-		// inputs as are defined in the infofilter.dat file and to
-		// have four (2 rows * 2 columns) outputs or clusters
-		clusterNet.createNetwork(clusterNet.getFieldsPerRec(), 2, 2);
+			displayMSG("Training Kohonen map neural network");
+			trainClusterNet(dataSet);
 
-		// train the network
-		int maxNumPasses = 20;
-		int numRecs = clusterNet.getNumRecs();
-
-		for (int i = 0; i < maxNumPasses; i++) {
-			for (int j = 0; j < numRecs; j++) {
-				clusterNet.cluster(); // train
-			}
-
-			// after each training pass, to enable the InfoFilter
-			// application to continue its processing, the
-			// FilterAgent thread is yielded
-			Thread.yield();
+			neuralNetworksTrained = true;
+			displayMSG("Neural networks have been trained");
+		} catch (FileNotFoundException e) {
+			neuralNetworksTrained = false;
+			displayERR("Cannot find the file \"" +
+					Constants.keywordCountsFileName +
+					"\" containing keyword frequencies and user ratings");
+		} catch (IOException e) {
+			neuralNetworksTrained = false;
+			displayERR("Error occured while reading the file \"" +
+					Constants.keywordCountsFileName + "\"");
+		} catch (Exception e) {
+			neuralNetworksTrained = false;
+			displayERR("Cannot train neural networks successfully - " + e);
+			e.printStackTrace();
 		}
 
-		clusterNet.setMode(1); // lock the network weights
-		trace("\nKohonen Map Training Completed\n");
-
-		// a single pass is used to check results
-		for (int i = 0; i < numRecs; i++) {
-			clusterNet.cluster(); // test
-			// clusterNet.display_network();
+		if (neuralNetworksTrained) {
+			infoFilter.useFeedbackCheckBoxMenuItem.setEnabled(true);
+			infoFilter.useClustersCheckBoxMenuItem.setEnabled(true);
+		} else {
+			infoFilter.useFeedbackCheckBoxMenuItem.setEnabled(false);
+			infoFilter.useClustersCheckBoxMenuItem.setEnabled(false);
 		}
 	}
 
@@ -233,11 +203,7 @@ public class FilterAgent extends CIAgent {
 	 * the top of the list and the score that is closest to 0.0 at
 	 * the bottom.
 	 */
-	private void trainRatingNet() {
-		// create a data set using infofilter.dfn/dat files
-		DataSet dataSet = new DataSet("ProfileData", "infofilter");
-		dataSet.loadDataFile();
-
+	private void trainRatingNet(DataSet dataSet) {
 		// create a back propagation neural network
 		ratingNet = new BackProp("Back Propagation Neural Network");
 		ratingNet.setDataSet(dataSet); //TODO redundant
@@ -277,6 +243,49 @@ public class FilterAgent extends CIAgent {
 	}
 
 	/**
+	 * Builds the Kohonen map neural network used by the cluster
+	 * filter. The <code>infofilter.dfn</code> and <code>
+	 * infofilter.dat</code> files are used as training data.
+	 */
+	private void trainClusterNet(DataSet dataSet) {
+		// create a Kohonen map neural network
+		clusterNet = new KMapNet("Kohonen Map Neural Network");
+		clusterNet.setDataSet(dataSet); //TODO redundant
+		clusterNet.setNumRecs(dataSet.getNumRecords());
+		clusterNet.setFieldsPerRec(dataSet.getFieldsPerRec());
+		clusterNet.setData(dataSet.getNormalizedData());
+
+		// configure the Kohonen map neural network to have as many
+		// inputs as are defined in the infofilter.dat file and to
+		// have four (2 rows * 2 columns) outputs or clusters
+		clusterNet.createNetwork(clusterNet.getFieldsPerRec(), 2, 2);
+
+		// train the network
+		int maxNumPasses = 20;
+		int numRecs = clusterNet.getNumRecs();
+
+		for (int i = 0; i < maxNumPasses; i++) {
+			for (int j = 0; j < numRecs; j++) {
+				clusterNet.cluster(); // train
+			}
+
+			// after each training pass, to enable the InfoFilter
+			// application to continue its processing, the
+			// FilterAgent thread is yielded
+			Thread.yield();
+		}
+
+		clusterNet.setMode(1); // lock the network weights
+		trace("\nKohonen Map Training Completed\n");
+
+		// a single pass is used to check results
+		for (int i = 0; i < numRecs; i++) {
+			clusterNet.cluster(); // test
+			// clusterNet.display_network();
+		}
+	}
+
+	/**
 	 * Processes agent event.
 	 * @param e the agent event to be processed.
 	 */
@@ -288,10 +297,8 @@ public class FilterAgent extends CIAgent {
 
 		String arg = (String) e.getArgObject();
 
-		if (arg.equals("buildClusterNet")) {
-			buildClusterNet = true;
-		} else if (arg.equals("buildRatingNet")) {
-			buildRatingNet = true;
+		if (arg.equals("buildNeuralNetworks")) {
+			buildNeuralNetworks = true;
 		}
 	}
 
@@ -303,8 +310,8 @@ public class FilterAgent extends CIAgent {
 	 * @param filterType the filter type (or filter method):<br>
 	 * <ul>
 	 * <li>{@link #USE_KEYWORDS}
-	 * <li>{@link #USE_CLUSTERS}
 	 * <li>{@link #USE_PREDICTED_RATING}
+	 * <li>{@link #USE_CLUSTERS}
 	 * </ul>
 	 */
 	protected void score(NewsArticle article, int filterType) {
@@ -513,19 +520,21 @@ public class FilterAgent extends CIAgent {
 
 			out.flush();
 			out.close();
+			displayMSG("The new list of keywords was saved to keyword "
+					+ "definition file.");
 		} catch (IOException e) {
-			trace("Error: FilterAgent couldn't create "
+			displayMSG("Error: FilterAgent couldn't create "
 					+ "infofilter.dfn file");
 		}
 	}
 
 	/**
-	 * Deletes the {@value infofilter.Constants#keywordCountsFileName}
+	 * Deletes the file {@link Constants#keywordCountsFileName}
 	 * when the new list of keywords is save to the file
-	 * {@value infofilter.Constants#keywordDefinitionsFileName}. The
-	 * deletion is necessary since both the keyword definitions file
-	 * and the keyword count file will be kept consistent with respect
-	 * to the number of fields in each record.
+	 * {@link Constants#keywordDefinitionsFileName}. The deletion
+	 * is necessary since both the keyword definitions file
+	 * and the keyword count file will be kept consistent with
+	 * respect to the number of fields in each record.
 	 */
 	protected void deleteKeywordCountsFile() {
 		try {
@@ -535,9 +544,10 @@ public class FilterAgent extends CIAgent {
 
 			if (keywordCountsFile.exists()) {
 				keywordCountsFile.delete();
+				displayMSG("The file containing keyword frequencies was deleted");
 			}
 		} catch (Exception e) {
-			trace("Error: Cannot delete file " +
+			displayMSG("Error: Cannot delete file " +
 					Constants.keywordCountsFileName +
 					" when the new list of keywords is saved");
 		}
@@ -601,6 +611,32 @@ public class FilterAgent extends CIAgent {
 	}
 
 	/**
+	 * Asks the information filtering agent to display a message
+	 * containing no error at its bottom.
+	 * @param msg the message to be displayed.
+	 */
+	public void displayMSG(String msg) {
+		// create a data event
+		CIAgentEvent event = new CIAgentEvent(this, "displayMSG", msg);
+
+		// sent the event to all registered listeners
+		notifyCIAgentEventListeners(event);
+	}
+
+	/**
+	 * Asks the information filtering agent to display a message
+	 * showing error at its bottom.
+	 * @param err the error message to be displayed.
+	 */
+	public void displayERR(String err) {
+		// create a data event
+		CIAgentEvent event = new CIAgentEvent(this, "displayERR", err);
+
+		// sent the event to all registered listeners
+		notifyCIAgentEventListeners(event);
+	}
+
+	/**
 	 * Retrieves the list of keywords given by user.
 	 * @return a String array of keywords.
 	 */
@@ -617,35 +653,11 @@ public class FilterAgent extends CIAgent {
 	}
 
 	/**
-	 * Triggers an autonomous build of Kohonen map neural network.
+	 * Triggers an autonomous build of both back propagation
+	 * neural network and Kohonen map neural network.
 	 */
-	public void buildClusterNet() {
-		buildClusterNet = true;
-	}
-
-	/**
-	 * Triggers an autonomous build of back propagation neural network.
-	 */
-	public void buildRatingNet() {
-		buildRatingNet = true;
-	}
-
-	/**
-	 * Indicates whether the Kohonen map neural network is trained.
-	 * @return <code>true</code> if the Kohonen map is trained and
-	 * <code>false</code> otherwise.
-	 */
-	public boolean isClusterNetTrained() {
-		return clusterNetTrained;
-	}
-
-	/**
-	 * Indicates whether the back propagation neural network is trained.
-	 * @return <code>true</code> if the back propagation network is
-	 * trained, <code>false</code> otherwise.
-	 */
-	public boolean isRatingNetTrained() {
-		return ratingNetTrained;
+	public void buildNeuralNetworks() {
+		buildNeuralNetworks = true;
 	}
 
 	/**

@@ -225,6 +225,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	public void setDataOnBean() {
 		agent.setKeywords(getKeywords());
 		agent.writeProfileDataDefinition();
+		agent.deleteKeywordCountsFile();
 	}
 
 	/**

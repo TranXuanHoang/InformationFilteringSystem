@@ -301,7 +301,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useFeedbackCheckBoxMenuItem = new JCheckBoxMenuItem(
 				"Using Back Propagation Neural Network");
 		useFeedbackCheckBoxMenuItem.setEnabled(
-				filterAgent.isRatingNetTrained() ? true : false);
+				filterAgent.neuralNetworksTrained ? true : false);
 		useFeedbackCheckBoxMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -312,7 +312,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		useClustersCheckBoxMenuItem = new JCheckBoxMenuItem(
 				"Using Kohonen Map Neural Network");
 		useClustersCheckBoxMenuItem.setEnabled(
-				filterAgent.isClusterNetTrained() ? true : false);
+				filterAgent.neuralNetworksTrained ? true : false);
 		useClustersCheckBoxMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -382,7 +382,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		jScrollPane1.setMinimumSize(minimumSize);
 		jScrollPane2.setMinimumSize(minimumSize);
 
-		filterAgentStatusLabel = new JLabel("FilterAgent status:");
+		filterAgentStatusLabel = new JLabel();
 		filterAgentStatusLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
 		jPanel1 = new JPanel(new GridLayout());
 		jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -641,7 +641,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * menu item is selected.
 	 */
 	protected void trainNeuralNetworksMenuItem_actionPerformed(ActionEvent e) {
-		if (filterAgent.clusterNetTrained && filterAgent.ratingNetTrained) {
+		if (filterAgent.neuralNetworksTrained) {
 			int option = JOptionPane.showConfirmDialog(this,
 					"This will reset the current neural networks and\n" +
 							"start training them again.\n" +
@@ -650,12 +650,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 							JOptionPane.YES_NO_OPTION);
 
 			if (option == JOptionPane.YES_NO_OPTION) {
-				filterAgent.buildRatingNet();
-				filterAgent.buildClusterNet();
+				filterAgent.buildNeuralNetworks();
 			}
 		} else {
-			filterAgent.buildRatingNet();
-			filterAgent.buildClusterNet();
+			filterAgent.buildNeuralNetworks();
 		}
 	}
 
@@ -949,8 +947,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				// score the article sent by another agent
 				addArticle((NewsArticle) arg);
 			} else if (action.equals("status")) {
-				filterAgentStatusLabel.setText(
-						"FilterAgent Status: " + (String) arg);
+				filterAgentStatusLabel.setForeground(Color.BLACK);
+				filterAgentStatusLabel.setText((String) arg);
+			} else if (action.equals("displayMSG")) {
+				filterAgentStatusLabel.setForeground(Color.BLUE);
+				filterAgentStatusLabel.setText((String) arg);
+			} else if (action.equals("displayERR")) {
+				filterAgentStatusLabel.setForeground(Color.RED);
+				filterAgentStatusLabel.setText((String) arg);
 			}
 		}
 	}

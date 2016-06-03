@@ -173,8 +173,11 @@ public class DataSet implements Serializable {
 	/**
 	 * Reads the data from the <i>data file</i> defined by the
 	 * <i>data file definition</i>.
+	 * @throws FileNotFoundException if the <i>data file</i> not found.
+	 * @throws IOException  if any error occurs while reading the
+	 * <i>data file</i>.
 	 */
-	public void loadDataFile() {
+	public void loadDataFile() throws FileNotFoundException, IOException {
 		// first read the file definition and create variables
 		loadDataFileDefinition();
 		fieldsPerRec = fieldList.size(); //TODO redundant
@@ -212,9 +215,12 @@ public class DataSet implements Serializable {
 			displayVariables();
 			displayNormalizedData();
 		} catch (FileNotFoundException e) {
-			trace("Error: Cannot find definition file " + fileName + ".dat");
+			trace("Error: Cannot find data record file " + fileName + ".dat");
+			throw new FileNotFoundException();
 		} catch (IOException e) {
-			trace("Error Reading file: " + fileName + ".dat");
+			trace("Error reading file: " + fileName + ".dat");
+			e.printStackTrace();
+			throw new IOException();
 		}
 	}
 

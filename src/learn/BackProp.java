@@ -398,6 +398,9 @@ public class BackProp implements Serializable {
 		aveRMSError = 0.0;
 		numPasses = 0;
 
+		System.out.println("Network's numUnit: " + numUnits +
+				", numIn = " + numIn + ", numHidden = " + numHidden
+				+ ", numOut = " + numOut);
 		// create weight and error arrays
 		activations = new double[numUnits];	// unit activations
 		weights = new double[numWeights];

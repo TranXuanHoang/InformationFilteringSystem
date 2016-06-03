@@ -8,6 +8,8 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
@@ -408,7 +410,10 @@ public class LearnFrame extends JFrame implements Runnable {
 
 			dataSet = new DataSet("ds", dirName + fileName);
 			dataSet.setDisplay(dataTextArea);
-			dataSet.loadDataFile(); // load the data set from the data file
+
+			try {
+				dataSet.loadDataFile();
+			} catch (Exception exc) {}
 
 			dataSetFileNameLabel.setText(dirName + fileName);
 			startMenuItem.setEnabled(true);
