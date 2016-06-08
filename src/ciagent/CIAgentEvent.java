@@ -9,9 +9,7 @@ import java.util.EventObject;
  * @author Tran Xuan Hoang
  */
 public class CIAgentEvent extends EventObject {
-	/**
-	 * Serial version.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	private Object argObject;

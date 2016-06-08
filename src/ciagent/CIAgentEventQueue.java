@@ -10,14 +10,10 @@ import java.util.Vector;
  * @author Tran Xuan Hoang
  */
 public class CIAgentEventQueue implements Serializable {
-	/**
-	 * Serial version.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Queue of agent events.
-	 */
+	/** Queue of agent events. */
 	private Vector<CIAgentEvent> eventQueue;
 
 	/**

@@ -10,9 +10,7 @@ import java.io.Serializable;
  * @author Tran Xuan Hoang
  */
 public class ContinuousVariable extends Variable implements Serializable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	protected double min = 0.0;

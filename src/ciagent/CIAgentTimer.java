@@ -21,9 +21,7 @@ import java.util.Date;
  * @author Tran Xuan Hoang
  */
 public class CIAgentTimer implements Runnable, Serializable {
-	/**
-	 * Serial version.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	private CIAgent agent;			// owner agent
@@ -31,14 +29,10 @@ public class CIAgentTimer implements Runnable, Serializable {
 	private boolean timerEnabled = true;
 	private int asyncTime = 500;	// millisecond (default to 0.5s)
 
-	/**
-	 * 	Used to exit thread that runs the {link #run()} method.
-	 */
+	/**	Used to exit thread that runs the {link #run()} method. */
 	private boolean quit = false;
 
-	/**
-	 * Used to check timer variables.
-	 */
+	/** Used to check timer variables. */
 	private boolean debug = false;
 
 	transient private Thread runnit = new Thread(this);

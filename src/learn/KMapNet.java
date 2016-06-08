@@ -12,9 +12,7 @@ import javax.swing.JTextArea;
  * @author Tran Xuan Hoang
  */
 public class KMapNet implements Serializable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	// data parameters
@@ -312,5 +310,15 @@ public class KMapNet implements Serializable {
 
 	public void setMode(int mode) {
 		this.mode = mode;
+	}
+
+	/**
+	 * Returns basic information about the Kohonen map neural network.
+	 */
+	public String toString() {
+		return "Kohonen Map Neural Net:" + name +
+				"\n\tNum. of units in the input layer: " + numInputs +
+				"\n\tNum. of units in the output layer: " + numRows + "x" + numCols +
+				"\n\t" + dataset;
 	}
 } // end class KMapNet

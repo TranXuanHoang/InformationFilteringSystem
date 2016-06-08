@@ -154,16 +154,16 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 					FilterAgent.fileName);
 			if (tmpFilterAgent != null) {
 				filterAgent = tmpFilterAgent;
-				
 
-System.out.println("Restored Filter Agent:\n\t" +
-					"Keywords: " + Arrays.asList(tmpFilterAgent.keywords));
+				System.out.println("\nSerialized " + filterAgent);
 			}
 		} catch (Exception e) {
 			// there is no serialized filter agent, create a new one
+			filterAgent = new FilterAgent();
+
 			System.out.println("There is no serialized filter agent. "
 					+ "New filter agent was created.");
-			filterAgent = new FilterAgent();
+			System.out.println("New " + filterAgent);
 		}
 
 		filterAgent.infoFilter = this;

@@ -11,9 +11,7 @@ import javax.swing.UIManager;
  * @author Tran Xuan Hoang
  */
 public class LearnApp {
-	/**
-	 * Indicates whether frame should be packed.
-	 */
+	/** Indicates whether frame should be packed. */
 	boolean packFrame = false;
 
 	/**

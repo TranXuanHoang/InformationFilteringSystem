@@ -10,9 +10,7 @@ import java.util.Vector;
  * @author Tran Xuan Hoang
  */
 public class Node implements Serializable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	protected String label;				 // name of the node

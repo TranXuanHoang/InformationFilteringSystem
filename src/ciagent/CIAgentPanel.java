@@ -16,9 +16,7 @@ import javax.swing.JToggleButton;
  * @author Tran Xuan Hoang
  */
 public class CIAgentPanel extends JPanel {
-	/**
-	 * Serial version.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	JLabel nameLabel = new JLabel();

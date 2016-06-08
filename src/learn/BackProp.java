@@ -12,68 +12,45 @@ import javax.swing.JTextArea;
  * @author Tran Xuan Hoang
  */
 public class BackProp implements Serializable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	// members that are used to manage the data set.
 	protected String name;
 	private DataSet dataset;
-	/**
-	 * Holds the training data.
-	 */
+	/** Holds the training data. */
 	private Vector<double[]> data;
-	/**
-	 * Current record index.
-	 */
+	/** Current record index. */
 	private int recInx = 0;
-	/**
-	 * Total number of records in data.
-	 */
+	/** Total number of records in data. */
 	private int numRecs = 0;
-	/**
-	 * Number of fields in each record.
-	 */
+	/** Number of fields in each record. */
 	private int fieldsPerRec = 0;
 
 	// error measures
-	/**
-	 * The accumulative sum of squared errors
-	 */
+	/** The accumulative sum of squared errors. */
 	private double sumSquaredError;	// total SSE for an epoch
 	private double aveRMSError;		// average root-mean-square error
 	private int numPasses;			// number of passes over the data set
 
 	// network architecture parameters
-	/**
-	 * Number of units in the input layer.
-	 */
+	/** Number of units in the input layer. */
 	private int numInputs;
-	/**
-	 * Number of units in the first hidden layer.
-	 */
+	/** Number of units in the first hidden layer. */
 	private int numHid1;
-	/**
-	 * Number of units in the output layer.
-	 */
+	/** Number of units in the output layer. */
 	private int numOutputs;
-	/**
-	 * Total number of units in all layers.
-	 */
+	/** Total number of units in all layers. */
 	private int numUnits;
-	/**
-	 * Total number of weights in the network.
-	 */
+	/** Total number of weights in the network. */
 	private int numWeights;
 
 	// network control parameters
-	/**
-	 * <ul>
+	/** <ul>
 	 * <li>mode = 0: the network is in training, the connection
 	 * weights are adjusted</li>
 	 * <li>mode = 1: the network weights are locked</li>
-	 * </ul> 
+	 * </ul>
 	 */
 	private int mode;
 	private double learnRate; // learnRate and momentum are used to
@@ -478,5 +455,16 @@ public class BackProp implements Serializable {
 
 	public void setMomentum(double momentum) {
 		this.momentum = momentum;
+	}
+
+	/**
+	 * Return basic information about the back propagation neural network.
+	 */
+	public String toString() {
+		return "Back Propagation Neural Net: " + name +
+				"\n\tNum. of units in the input layer: " + numInputs +
+				"\n\tNum. of units in the hidden layer: " + numHid1 +
+				"\n\tNum. of units in the output layer: " + numOutputs +
+				"\n\t" + dataset;
 	}
 } // end class BackProp

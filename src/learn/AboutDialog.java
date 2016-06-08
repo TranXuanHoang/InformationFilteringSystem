@@ -21,9 +21,7 @@ import javax.swing.SwingConstants;
  * @author Tran Xuan Hoang
  */
 public class AboutDialog extends JDialog{
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	/**

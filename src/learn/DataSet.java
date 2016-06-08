@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.StreamTokenizer;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -21,19 +23,13 @@ import javax.swing.JTextArea;
  * @author Tran Xuan Hoang
  */
 public class DataSet implements Serializable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The name of the data set.
-	 */
+	/** The name of the data set. */
 	protected String name;
 
-	/**
-	 * The name of the file that contains the data set.
-	 */
+	/** The name of the file that contains the data set. */
 	protected String fileName;
 
 	/**
@@ -43,14 +39,10 @@ public class DataSet implements Serializable {
 	 */
 	protected boolean allNumericData;
 
-	/**
-	 * Stores raw data read from the file.
-	 */
+	/** Stores raw data read from the file. */
 	protected Vector<String[]> data;
 
-	/**
-	 * Stores scaled and translated data.
-	 */
+	/** Stores scaled and translated data. */
 	protected Vector<double[]> normalizedData;
 
 	/**
@@ -73,9 +65,7 @@ public class DataSet implements Serializable {
 	 */
 	protected int fieldsPerRec = 0;
 
-	/**
-	 * The number of data fields in each record that are normalized.
-	 */
+	/** The number of data fields in each record that are normalized. */
 	protected int normFieldsPerRec = 0;
 
 	/**
@@ -411,5 +401,15 @@ public class DataSet implements Serializable {
 	 */
 	public String getFileName() {
 		return fileName;
+	}
+
+	/**
+	 * Returns basic information about the data set.
+	 */
+	public String toString() {
+		List<String> vars = Collections.list(variableList.keys());
+
+		return "Dataset: extracted from file " + fileName +
+				"\n\t" + vars.size() + "Variables: " + vars;
 	}
 } // end class DataSet

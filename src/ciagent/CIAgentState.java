@@ -15,9 +15,7 @@ import java.io.Serializable;
  * @author Tran Xuan Hoang
  */
 public class CIAgentState implements Serializable {
-	/**
-	 * Serial version.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	public static final int UNINITIATED = 0;

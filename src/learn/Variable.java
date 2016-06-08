@@ -13,9 +13,7 @@ import java.util.Vector;
  * @author Tran Xuan Hoang
  */
 public abstract class Variable implements Serializable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	protected String name;

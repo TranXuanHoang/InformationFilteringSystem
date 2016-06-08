@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -90,15 +91,6 @@ public class FilterAgent extends CIAgent {
 		super(name);
 		buildNeuralNetworks = false;
 		neuralNetworksTrained = false;
-
-		// create the default keyword list
-//		setKeywords(new String[] {"writing", "revising",
-//				"communication", "academic", "English",
-//				"grammar", "vocabulary", "scientific", "research",
-//				"logic", "epistemic", "modal", "dynamic", "fuzzy",
-//				"intelligent", "agent", "neural", "network",
-//				"deep", "learning", "probability", "theory",
-//				"probabilistic", "reasoning"});
 		keywords = new String[]{};
 	}
 
@@ -705,5 +697,15 @@ public class FilterAgent extends CIAgent {
 			System.out.println(
 					"Error at FilterAgent.saveToFile()" + e);
 		}
+	}
+
+	/**
+	 * Returns a string containing basic information of the filter agent.
+	 */
+	public String toString() {
+		return "Filter Agent: " + name +
+				"\n- Keywords: " + Arrays.asList(keywords) +
+				"\n- " + ratingNet +
+				"\n- " + clusterNet;
 	}
 } // end class FilterAgent

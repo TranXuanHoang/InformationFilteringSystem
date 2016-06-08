@@ -33,9 +33,7 @@ import javax.swing.border.EmptyBorder;
  * @author Tran Xuan Hoang
  */
 public class LearnFrame extends JFrame implements Runnable {
-	/**
-	 * The serial version ID.
-	 */
+	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	JMenuBar menuBar = new JMenuBar();
