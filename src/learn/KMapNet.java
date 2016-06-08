@@ -316,7 +316,7 @@ public class KMapNet implements Serializable {
 	 * Returns basic information about the Kohonen map neural network.
 	 */
 	public String toString() {
-		return "Kohonen Map Neural Net:" + name +
+		return "Kohonen Map Neural Net: " + name +
 				"\n\tNum. of units in the input layer: " + numInputs +
 				"\n\tNum. of units in the output layer: " + numRows + "x" + numCols +
 				"\n\t" + dataset;

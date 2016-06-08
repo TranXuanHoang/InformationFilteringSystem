@@ -132,6 +132,8 @@ public class FilterAgent extends CIAgent {
 
 		if (!neuralNetworksTrained) {
 			displayERR("Neural networks have not been trained");
+		} else {
+			displayMSG("Neural networks have been trained");
 		}
 	}
 
@@ -158,9 +160,11 @@ public class FilterAgent extends CIAgent {
 			displayMSG("Training Kohonen map neural network");
 			trainClusterNet(dataSet);
 
-			saveToFile(fileName);
+			// this statement must be invoked before the call of saveToFile
 			neuralNetworksTrained = true;
 			displayMSG("Neural networks have been trained");
+
+			saveToFile(fileName);
 		} catch (FileNotFoundException e) {
 			neuralNetworksTrained = false;
 			displayERR("Cannot find the file \"" +
@@ -704,7 +708,10 @@ public class FilterAgent extends CIAgent {
 	 */
 	public String toString() {
 		return "Filter Agent: " + name +
-				"\n- Keywords: " + Arrays.asList(keywords) +
+				"\n- " + keywords.length + " Keywords: " +
+				Arrays.asList(keywords) +
+				"\n- Neural networks have" +
+				(neuralNetworksTrained ? "" : " not") + " been trained" +
 				"\n- " + ratingNet +
 				"\n- " + clusterNet;
 	}

@@ -410,6 +410,6 @@ public class DataSet implements Serializable {
 		List<String> vars = Collections.list(variableList.keys());
 
 		return "Dataset: extracted from file " + fileName +
-				"\n\t" + vars.size() + "Variables: " + vars;
+				"\n\t" + vars.size() + " Variables: " + vars;
 	}
 } // end class DataSet
