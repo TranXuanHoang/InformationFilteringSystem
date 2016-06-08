@@ -92,13 +92,14 @@ public class FilterAgent extends CIAgent {
 		neuralNetworksTrained = false;
 
 		// create the default keyword list
-		setKeywords(new String[] {"writing", "revising",
-				"communication", "academic", "English",
-				"grammar", "vocabulary", "scientific", "research",
-				"logic", "epistemic", "modal", "dynamic", "fuzzy",
-				"intelligent", "agent", "neural", "network",
-				"deep", "learning", "probability", "theory",
-				"probabilistic", "reasoning"});
+//		setKeywords(new String[] {"writing", "revising",
+//				"communication", "academic", "English",
+//				"grammar", "vocabulary", "scientific", "research",
+//				"logic", "epistemic", "modal", "dynamic", "fuzzy",
+//				"intelligent", "agent", "neural", "network",
+//				"deep", "learning", "probability", "theory",
+//				"probabilistic", "reasoning"});
+		keywords = new String[]{};
 	}
 
 	/**
@@ -165,6 +166,7 @@ public class FilterAgent extends CIAgent {
 			displayMSG("Training Kohonen map neural network");
 			trainClusterNet(dataSet);
 
+			saveToFile(fileName);
 			neuralNetworksTrained = true;
 			displayMSG("Neural networks have been trained");
 		} catch (FileNotFoundException e) {
@@ -679,7 +681,7 @@ public class FilterAgent extends CIAgent {
 		FilterAgent restoreAgent = null;
 		restoreAgent = (FilterAgent) inStream.readObject();
 		inStream.close();
-		System.out.println("Successfully read FilterAgent fom " + fileName);
+		System.out.println("+Successfully read FilterAgent fom " + fileName);
 
 		return restoreAgent;
 	}
@@ -698,7 +700,7 @@ public class FilterAgent extends CIAgent {
 			outStream.flush();
 			outStream.close();
 			System.out.println(
-					"Successfully saved FilterAgent to " + fileName);
+					"+Successfully saved FilterAgent to " + fileName);
 		} catch (IOException e) {
 			System.out.println(
 					"Error at FilterAgent.saveToFile()" + e);

@@ -14,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.Customizer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -144,21 +146,26 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * the set of articles, the filter agent, the URL reader agent.
 	 */
 	private void initializeUnderlyingData() {
+		articles = new Vector<>();
+
 		// check if a serialized FilterAgent exists
 		try {
 			FilterAgent tmpFilterAgent = FilterAgent.restoreFromFile(
 					FilterAgent.fileName);
-
 			if (tmpFilterAgent != null) {
 				filterAgent = tmpFilterAgent;
+				
+
+System.out.println("Restored Filter Agent:\n\t" +
+					"Keywords: " + Arrays.asList(tmpFilterAgent.keywords));
 			}
 		} catch (Exception e) {
-			// no error, just catch any exception
+			// there is no serialized filter agent, create a new one
+			System.out.println("There is no serialized filter agent. "
+					+ "New filter agent was created.");
+			filterAgent = new FilterAgent();
 		}
 
-		articles = new Vector<>();
-
-		filterAgent = new FilterAgent();
 		filterAgent.infoFilter = this;
 		filterAgent.addCIAgentEventListener(this); // for trace msgs
 		filterAgent.initialize();
@@ -853,6 +860,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		JComboBox<String> userRatings =
 				new JComboBox<>(FilterAgent.RATINGS);
+		userRatings.setFont(new Font("Calibri", Font.PLAIN, 14));
 		articleTable.getColumnModel().getColumn(COL_RATING_ID).
 		setCellEditor(new DefaultCellEditor(userRatings));
 		articleTable.setCellSelectionEnabled(true);
