@@ -14,8 +14,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.Customizer;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
