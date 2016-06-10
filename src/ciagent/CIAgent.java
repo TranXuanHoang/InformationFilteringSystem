@@ -175,12 +175,11 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Delivers the event received to all register listeners.
 	 * @param e the event to be sent to all listeners.
 	 */
-	@SuppressWarnings("unchecked")
 	protected void notifyCIAgentEventListeners(CIAgentEvent e) {
 		Vector<CIAgentEventListener> l;
 
 		synchronized (this) {
-			l = (Vector<CIAgentEventListener>) listeners.clone();
+			l = new Vector<CIAgentEventListener>(listeners);
 		}
 
 		for (int i = 0; i < l.size(); i++) {
@@ -394,9 +393,8 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Retrieves all child agents of this agent.
 	 * @return a copy of vector of agents contained by this agent.
 	 */
-	@SuppressWarnings("unchecked")
 	public Vector<CIAgent> getChildren() {
-		return (Vector<CIAgent>) children.clone();
+		return new Vector<CIAgent>(children);
 	}
 
 	/**

@@ -50,6 +50,11 @@ public class NewsArticle {
 	 * contents of the web page. */
 	protected String body;
 
+	/** Indicates whether the article satisfies the degree of
+	 * interestingness/usefulness so that it could be selected
+	 * to send to other agent(s). */
+	protected boolean apporved;
+
 	/** Raw frequencies of keywords in the body text. */
 	protected int counts[];
 
@@ -86,6 +91,7 @@ public class NewsArticle {
 	public NewsArticle(String id, int type) {
 		this.id = id;
 		this.type = type;
+		apporved = false;
 	}
 
 	/**
@@ -286,6 +292,26 @@ public class NewsArticle {
 	}
 
 	/**
+	 * Checked whether the article has been approved as satisfies
+	 * the interestingness/usefulness.
+	 * @return <code>true</code> if approved, <code>false</code>
+	 * if not.
+	 */
+	public boolean isApproved() {
+		return apporved;
+	}
+
+	/**
+	 * Sets the flag indicating whether the article has been
+	 * approved as satisfies the interestingness/usefulness.
+	 * @param appr <code>true</code> if approved,
+	 * <code>false</code> if not.
+	 */
+	public void setApproved(boolean appr) {
+		this.apporved = appr;
+	}
+
+	/**
 	 * Retrieves the keyword score for the article.
 	 * @return the keyword score for the article.
 	 */
@@ -431,5 +457,12 @@ public class NewsArticle {
 		profile.append(rating); // numeric user rating value
 
 		return profile.toString();
+	}
+
+	/**
+	 * Returns basic information about the article.
+	 */
+	public String toString() {
+		return subject;
 	}
 } // end class NewsArticle

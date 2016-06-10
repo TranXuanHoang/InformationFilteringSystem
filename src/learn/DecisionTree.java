@@ -301,9 +301,8 @@ public class DecisionTree implements Serializable {
 				Vector<String[]> examples1 =
 						subset(examples, best, best.getLabel(i));
 
-				@SuppressWarnings("unchecked")
 				Hashtable<String, Variable> variables1 =
-				(Hashtable<String, Variable>) variables.clone();
+						new Hashtable<String, Variable>(variables);
 
 				variables1.remove(best.getName());
 				Node subTree = buildDecisionTree(examples1,

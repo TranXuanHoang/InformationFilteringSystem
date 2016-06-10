@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -90,15 +91,17 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 	String titleBarText = "Information Filtering Application";
 
-	protected static final int NUM_COLS = 3;
 	protected static final int COL_SUBJECT_ID = 0;
-	protected static final int COL_SCORE_ID = 1;
-	protected static final int COL_RATING_ID = 2;
+	protected static final int COL_APPROVE_ID = 1;
+	protected static final int COL_SCORE_ID = 2;
+	protected static final int COL_RATING_ID = 3;
 	private static final String COL_SUBJECT = "Subject";
+	private static final String COL_APPROVE = "Approve";
 	private static final String COL_SCORE = "Score";
 	private static final String COL_RATING = "Rating";
-	protected String[] columnNameList =
-		{COL_SUBJECT, COL_SCORE, COL_RATING};
+	protected static String[] columnNameList =
+		{COL_SUBJECT, COL_APPROVE, COL_SCORE, COL_RATING};
+	protected static final int NUM_COLS = columnNameList.length;
 
 	protected Object[][] data;
 
@@ -740,6 +743,15 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				switch (col) {
 				case COL_SUBJECT_ID:
 					break;
+				case COL_APPROVE_ID:
+					Boolean approved = (Boolean) value;
+					data[row][col] = approved;
+
+					if (currentArt != null) {
+						currentArt.setApproved(approved);
+					}
+
+					break;
 				case COL_SCORE_ID:
 					break;
 				case COL_RATING_ID:
@@ -749,6 +761,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 					if (currentArt != null) {
 						currentArt.setUserRating(userRating);
 					}
+
 					break;
 				}
 			}
@@ -777,6 +790,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			public boolean isCellEditable(int row, int col) {
 				switch (col) {
 				case COL_SUBJECT_ID:
+					return false;
+				case COL_APPROVE_ID:
+					return true;
 				case COL_SCORE_ID:
 					return false;
 				case COL_RATING_ID:
@@ -788,11 +804,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		}; // end create a model of the data
 
 		articleTable = new JTable(articleTableModel);
-		articleTable.setRowHeight(20);
-		articleTable.getColumn(COL_SUBJECT).setPreferredWidth(200);
-		articleTable.getColumn(COL_SCORE).setPreferredWidth(30);
-		articleTable.getColumn(COL_RATING).setPreferredWidth(30);
-		articleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		// handle the table's row selection events (1-click event)
 		ListSelectionModel rowSM = articleTable.getSelectionModel();
@@ -856,19 +867,32 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 
+		JCheckBox approved = new JCheckBox();
+		articleTable.getColumnModel().getColumn(COL_APPROVE_ID).
+		setCellEditor(new DefaultCellEditor(approved));
+
 		JComboBox<String> userRatings =
 				new JComboBox<>(FilterAgent.RATINGS);
 		userRatings.setFont(new Font("Calibri", Font.PLAIN, 14));
 		articleTable.getColumnModel().getColumn(COL_RATING_ID).
 		setCellEditor(new DefaultCellEditor(userRatings));
+
+		articleTable.getColumn(COL_SUBJECT).setPreferredWidth(300);
+		articleTable.getColumn(COL_APPROVE).setMaxWidth(70);
+		articleTable.getColumn(COL_APPROVE).setMinWidth(70);
+		articleTable.getColumn(COL_SCORE).setPreferredWidth(30);
+		articleTable.getColumn(COL_RATING).setPreferredWidth(30);
+
+		articleTable.setRowHeight(20);
+		articleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		articleTable.setCellSelectionEnabled(true);
 	}
 
 	/**
-	 * Retrieves the subjects, scores and user ratings of downloaded
-	 * articles.
-	 * @return an array of downloaded articles' information
-	 * including subjects, scores and ratings.
+	 * Retrieves the subjects, approved flags, scores and
+	 * user ratings of downloaded/loaded articles.
+	 * @return an array of downloaded/loaded articles' information
+	 * including subjects, approved flags, scores and ratings.
 	 */
 	private Object[][] getTableData() {
 		Object[][] table;
@@ -881,8 +905,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			table = new Object[1][NUM_COLS];
 
 			table[0][0] = "";
-			table[0][1] = "";
+			table[0][1] = false;
 			table[0][2] = "";
+			table[0][3] = "";
 
 			return table;
 		} else {
@@ -892,8 +917,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				NewsArticle article = articles.elementAt(i);
 
 				table[i][0] = article.getSubject();
-				table[i][1] = String.valueOf(article.getScore(filterType));
-				table[i][2] = article.getUserRating();
+				table[i][1] = article.isApproved();
+				table[i][2] = String.valueOf(article.getScore(filterType));
+				table[i][3] = article.getUserRating();
 			}
 
 			return table;
@@ -901,13 +927,15 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	}
 
 	/**
-	 * Changes the contents of the <b>Score</b> column in the table.
+	 * Changes the contents of the <b>Approved</b> and
+	 * <b>Score</b> columns in the table.
 	 */
 	private void updateTableData() {
 		for (int i = 0; i < articles.size(); i++) {
 			NewsArticle article = articles.get(i);
 			String score = String.valueOf(article.getScore(filterType));
 
+			data[i][COL_APPROVE_ID] = article.apporved;
 			data[i][COL_SCORE_ID] = score;
 		}
 	}
@@ -1041,6 +1069,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 */
 	public void filterArticles() {
 		filterAgent.score(articles, filterType);
+
 		articles = insertionSort(articles);
 
 		refreshTable();
@@ -1070,7 +1099,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 				if (ai.getScore(filterType) > aj.getScore(filterType)) {
 					out.remove(i);
-					out.insertElementAt(aj, j);
+					out.insertElementAt(ai, j);
 					break;
 				}
 			}
