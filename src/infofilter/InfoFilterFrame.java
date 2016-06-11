@@ -31,6 +31,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -57,6 +58,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JMenu menuEdit;
 	JMenu menuKeywords;
 	JMenu menuFilter;
+	JMenu menuExchange;
 	JMenu menuHelp;
 
 	JMenuItem resetMenuItem;
@@ -77,6 +79,13 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JCheckBoxMenuItem useFeedbackCheckBoxMenuItem;
 	ButtonGroup useButtonGroup;
 
+	JMenuItem sendArticles;
+	JMenuItem receiveArticles;
+	JMenuItem sendFeedback;
+	JMenuItem receiveFeedback;
+	JMenuItem agentsNetwork;
+	JMenuItem connections;
+
 	JMenuItem aboutMenuItem;
 
 	JSplitPane splitPane;
@@ -86,8 +95,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JTable articleTable;
 	JEditorPane articleEditorPane;
 
-	JPanel jPanel1;
+	JPanel southPanel;
 	JLabel filterAgentStatusLabel;
+	JLabel taskProgessLabel;
+	JProgressBar taskProgessBar;
 
 	String titleBarText = "Information Filtering Application";
 
@@ -190,12 +201,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuEdit = new JMenu("Edit");
 		menuKeywords = new JMenu("Keywords");
 		menuFilter = new JMenu("Filter");
+		menuExchange = new JMenu("Exchange");
 		menuHelp = new JMenu("Help");
 		menuBar = new JMenuBar();
 		menuBar.add(menuFile);
 		menuBar.add(menuEdit);
 		menuBar.add(menuKeywords);
 		menuBar.add(menuFilter);
+		menuBar.add(menuExchange);
 		menuBar.add(menuHelp);
 
 		resetMenuItem = new JMenuItem("Clear All");
@@ -338,6 +351,63 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuFilter.add(useKeywordsCheckBoxMenuItem);
 		menuFilter.add(useFeedbackCheckBoxMenuItem);
 		menuFilter.add(useClustersCheckBoxMenuItem);
+		
+		sendArticles = new JMenuItem("Send Article(s)");
+		sendArticles.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sendArticles_actionPerformed(e);
+			}
+		});
+		
+		receiveArticles = new JMenuItem("Reveive Article(s)");
+		receiveArticles.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				receiveArticles_actionPerformed(e);
+			}
+		});
+		
+		sendFeedback = new JMenuItem("Send Feedback");
+		sendFeedback.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sendFeedback_actionPerformed(e);
+			}
+		});
+		
+		receiveFeedback = new JMenuItem("Receive Feedback");
+		receiveFeedback.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				receiveFeedback_actionPerformed(e);
+			}
+		});
+		
+		agentsNetwork = new JMenuItem("Network of Agents");
+		agentsNetwork.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				agentsNetwork_actionPerformed(e);
+			}
+		});
+		
+		connections = new JMenuItem("Network Connections");
+		connections.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				connections_actionPerformed(e);
+			}
+		});
+		
+		menuExchange.add(sendArticles);
+		menuExchange.add(receiveArticles);
+		menuExchange.addSeparator();
+		menuExchange.add(sendFeedback);
+		menuExchange.add(receiveFeedback);
+		menuExchange.addSeparator();
+		menuExchange.add(agentsNetwork);
+		menuExchange.add(connections);
 
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.addActionListener(new ActionListener() {
@@ -392,15 +462,25 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 		filterAgentStatusLabel = new JLabel();
 		filterAgentStatusLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
-		jPanel1 = new JPanel(new GridLayout());
-		jPanel1.setBorder(new EmptyBorder(10, 10, 10, 10));
-		jPanel1.add(filterAgentStatusLabel);
+		taskProgessLabel = new JLabel();
+		taskProgessLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
+		taskProgessBar = new JProgressBar();
+		taskProgessBar.setStringPainted(true);
+		taskProgessBar.setForeground(Color.GREEN);
+		JPanel progressPanel = new JPanel(new GridLayout(1, 0));
+		progressPanel.add(taskProgessLabel);
+		progressPanel.add(taskProgessBar);
+		
+		southPanel = new JPanel(new GridLayout());
+		southPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		southPanel.add(filterAgentStatusLabel);
+		southPanel.add(progressPanel);
 
 		setTitle(titleBarText + " - Using Keywords");
 		setJMenuBar(menuBar);
 		setLayout(new BorderLayout());
 		add(splitPane, BorderLayout.CENTER);
-		add(jPanel1, BorderLayout.SOUTH);
+		add(southPanel, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -699,6 +779,36 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		filterType = FilterAgent.USE_CLUSTERS;
 		filterArticles();
 		this.setTitle(titleBarText + " - Using Kohonen Map Neural Network");
+	}
+
+	protected void sendArticles_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void receiveArticles_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void sendFeedback_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void receiveFeedback_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void agentsNetwork_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void connections_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
