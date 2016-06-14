@@ -463,6 +463,6 @@ public class NewsArticle {
 	 * Returns basic information about the article.
 	 */
 	public String toString() {
-		return subject;
+		return subject + " <Approved = " + apporved + ", Rating = " + userRating + ">";
 	}
 } // end class NewsArticle

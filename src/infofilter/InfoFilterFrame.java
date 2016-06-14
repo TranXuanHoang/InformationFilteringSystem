@@ -360,7 +360,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			}
 		});
 		
-		receiveArticles = new JMenuItem("Reveive Article(s)");
+		receiveArticles = new JMenuItem("Receive Article(s)");
 		receiveArticles.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -782,8 +782,16 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	}
 
 	protected void sendArticles_actionPerformed(ActionEvent e) {
+		System.out.println("Articles: " + articles);
 		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < articles.size(); i++) {
+			NewsArticle article = articles.get(i);
+			
+			if (article.apporved) {
+				System.out.println(i + ": " + article);
+			}
+		}
+		System.out.println();
 	}
 
 	protected void receiveArticles_actionPerformed(ActionEvent e) {
@@ -853,17 +861,20 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				switch (col) {
 				case COL_SUBJECT_ID:
 					break;
+
 				case COL_APPROVE_ID:
 					Boolean approved = (Boolean) value;
 					data[row][col] = approved;
 
-					if (currentArt != null) {
-						currentArt.setApproved(approved);
+					if (articles.size() > 0) {
+						articles.elementAt(row).setApproved(approved);
 					}
 
 					break;
+
 				case COL_SCORE_ID:
 					break;
+
 				case COL_RATING_ID:
 					String userRating = ((String) value).trim();
 					data[row][col] = userRating;
@@ -963,8 +974,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					int row = articleTable.rowAtPoint(e.getPoint());
+					int col = articleTable.columnAtPoint(e.getPoint());
 
-					if (articles != null && row >= 0 && row < articles.size()) {
+					if (articles != null && row >= 0 &&
+							row < articles.size() && col == COL_SUBJECT_ID) {
 						NewsArticle art = articles.get(row);
 
 						if (art.type == NewsArticle.FROM_WEB_PAGE) {

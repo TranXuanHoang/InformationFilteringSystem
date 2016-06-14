@@ -128,9 +128,9 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 										.addGap(18)
 										.addComponent(listOfKeywordsLabel)
 										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE))))
+										.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))))
 				);
-		panel.setLayout(new GridLayout(3, 1, 0, 40));
+		panel.setLayout(new GridLayout(4, 1, 0, 40));
 
 		JButton addButton = new JButton("Add");
 		addButton.setToolTipText("Add keyword");
@@ -161,6 +161,16 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 		});
 		removeButton.setFont(new Font("Calibri", Font.PLAIN, 14));
 		panel.add(removeButton);
+
+		JButton removeAllButton = new JButton("Remove All");
+		removeAllButton.setToolTipText("Remove all keywords");
+		removeAllButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				removeAllButtonActionPerformed(e);
+			}
+		});
+		removeAllButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		panel.add(removeAllButton);
 
 		keywordList = new JList<>();
 		keywordList.addMouseListener(new MouseAdapter() {
@@ -333,7 +343,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 	}
 
 	/**
-	 * Removes a keyword from when the <b>Remove</b> button is pressed.
+	 * Removes a keyword when the <b>Remove</b> button is pressed.
 	 * @param e the event generated when the <b>Remove</b> button
 	 * is pressed.
 	 */
@@ -345,6 +355,18 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 			keywordList.setListData(keywords);
 			keywordTextField.setText("");
 		}
+	}
+
+	/**
+	 * Removes all the list of keywords when the <b>Remove All</b>
+	 * button is pressed.
+	 * @param e the event generated when the <b>Remove All</b>
+	 * button is pressed.
+	 */
+	private void removeAllButtonActionPerformed(ActionEvent e) {
+		keywords.removeAllElements();
+		keywordList.setListData(keywords);
+		keywordTextField.setText("");
 	}
 
 	/**
