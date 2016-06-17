@@ -113,6 +113,8 @@ public class Server extends JPanel implements Serializable {
 	 * of incoming connections.
 	 * @param gui the GUI of the class that uses this <code>
 	 * ServerClient</code> class as the core server.
+	 * @param gui the GUI of the <code>ServerClient</code> class that uses
+	 * this class as the core server.
 	 */
 	public void runServer(int port, int maxConnections, ServerClient gui) {
 		try {
@@ -131,7 +133,7 @@ public class Server extends JPanel implements Serializable {
 		} catch (IOException ioException) {
 			if (serverSocket != null && serverSocket.isClosed()) {
 				gui.setStoppedServerGUIControls();
-				System.out.println("Server closed, not accepting connections");
+				displayMessage("\nServer closed, not accepting connections\n");
 			} else {
 				System.out.println("Error: cannot initialize server socket or accepting connection.");
 				ioException.printStackTrace();

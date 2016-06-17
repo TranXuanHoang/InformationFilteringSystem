@@ -14,7 +14,7 @@ public class ServerClientTest {
 		}
 		
 		ServerClient panel = new ServerClient();
-		JFrame app = new JFrame();
+		JFrame app = new JFrame("Server Client");
 		app.add(panel);
 		app.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		app.setSize(700, 500);

@@ -186,11 +186,13 @@ public class ServerClient extends JPanel {
 		receiveSetupPanel2.setLayout(new GridLayout(2, 1, 5, 5));
 
 		cPortTextField = new JTextField("10000");
+		cPortTextField.setToolTipText("Port number of the server you want to run");
 		receiveSetupPanel2.add(cPortTextField);
 		cPortTextField.setFont(new Font("Calibri", Font.PLAIN, 14));
 		cPortTextField.setColumns(12);
 
 		cMaxConnectionsTextField = new JTextField("10");
+		cMaxConnectionsTextField.setToolTipText("Max number of connections that the server you want to run can respond");
 		receiveSetupPanel2.add(cMaxConnectionsTextField);
 		cMaxConnectionsTextField.setFont(new Font("Calibri", Font.PLAIN, 14));
 		cMaxConnectionsTextField.setColumns(10);
@@ -201,6 +203,7 @@ public class ServerClient extends JPanel {
 		receiveSetUpPanel3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		cRunServerButton = new JButton("Run Server");
+		cRunServerButton.setToolTipText("Run server whose port number max connections are as above");
 		cRunServerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				runServer(e);
@@ -214,12 +217,14 @@ public class ServerClient extends JPanel {
 		receiveSetUpPanel3.add(cConnectStatus);
 
 		cStopServerButton = new JButton("Stop Server");
+		cStopServerButton.setToolTipText("Stop running server");
 		cStopServerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				stopServer(e);
 			}
 		});
 		cStopServerButton.setFont(new Font("Calibri", Font.PLAIN, 14));
+		cStopServerButton.setEnabled(false);
 		receiveSetUpPanel3.add(cStopServerButton);
 
 		server = new Server();
@@ -234,47 +239,17 @@ public class ServerClient extends JPanel {
 			@Override
 			public void run() {
 				if (client.isClosed()) {
-					try {
-						client.connectToServer(serverIP, serverPort);
-
-						if (!client.isClosed()) {
-							sIPTextField.setEditable(false);
-							sPortTextField.setEditable(false);
-							sConnectButton.setEnabled(false);
-							sConnectStatus.setIcon(connectedIcon);
-							sDisconnectButton.setEnabled(true);
-						}
-
-						client.runClient();
-					} catch (IOException e) {
-						sIPTextField.setEditable(true);
-						sPortTextField.setEditable(true);
-						sConnectButton.setEnabled(true);
-						sConnectStatus.setIcon(disconnectedIcon);
-						sDisconnectButton.setEnabled(false);
-					}
+					client.runClient(serverIP, serverPort, ServerClient.this);
 				}
 			}
 		}.start();
-
-		if (!client.isClosed()) {
-			sIPTextField.setEditable(false);
-			sPortTextField.setEditable(false);
-			sConnectButton.setEnabled(false);
-			sConnectStatus.setIcon(connectedIcon);
-			sDisconnectButton.setEnabled(true);
-		}
 	}
 
 	protected void disconnectClientToServer(ActionEvent e) {
 		if (client != null && !client.isClosed()) {
 			client.closeConnection();
 
-			sIPTextField.setEditable(true);
-			sPortTextField.setEditable(true);
-			sConnectButton.setEnabled(true);
-			sConnectStatus.setIcon(disconnectedIcon);
-			sDisconnectButton.setEnabled(false);
+			setDisconnectingClientGUIControls();
 		}
 	}
 
@@ -299,6 +274,22 @@ public class ServerClient extends JPanel {
 			System.out.println("Error: cannot stop server");
 			e1.printStackTrace();
 		}
+	}
+
+	protected void setConnectedClientGUIControls() {
+		sIPTextField.setEditable(false);
+		sPortTextField.setEditable(false);
+		sConnectButton.setEnabled(false);
+		sConnectStatus.setIcon(connectedIcon);
+		sDisconnectButton.setEnabled(true);
+	}
+
+	protected void setDisconnectingClientGUIControls() {
+		sIPTextField.setEditable(true);
+		sPortTextField.setEditable(true);
+		sConnectButton.setEnabled(true);
+		sConnectStatus.setIcon(disconnectedIcon);
+		sDisconnectButton.setEnabled(false);
 	}
 
 	protected void setRunningServerGUIControls() {

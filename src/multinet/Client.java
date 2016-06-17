@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -105,7 +106,7 @@ public class Client extends JPanel implements Serializable {
 					", " + serverPort + ">");
 		}
 	}
-	
+
 	/**
 	 * Processes messages with server.
 	 * @throws IOException if any I/O error occurs when exchanging
@@ -147,9 +148,43 @@ public class Client extends JPanel implements Serializable {
 		}
 	} // end method runClient
 
+	/**
+	 * Connects to server and processes messages from server.
+	 * @param serverIP the IP address of server to which client will connect.
+	 * @param serverPort the port of server to which client will connect.
+	 * @param gui the GUI of <code>ServerClient</code> class that uses
+	 * this class as the core client.
+	 */
+	public void runClient(String serverIP, int serverPort, ServerClient gui) {
+		try	{
+			this.serverIP = serverIP;
+			this.serverPort = serverPort;
+
+			connectToServer(); // create a Socket to make connection
+
+			// set up GUI controls
+			gui.setConnectedClientGUIControls();
+
+			getStreams(); // get the input and output streams
+			processConnection(); // process connection
+		} catch (EOFException e) {
+			closeConnection(); // close connection
+			gui.setDisconnectingClientGUIControls();
+			displayMessage("\nClient terminated connection because server stopped running");
+		} catch (ConnectException e) {
+			displayMessage("\nServer to which you want to connect is not running");
+		} catch(SocketException e) {
+			closeConnection();
+			gui.setDisconnectingClientGUIControls();
+			displayMessage("\nClient disconnected from server");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	} // end method runClient
+
 	/** Connects to server. */
 	private void connectToServer() throws IOException {
-		displayMessage("Attempting connection\n");
+		displayMessage("\nAttempting connection");
 
 		// create Socket to make connection to server
 		socket = new Socket(InetAddress.getByName(serverIP), serverPort);
@@ -193,7 +228,6 @@ public class Client extends JPanel implements Serializable {
 
 	/** Closes streams and socket. */
 	protected void closeConnection() {
-		displayMessage("\nClosing connection\n");
 		setTextFieldEditable(false); // disable enterField
 
 		try {
