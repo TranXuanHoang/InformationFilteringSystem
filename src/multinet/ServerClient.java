@@ -21,6 +21,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
+/**
+ * The <code>ServerClient</code> class provide basic method for
+ * exchanging information between server-client application.
+ * 
+ * @author Tran Xuan Hoang
+ */
 public class ServerClient extends JPanel {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
