@@ -3,7 +3,7 @@ package agent;
 import java.io.Serializable;
 
 /**
- * The <code>CIAgentState</code> class defines states of an agent:
+ * The <code>AgentState</code> class defines states of an agent:
  * <ul>
  * <li><code>UNINITIATED</code>
  * <li><code>INITIATED</code>
@@ -68,4 +68,4 @@ public class AgentState implements Serializable {
 			return "Unknown";	
 		}
 	}
-} // end class CIAgentState
+} // end class AgentState

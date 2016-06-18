@@ -3,7 +3,7 @@ package agent;
 import java.util.EventObject;
 
 /**
- * The <code>CIAgentEvent</code> class defines common events that
+ * The <code>AgentEvent</code> class defines common events that
  * are sent by intelligent agents.
  * 
  * @author Tran Xuan Hoang
@@ -16,7 +16,7 @@ public class AgentEvent extends EventObject {
 	private String action;
 
 	/**
-	 * Creates a simple <code>CIAgentEvent</code> object.
+	 * Creates a simple <code>AgentEvent</code> object.
 	 * @param source the reference to the object sending the event
 	 * (the source of this event).
 	 */
@@ -25,7 +25,7 @@ public class AgentEvent extends EventObject {
 	}
 
 	/**
-	 * Creates a more complex <code>CIAgentEvent</code> object.
+	 * Creates a more complex <code>AgentEvent</code> object.
 	 * @param source the reference to the object sending the event
 	 * (the source of this event).
 	 * @param argObject supplies additional data about this event.
@@ -36,7 +36,7 @@ public class AgentEvent extends EventObject {
 	}
 
 	/**
-	 * Creates a <code>CIAgentEvent</code> object that includes
+	 * Creates a <code>AgentEvent</code> object that includes
 	 * <i>data</i> and <i>action</i> of the event.
 	 * @param source the reference to the object sending the event
 	 * (the source of this event).
@@ -74,11 +74,11 @@ public class AgentEvent extends EventObject {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 
-		buf.append("CIAgent ");
+		buf.append("Agent ");
 		buf.append("source: " + source);
 		buf.append("action: " + action);
 		buf.append("argObject: " + argObject);
 
 		return buf.toString();
 	}
-} // end class CIAgentEvent
+} // end class AgentEvent

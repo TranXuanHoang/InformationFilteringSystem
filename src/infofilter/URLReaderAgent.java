@@ -94,7 +94,7 @@ public class URLReaderAgent extends Agent {
 	 * <code>URLReaderAgent</code>.
 	 */
 	@Override
-	public void processCIAgentEvent(AgentEvent event) {
+	public void processAgentEvent(AgentEvent event) {
 		Object source = event.getSource();
 		Object arg = event.getArgObject();
 		Object action = event.getAction();
@@ -134,7 +134,7 @@ public class URLReaderAgent extends Agent {
 				+ "download article to listeners.");
 		AgentEvent event =
 				new AgentEvent(this, "addArticle", article);
-		notifyCIAgentEventListeners(event);
+		notifyAgentEventListeners(event);
 	}
 
 	/**

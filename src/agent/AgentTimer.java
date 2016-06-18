@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * The <code>CIAgentTimer</code> class provides two basic functions
- * to <code>CIAgent</code>s:
+ * The <code>AgentTimer</code> class provides two basic functions
+ * to <code>Agent</code>s:
  * <ul>
  * <li>The <i>autonomous behaviors</i> which the agent's
  * {@link Agent#processTimerPop()} method gets called every
@@ -182,4 +182,4 @@ public class AgentTimer implements Runnable, Serializable {
 		// restore the rest of the object
 		inputStream.defaultReadObject();
 	}
-} // end class CIAgentTimer
+} // end class AgentTimer

@@ -8,7 +8,7 @@ import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
 /**
- * The <code>CIAgentBeanInfo</code> class defines the information
+ * The <code>AgentBeanInfo</code> class defines the information
  * available for an agent bean.
  * 
  * @author Tran Xuan Hoang
@@ -21,7 +21,7 @@ public class AgentBeanInfo extends SimpleBeanInfo {
 	String iconMono32x32Filename;
 
 	/**
-	 * Creates a <code>CIAgentBeanInfo</code> object.
+	 * Creates a <code>AgentBeanInfo</code> object.
 	 * This no-argument constructor is used within
 	 * editing and activation frameworks of JavaBeans.
 	 */
@@ -89,4 +89,4 @@ public class AgentBeanInfo extends SimpleBeanInfo {
 			return null;
 		}
 	}
-} // end class CIAgentBeanInfo
+} // end class AgentBeanInfo

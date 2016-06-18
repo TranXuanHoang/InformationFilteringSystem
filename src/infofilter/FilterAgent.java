@@ -288,8 +288,8 @@ public class FilterAgent extends Agent {
 	 * @param e the agent event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(AgentEvent e) {
-		trace(name + ": CIAgentEvent received by " + name +
+	public void processAgentEvent(AgentEvent e) {
+		trace(name + ": AgentEvent received by " + name +
 				" from " + e.getSource() +
 				" with argument " + e.getArgObject());
 
@@ -605,7 +605,7 @@ public class FilterAgent extends Agent {
 		AgentEvent event = new AgentEvent(this, "status", msg);
 
 		// sent the event to all registered listeners
-		notifyCIAgentEventListeners(event);
+		notifyAgentEventListeners(event);
 	}
 
 	/**
@@ -618,7 +618,7 @@ public class FilterAgent extends Agent {
 		AgentEvent event = new AgentEvent(this, "displayMSG", msg);
 
 		// sent the event to all registered listeners
-		notifyCIAgentEventListeners(event);
+		notifyAgentEventListeners(event);
 	}
 
 	/**
@@ -631,7 +631,7 @@ public class FilterAgent extends Agent {
 		AgentEvent event = new AgentEvent(this, "displayERR", err);
 
 		// sent the event to all registered listeners
-		notifyCIAgentEventListeners(event);
+		notifyAgentEventListeners(event);
 	}
 
 	/**

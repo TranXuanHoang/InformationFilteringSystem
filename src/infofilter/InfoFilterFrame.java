@@ -186,12 +186,12 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		}
 
 		filterAgent.infoFilter = this;
-		filterAgent.addCIAgentEventListener(this); // for trace msgs
+		filterAgent.addAgentEventListener(this); // for trace msgs
 		filterAgent.initialize();
 		filterAgent.startAgentProcessing(); // start filter agent thread
 
 		urlReaderAgent = new URLReaderAgent();
-		urlReaderAgent.addCIAgentEventListener(this);
+		urlReaderAgent.addAgentEventListener(this);
 		urlReaderAgent.initialize();
 		urlReaderAgent.startAgentProcessing(); // start it running
 
@@ -1139,7 +1139,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	 * @param e the event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(AgentEvent e) {
+	public void processAgentEvent(AgentEvent e) {
 		//Object source = e.getSource();
 		Object arg = e.getArgObject();
 		Object action = e.getAction();
@@ -1166,14 +1166,14 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	}
 
 	/**
-	 * Just calls the {@link #processCIAgentEvent(AgentEvent)}
+	 * Just calls the {@link #processAgentEvent(AgentEvent)}
 	 * method because the <code>InforFilterFrame</code> does not
 	 * process asynchronous events.
 	 * @param e the event to be processed.
 	 */
 	@Override
-	public void postCIAgentEvent(AgentEvent e) {
-		processCIAgentEvent(e);
+	public void postAgentEvent(AgentEvent e) {
+		processAgentEvent(e);
 	}
 
 	/**

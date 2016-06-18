@@ -10,8 +10,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
 /**
- * The <code>CIAgentPanel</code> class is a part of the GUI for
- * applications using <code>CIAgent</code> class.
+ * The <code>AgentPanel</code> class is a part of the GUI for
+ * applications using <code>Agent</code> class.
  * 
  * @author Tran Xuan Hoang
  */
@@ -114,4 +114,4 @@ public class AgentPanel extends JPanel {
 		asyncTimeTextField.setText(String.valueOf(agent.getAsyncTime()));
 		currentStateLabel.setText(agent.getState().toString());
 	}
-} // end class CIAgentPanel
+} // end class AgentPanel

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Vector;
 
 /**
- * The <code>CIAgentEventQueue</code> class implements a queue of
+ * The <code>AgentEventQueue</code> class implements a queue of
  * intelligent agent events.
  * 
  * @author Tran Xuan Hoang
@@ -58,4 +58,4 @@ public class AgentEventQueue implements Serializable {
 			return eventQueue.elementAt(0);
 		}
 	}
-} // end class CIAgentEventQueue
+} // end class AgentEventQueue

@@ -117,7 +117,7 @@ implements Customizer, AgentEventListener {
 				}
 
 				AgentEvent event = new AgentEvent(this, "getURLText", null);
-				agent.postCIAgentEvent(event); // ask agent to get url
+				agent.postAgentEvent(event); // ask agent to get url
 
 				dispose();
 			}
@@ -141,7 +141,7 @@ implements Customizer, AgentEventListener {
 	 * @param event the event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(AgentEvent event) {
+	public void processAgentEvent(AgentEvent event) {
 		Object source = event.getSource();
 		Object arg = event.getArgObject();
 		Object action = event.getAction();
@@ -164,8 +164,8 @@ implements Customizer, AgentEventListener {
 	 * event queue.
 	 */
 	@Override
-	public void postCIAgentEvent(AgentEvent event) {
-		processCIAgentEvent(event);
+	public void postAgentEvent(AgentEvent event) {
+		processAgentEvent(event);
 	}
 
 	/**
@@ -175,6 +175,6 @@ implements Customizer, AgentEventListener {
 	@Override
 	public void setObject(Object obj) {
 		agent = (URLReaderAgent) obj;
-		agent.addCIAgentEventListener(this);
+		agent.addAgentEventListener(this);
 	}
 } // end class URLReaderAgentCustomizer

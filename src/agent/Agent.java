@@ -11,6 +11,12 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Vector;
 
+/**
+ * The <code>Agent</code> class defines basic function for an intelligent
+ * agent.
+ * 
+ * @author Tran Xuan Hoang
+ */
 public abstract class Agent implements AgentEventListener, Serializable {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
@@ -131,7 +137,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 		AgentEvent event = null;
 
 		while ((event = eventQueue.getNextEvent()) != null) {
-			processCIAgentEvent(event);
+			processAgentEvent(event);
 		}
 	}
 
@@ -140,7 +146,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 	 * @param event the event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(AgentEvent event) {
+	public void processAgentEvent(AgentEvent event) {
 		// currently this method is leaved as doing nothing
 	}
 
@@ -149,7 +155,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 	 * @param event the event to be added.
 	 */
 	@Override
-	public void postCIAgentEvent(AgentEvent event) {
+	public void postAgentEvent(AgentEvent event) {
 		eventQueue.addEvent(event);
 	}
 
@@ -157,7 +163,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 	 * Adds a listener for events received by the agent.
 	 * @param listener the listener to be added.
 	 */
-	public synchronized void addCIAgentEventListener(
+	public synchronized void addAgentEventListener(
 			AgentEventListener listener) {
 		listeners.addElement(listener);
 	}
@@ -166,7 +172,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 	 * Removes a listener for events received by the agent.
 	 * @param listener the listener to be removed.
 	 */
-	public synchronized void removeCIAgentEventListener(
+	public synchronized void removeAgentEventListener(
 			AgentEventListener listener) {
 		listeners.removeElement(listener);
 	}
@@ -175,7 +181,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 	 * Delivers the event received to all register listeners.
 	 * @param e the event to be sent to all listeners.
 	 */
-	protected void notifyCIAgentEventListeners(AgentEvent e) {
+	protected void notifyAgentEventListeners(AgentEvent e) {
 		Vector<AgentEventListener> l;
 
 		synchronized (this) {
@@ -184,7 +190,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 
 		for (int i = 0; i < l.size(); i++) {
 			// deliver the event
-			l.elementAt(i).processCIAgentEvent(e);
+			l.elementAt(i).processAgentEvent(e);
 		}
 	}
 
@@ -215,7 +221,7 @@ public abstract class Agent implements AgentEventListener, Serializable {
 		AgentEvent event = new AgentEvent(this, "trace", msg);
 
 		// send it to any registered listeners
-		notifyCIAgentEventListeners(event);
+		notifyAgentEventListeners(event);
 	}
 
 	/**
@@ -484,4 +490,4 @@ public abstract class Agent implements AgentEventListener, Serializable {
 		// restore the remaining variables
 		inputStream.defaultReadObject();
 	}
-} // end class CIAgent
+} // end class Agent
