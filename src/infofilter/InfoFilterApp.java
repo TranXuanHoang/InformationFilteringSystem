@@ -2,7 +2,11 @@ package infofilter;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 /**
@@ -26,6 +30,19 @@ public class InfoFilterApp {
 	 */
 	public InfoFilterApp() {
 		InfoFilterFrame frame = new InfoFilterFrame();
+
+		// prevent closing when user clicks close button of the frame
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				frame.setExtendedState(JFrame.ICONIFIED);
+			}
+		});
+
+		// set icon for the application
+		ImageIcon icon = new ImageIcon(
+				getClass().getResource("icons/AppIcon.png"));
+		frame.setIconImage(icon.getImage());
 
 		// pack frames that have useful preferred size information
 		// from their layout or validate frames that have preset

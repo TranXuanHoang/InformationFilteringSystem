@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 import java.beans.Customizer;
 import java.util.Vector;
 
@@ -390,6 +389,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		});
 		
 		agentsNetwork = new JMenuItem("Network of Agents");
+		agentsNetwork.setIcon(getIcon("icons/Exchange_NetworkOfAgents.png"));
 		agentsNetwork.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -398,6 +398,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		});
 		
 		sendArticles = new JMenuItem("Send Article(s)");
+		sendArticles.setIcon(getIcon("icons/Exchange_SendArticles.png"));
 		sendArticles.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1290,22 +1291,6 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		// articleEditorPane.setText(articleEditorPane.getText() + msg + "\n");
 	}
 
-	/**
-	 * Processes window events and is overridden to exit when
-	 * window closes.
-	 * @param e the WindowEvent to be processed.
-	 */
-	@Override
-	protected void processWindowEvent(WindowEvent e) {
-		super.processWindowEvent(e);
-
-		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-			System.exit(0);
-		} else if (e.getID() == WindowEvent.WINDOW_ACTIVATED) {
-			e.getWindow().repaint();
-		}
-	}
-	
 	/**
 	 * Extract icon for menu items in menu bar.
 	 * @param fileName the name of the icon image file.
