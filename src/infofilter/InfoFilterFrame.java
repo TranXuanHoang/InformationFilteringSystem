@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
@@ -36,6 +37,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -46,10 +48,11 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import ciagent.CIAgentEvent;
-import ciagent.CIAgentEventListener;
+import agent.AgentEvent;
+import agent.AgentEventListener;
+import multinet.ServerClient;
 
-public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
+public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
@@ -79,12 +82,12 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	JCheckBoxMenuItem useFeedbackCheckBoxMenuItem;
 	ButtonGroup useButtonGroup;
 
+	JMenuItem connections;
+	JMenuItem agentsNetwork;
 	JMenuItem sendArticles;
 	JMenuItem receiveArticles;
 	JMenuItem sendFeedback;
 	JMenuItem receiveFeedback;
-	JMenuItem agentsNetwork;
-	JMenuItem connections;
 
 	JMenuItem aboutMenuItem;
 
@@ -117,7 +120,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected Object[][] data;
 
 	/** List of downloaded articles. */
-	protected Vector<NewsArticle> articles;
+	protected Vector<Article> articles;
 
 	/** The agent that filters articles. */
 	protected FilterAgent filterAgent;
@@ -126,7 +129,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	protected URLReaderAgent urlReaderAgent;
 
 	/** Currently selected article. */
-	NewsArticle currentArt;
+	Article currentArt;
 	boolean scored = false; // true if articles were scored
 
 	/**
@@ -138,6 +141,10 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * </ul>
 	 */
 	int filterType = 0;
+	
+	/** Contains methods for exchanging information with other
+	 * agents over the Internet. */
+	protected ServerClient network;
 
 	/**
 	 * Constructs a frame for the information filtering agent.
@@ -187,6 +194,18 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		urlReaderAgent.addCIAgentEventListener(this);
 		urlReaderAgent.initialize();
 		urlReaderAgent.startAgentProcessing(); // start it running
+
+		// initialize network connections
+		try {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					network = new ServerClient();
+				}
+			});
+		} catch (Exception e) {
+			System.out.println("Error while creating ServerClient object");
+		}
 	}
 
 	/**
@@ -212,6 +231,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuBar.add(menuHelp);
 
 		resetMenuItem = new JMenuItem("Clear All");
+		resetMenuItem.setIcon(getIcon("icons/File_ClearAll.png"));
 		resetMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -220,6 +240,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		downloadArticleMenuItem = new JMenuItem("Dowload Article...");
+		downloadArticleMenuItem.setIcon(getIcon("icons/File_DownloadArticle.png"));
 		downloadArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -228,6 +249,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		loadArticleMenuItem = new JMenuItem("Load Article...");
+		loadArticleMenuItem.setIcon(getIcon("icons/File_LoadArticle.png"));
 		loadArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -236,6 +258,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		saveArticleMenuItem = new JMenuItem("Save Article...");
+		saveArticleMenuItem.setIcon(getIcon("icons/File_SaveArticle.png"));
 		saveArticleMenuItem.setEnabled(false);
 		saveArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -245,6 +268,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		exitMenuItem = new JMenuItem("Exit");
+		exitMenuItem.setIcon(getIcon("icons/File_Exit.png"));
 		exitMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -261,6 +285,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuFile.add(exitMenuItem);
 
 		deleteMenuItem = new JMenuItem("Delete");
+		deleteMenuItem.setIcon(getIcon("icons/Edit_Delete.png"));
 		deleteMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -271,6 +296,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuEdit.add(deleteMenuItem);
 
 		keywordsMenuItem = new JMenuItem("Customize...");
+		keywordsMenuItem.setIcon(getIcon("icons/Keywords_Customize.png"));
 		keywordsMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -279,6 +305,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		addArticleMenuItem = new JMenuItem("Add Article");
+		addArticleMenuItem.setIcon(getIcon("icons/Keywords_AddArticle.png"));
 		addArticleMenuItem.setEnabled(true);
 		addArticleMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -288,6 +315,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		});
 
 		addAllMenuItem = new JMenuItem("Add All Articles");
+		addAllMenuItem.setIcon(getIcon("icons/Keywords_AddAllArticles.png"));
 		addAllMenuItem.setEnabled(true);
 		addAllMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -352,6 +380,23 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		menuFilter.add(useFeedbackCheckBoxMenuItem);
 		menuFilter.add(useClustersCheckBoxMenuItem);
 		
+		connections = new JMenuItem("Network Connections");
+		connections.setIcon(getIcon("icons/Exchange_NetworkConnections.png"));
+		connections.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				connections_actionPerformed(e);
+			}
+		});
+		
+		agentsNetwork = new JMenuItem("Network of Agents");
+		agentsNetwork.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				agentsNetwork_actionPerformed(e);
+			}
+		});
+		
 		sendArticles = new JMenuItem("Send Article(s)");
 		sendArticles.addActionListener(new ActionListener() {
 			@Override
@@ -383,33 +428,18 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				receiveFeedback_actionPerformed(e);
 			}
 		});
-		
-		agentsNetwork = new JMenuItem("Network of Agents");
-		agentsNetwork.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				agentsNetwork_actionPerformed(e);
-			}
-		});
-		
-		connections = new JMenuItem("Network Connections");
-		connections.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				connections_actionPerformed(e);
-			}
-		});
-		
+
+		menuExchange.add(connections);
+		menuExchange.add(agentsNetwork);
+		menuExchange.addSeparator();
 		menuExchange.add(sendArticles);
 		menuExchange.add(receiveArticles);
 		menuExchange.addSeparator();
 		menuExchange.add(sendFeedback);
 		menuExchange.add(receiveFeedback);
-		menuExchange.addSeparator();
-		menuExchange.add(agentsNetwork);
-		menuExchange.add(connections);
 
 		aboutMenuItem = new JMenuItem("About");
+		aboutMenuItem.setIcon(getIcon("icons/Help_About.png"));
 		aboutMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -559,40 +589,40 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		String filePath = directory + fileName;
 
 		if (fileName != null) {
-			int type = NewsArticle.typeOfFile(fileName);
-			NewsArticle article = new NewsArticle(filePath, type);
+			int type = Article.typeOfFile(fileName);
+			Article article = new Article(filePath, type);
 
 			switch (type) {
-			case NewsArticle.FROM_TEXT_FILE:
-				String text = NewsArticle.readArticle(filePath);
+			case Article.FROM_TEXT_FILE:
+				String text = Article.readArticle(filePath);
 				article.setBody(text);
 				article.setSubject(fileName, type);
 				articleEditorPane.setContentType("text/plain");
 				break;
 
-			case NewsArticle.FROM_PDF_FILE:
+			case Article.FROM_PDF_FILE:
 				String pdf = Utilities.getContentsOfPDFFile(filePath);
 				article.setBody(pdf);
 				article.setSubject(fileName, type);
 				articleEditorPane.setContentType("text/plain");
 				break;
 
-			case NewsArticle.FROM_MS_WORD_FILE:
+			case Article.FROM_MS_WORD_FILE:
 				String msword = Utilities.getContentsOfWordFile(filePath);
 				article.setBody(msword);
 				article.setSubject(fileName, type);
 				articleEditorPane.setContentType("text/plain");
 				break;
 
-			case NewsArticle.FROM_PPTX_FILE:
+			case Article.FROM_PPTX_FILE:
 				String pptx = Utilities.getContentsOfPPTXFile(filePath);
 				article.setBody(pptx);
 				article.setSubject(fileName, type);
 				articleEditorPane.setContentType("text/plain");
 				break;
 
-			case NewsArticle.FROM_HTML_FILE:
-				String html = NewsArticle.readArticle(filePath);
+			case Article.FROM_HTML_FILE:
+				String html = Article.readArticle(filePath);
 				article.setBody(html);
 				article.setSubject(fileName, type);
 				articleEditorPane.setContentType("text/html");
@@ -630,7 +660,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			int index = articleTable.getSelectedRow();
 
 			if (index != -1) {
-				NewsArticle article = articles.elementAt(index);
+				Article article = articles.elementAt(index);
 				article.writeArticle(fileName, directory);
 			}
 		}
@@ -785,13 +815,42 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		System.out.println("Articles: " + articles);
 		// TODO Auto-generated method stub
 		for (int i = 0; i < articles.size(); i++) {
-			NewsArticle article = articles.get(i);
+			Article article = articles.get(i);
 			
 			if (article.apporved) {
 				System.out.println(i + ": " + article);
 			}
 		}
 		System.out.println();
+	}
+
+	/**
+	 * Customize network connections between agent over Internet.
+	 * @param e the event generated when the <b>Network Connections</b>
+	 * menu item is selected.
+	 */
+	protected void connections_actionPerformed(ActionEvent e) {
+		JFrame frame = new JFrame("Agent Connections");
+		frame.setSize(650, 400);
+		frame.setIconImage(getIcon("icons/Exchange_NetworkConnections.png").getImage());
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.add(network);
+
+		// center the dialog
+		Dimension frameSize = frame.getSize();
+		Dimension appSize = this.getSize();
+		Point appLocation = this.getLocationOnScreen();
+
+		frame.setLocation(
+				appLocation.x + (appSize.width - frameSize.width) / 2,
+				appLocation.y + (appSize.height - frameSize.height) / 2);
+
+		frame.setVisible(true);
+	}
+
+	protected void agentsNetwork_actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	protected void receiveArticles_actionPerformed(ActionEvent e) {
@@ -805,16 +864,6 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	}
 
 	protected void receiveFeedback_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void agentsNetwork_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void connections_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -944,14 +993,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 					if (articles.size() > 0) {
 						currentArt = articles.get(selectedRow);
 
-						if (currentArt.getType() == NewsArticle.FROM_WEB_PAGE) {
+						if (currentArt.getType() == Article.FROM_WEB_PAGE) {
 							articleEditorPane.setContentType("text/html");
 							try {
 								articleEditorPane.setPage(currentArt.getID());
 							} catch (Exception exception) {
 								articleEditorPane.setText(currentArt.getBody());
 							}
-						} else if (currentArt.getType() == NewsArticle.FROM_HTML_FILE) {
+						} else if (currentArt.getType() == Article.FROM_HTML_FILE) {
 							articleEditorPane.setContentType("text/html");
 							articleEditorPane.setText(currentArt.getBody());
 						} else {
@@ -978,9 +1027,9 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 
 					if (articles != null && row >= 0 &&
 							row < articles.size() && col == COL_SUBJECT_ID) {
-						NewsArticle art = articles.get(row);
+						Article art = articles.get(row);
 
-						if (art.type == NewsArticle.FROM_WEB_PAGE) {
+						if (art.type == Article.FROM_WEB_PAGE) {
 							Utilities.openWebPageUsingSystemBrowser(art.getID());
 						} else {
 							Utilities.viewFileUsingSystemApp(art.getID());
@@ -1037,7 +1086,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 			table = new Object[articles.size()][NUM_COLS];
 
 			for (int i = 0; i < articles.size(); i++) {
-				NewsArticle article = articles.elementAt(i);
+				Article article = articles.elementAt(i);
 
 				table[i][0] = article.getSubject();
 				table[i][1] = article.isApproved();
@@ -1055,7 +1104,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 */
 	private void updateTableData() {
 		for (int i = 0; i < articles.size(); i++) {
-			NewsArticle article = articles.get(i);
+			Article article = articles.get(i);
 			String score = String.valueOf(article.getScore(filterType));
 
 			data[i][COL_APPROVE_ID] = article.apporved;
@@ -1090,7 +1139,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @param e the event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(CIAgentEvent e) {
+	public void processCIAgentEvent(AgentEvent e) {
 		//Object source = e.getSource();
 		Object arg = e.getArgObject();
 		Object action = e.getAction();
@@ -1102,7 +1151,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 				}
 			} else if (action.equals("addArticle")) {
 				// score the article sent by another agent
-				addArticle((NewsArticle) arg);
+				addArticle((Article) arg);
 			} else if (action.equals("status")) {
 				filterAgentStatusLabel.setForeground(Color.BLACK);
 				filterAgentStatusLabel.setText((String) arg);
@@ -1117,13 +1166,13 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	}
 
 	/**
-	 * Just calls the {@link #processCIAgentEvent(CIAgentEvent)}
+	 * Just calls the {@link #processCIAgentEvent(AgentEvent)}
 	 * method because the <code>InforFilterFrame</code> does not
 	 * process asynchronous events.
 	 * @param e the event to be processed.
 	 */
 	@Override
-	public void postCIAgentEvent(CIAgentEvent e) {
+	public void postCIAgentEvent(AgentEvent e) {
 		processCIAgentEvent(e);
 	}
 
@@ -1149,7 +1198,7 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * @param art the article downloaded from the Internet which
 	 * will be scored and added to the table.
 	 */
-	protected void addArticle(NewsArticle art) {
+	protected void addArticle(Article art) {
 		// add the article to the vector of all
 		// downloaded and loaded articles
 		articles.addElement(art);
@@ -1161,14 +1210,14 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		refreshTable();
 
 		// display article in editor pane, set cursor at beginning
-		if (art.getType() == NewsArticle.FROM_WEB_PAGE) {
+		if (art.getType() == Article.FROM_WEB_PAGE) {
 			articleEditorPane.setContentType("text/html");
 			try {
 				articleEditorPane.setPage(art.getID());
 			} catch (Exception exception) {
 				articleEditorPane.setText(art.getBody());
 			}
-		} else if (art.getType() == NewsArticle.FROM_HTML_FILE) {
+		} else if (art.getType() == Article.FROM_HTML_FILE) {
 			articleEditorPane.setContentType("text/html");
 			articleEditorPane.setText(art.getBody());
 		} else {
@@ -1210,15 +1259,15 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 	 * preserved after the invocation of this method.
 	 * @return a vector of articles sorted in descending order.
 	 */
-	Vector<NewsArticle> insertionSort(Vector<NewsArticle> articles) {
+	Vector<Article> insertionSort(Vector<Article> articles) {
 		int size = articles.size();
-		Vector<NewsArticle> out = new Vector<>(articles);
+		Vector<Article> out = new Vector<>(articles);
 
 		for (int i = 1; i < size; i++) {
-			NewsArticle ai = out.get(i);
+			Article ai = out.get(i);
 
 			for (int j = 0; j <= i - 1; j++) {
-				NewsArticle aj = out.get(j);
+				Article aj = out.get(j);
 
 				if (ai.getScore(filterType) > aj.getScore(filterType)) {
 					out.remove(i);
@@ -1255,5 +1304,18 @@ public class InfoFilterFrame extends JFrame implements CIAgentEventListener {
 		} else if (e.getID() == WindowEvent.WINDOW_ACTIVATED) {
 			e.getWindow().repaint();
 		}
+	}
+	
+	/**
+	 * Extract icon for menu items in menu bar.
+	 * @param fileName the name of the icon image file.
+	 * @return <code>ImageIcon</code> for the image file.
+	 */
+	private ImageIcon getIcon(String fileName) {
+		ImageIcon icon = new ImageIcon(
+				getClass().getResource(fileName));
+		icon = ServerClient.resizeIcon(icon, 16, 16);
+		
+		return icon;
 	}
 } // end class InfoFilterFrame

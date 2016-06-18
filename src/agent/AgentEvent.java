@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.util.EventObject;
 
@@ -8,7 +8,7 @@ import java.util.EventObject;
  * 
  * @author Tran Xuan Hoang
  */
-public class CIAgentEvent extends EventObject {
+public class AgentEvent extends EventObject {
 	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
@@ -20,7 +20,7 @@ public class CIAgentEvent extends EventObject {
 	 * @param source the reference to the object sending the event
 	 * (the source of this event).
 	 */
-	public CIAgentEvent(Object source) {
+	public AgentEvent(Object source) {
 		super(source);
 	}
 
@@ -30,7 +30,7 @@ public class CIAgentEvent extends EventObject {
 	 * (the source of this event).
 	 * @param argObject supplies additional data about this event.
 	 */
-	public CIAgentEvent(Object source, Object argObject) {
+	public AgentEvent(Object source, Object argObject) {
 		this(source);
 		this.argObject = argObject;
 	}
@@ -44,7 +44,7 @@ public class CIAgentEvent extends EventObject {
 	 * i.e. the method name could be specified as the <code>action</code>.
 	 * @param argObject supplies additional data about this event.
 	 */
-	public CIAgentEvent(Object source, String action, Object argObject) {
+	public AgentEvent(Object source, String action, Object argObject) {
 		this(source, argObject);
 		this.action = action;
 	}

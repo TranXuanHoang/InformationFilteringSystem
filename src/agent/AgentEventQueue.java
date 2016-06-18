@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.io.Serializable;
 import java.util.Vector;
@@ -9,17 +9,17 @@ import java.util.Vector;
  * 
  * @author Tran Xuan Hoang
  */
-public class CIAgentEventQueue implements Serializable {
+public class AgentEventQueue implements Serializable {
 	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
 	/** Queue of agent events. */
-	private Vector<CIAgentEvent> eventQueue;
+	private Vector<AgentEvent> eventQueue;
 
 	/**
 	 * Creates an empty queue of events.
 	 */
-	public CIAgentEventQueue() {
+	public AgentEventQueue() {
 		eventQueue = new Vector<>();
 	}
 
@@ -27,7 +27,7 @@ public class CIAgentEventQueue implements Serializable {
 	 * Adds an event to the end of the queue.
 	 * @param event the event to be added to the queue.
 	 */
-	public synchronized void addEvent(CIAgentEvent event) {
+	public synchronized void addEvent(AgentEvent event) {
 		eventQueue.addElement(event);
 	}
 
@@ -37,7 +37,7 @@ public class CIAgentEventQueue implements Serializable {
 	 * @return the first event on the queue. If there are not any
 	 * elements in the queue, <code>null</code> will be returned.
 	 */
-	public synchronized CIAgentEvent getNextEvent() {
+	public synchronized AgentEvent getNextEvent() {
 		if (eventQueue.size() == 0) {
 			return null;
 		} else {
@@ -51,7 +51,7 @@ public class CIAgentEventQueue implements Serializable {
 	 * @return the first event on the queue. If there are not any
 	 * elements in the queue, <code>null</code> will be returned.
 	 */
-	public synchronized CIAgentEvent peekEvent() {
+	public synchronized AgentEvent peekEvent() {
 		if (eventQueue.size() == 0) {
 			return null;
 		} else {

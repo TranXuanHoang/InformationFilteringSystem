@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ import java.io.Serializable;
  * 
  * @author Tran Xuan Hoang
  */
-public class CIAgentState implements Serializable {
+public class AgentState implements Serializable {
 	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
@@ -28,7 +28,7 @@ public class CIAgentState implements Serializable {
 	/**
 	 * Create an agent state with the value of <code>UNINITIATED</code>.
 	 */
-	public CIAgentState() {
+	public AgentState() {
 		this.state = UNINITIATED;
 	}
 

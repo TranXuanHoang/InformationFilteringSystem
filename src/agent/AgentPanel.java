@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -15,7 +15,7 @@ import javax.swing.JToggleButton;
  * 
  * @author Tran Xuan Hoang
  */
-public class CIAgentPanel extends JPanel {
+public class AgentPanel extends JPanel {
 	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
@@ -33,7 +33,7 @@ public class CIAgentPanel extends JPanel {
 	/**
 	 * Create a panel for simulating an agent.
 	 */
-	public CIAgentPanel() {
+	public AgentPanel() {
 		try {
 			createPanel();
 		} catch (Exception e) {
@@ -96,7 +96,7 @@ public class CIAgentPanel extends JPanel {
 	 * Uses input text fields to set properties of a specified agent.
 	 * @param agent the agent in which properties are set.
 	 */
-	public void setDataOnBean(CIAgent agent) {
+	public void setDataOnBean(Agent agent) {
 		agent.setName(nameTextField.getText().trim());
 		agent.setSleepTime(Integer.parseInt(
 				sleepTimeTextField.getText().trim()));
@@ -108,7 +108,7 @@ public class CIAgentPanel extends JPanel {
 	 * Sets text fields based on data in a specified agent.
 	 * @param agent the agent from which data is retrieved.
 	 */
-	public void getDataFromBean(CIAgent agent) {
+	public void getDataFromBean(Agent agent) {
 		nameTextField.setText(agent.getName());
 		sleepTimeTextField.setText(String.valueOf(agent.getSleepTime()));
 		asyncTimeTextField.setText(String.valueOf(agent.getAsyncTime()));

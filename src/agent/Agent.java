@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
@@ -11,25 +11,25 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Vector;
 
-public abstract class CIAgent implements CIAgentEventListener, Serializable {
+public abstract class Agent implements AgentEventListener, Serializable {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
 	public static final int DEFAULT_SLEEPTIME = 15000; // 15 seconds
 	public static final int DEFAULT_ASYNCTIME = 1000; // 1 second
 	protected String name;
-	private CIAgentState state;
-	private CIAgentTimer timer;
-	transient private Vector<CIAgentEventListener> listeners;
-	transient private CIAgentEventQueue eventQueue;
+	private AgentState state;
+	private AgentTimer timer;
+	transient private Vector<AgentEventListener> listeners;
+	transient private AgentEventQueue eventQueue;
 	transient private PropertyChangeSupport changes;
 	protected AgentPlatform agentPlatform; // agent platform
 
 	/** A vector containing all child agents of this agent */
-	protected Vector<CIAgent> children;
+	protected Vector<Agent> children;
 
 	/** A vector containing all parent agents of this agent */
-	protected Vector<CIAgent> parents;
+	protected Vector<Agent> parents;
 
 	protected int traceLevel = 0;
 
@@ -38,7 +38,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * This no-argument constructor allows easy instantiation
 	 * within editing and activation frameworks of JavaBeans.
 	 */
-	public CIAgent() {
+	public Agent() {
 		this("Agent");
 	}
 
@@ -46,14 +46,14 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Creates an agent with specified name.
 	 * @param name the name of the agent.
 	 */
-	public CIAgent(String name) {
+	public Agent(String name) {
 		this.name = name;
-		state = new CIAgentState();
-		timer = new CIAgentTimer(this);
+		state = new AgentState();
+		timer = new AgentTimer(this);
 		timer.setSleepTime(DEFAULT_SLEEPTIME);
 		timer.setAsyncTime(DEFAULT_ASYNCTIME);
 		listeners = new Vector<>();
-		eventQueue = new CIAgentEventQueue();
+		eventQueue = new AgentEventQueue();
 		changes = new PropertyChangeSupport(this);
 
 		agentPlatform = null;
@@ -79,7 +79,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 */
 	public synchronized void startAgentProcessing() {
 		timer.startTimer();
-		setState(CIAgentState.ACTIVE);
+		setState(AgentState.ACTIVE);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 */
 	public synchronized void stopAgentProcessing() {
 		timer.quitTimer();
-		setState(CIAgentState.UNKNOWN);
+		setState(AgentState.UNKNOWN);
 	}
 
 	/**
@@ -98,7 +98,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 */
 	public void suspendAgentProcessing() {
 		timer.stopTimer();
-		setState(CIAgentState.SUSPENDED);
+		setState(AgentState.SUSPENDED);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 */
 	public void resumeAgentProcessing() {
 		timer.startTimer();
-		setState(CIAgentState.ACTIVE);
+		setState(AgentState.ACTIVE);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * this agent.
 	 */
 	public void processAsynchronousEvents() {
-		CIAgentEvent event = null;
+		AgentEvent event = null;
 
 		while ((event = eventQueue.getNextEvent()) != null) {
 			processCIAgentEvent(event);
@@ -140,7 +140,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * @param event the event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(CIAgentEvent event) {
+	public void processCIAgentEvent(AgentEvent event) {
 		// currently this method is leaved as doing nothing
 	}
 
@@ -149,7 +149,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * @param event the event to be added.
 	 */
 	@Override
-	public void postCIAgentEvent(CIAgentEvent event) {
+	public void postCIAgentEvent(AgentEvent event) {
 		eventQueue.addEvent(event);
 	}
 
@@ -158,7 +158,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * @param listener the listener to be added.
 	 */
 	public synchronized void addCIAgentEventListener(
-			CIAgentEventListener listener) {
+			AgentEventListener listener) {
 		listeners.addElement(listener);
 	}
 
@@ -167,7 +167,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * @param listener the listener to be removed.
 	 */
 	public synchronized void removeCIAgentEventListener(
-			CIAgentEventListener listener) {
+			AgentEventListener listener) {
 		listeners.removeElement(listener);
 	}
 
@@ -175,11 +175,11 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Delivers the event received to all register listeners.
 	 * @param e the event to be sent to all listeners.
 	 */
-	protected void notifyCIAgentEventListeners(CIAgentEvent e) {
-		Vector<CIAgentEventListener> l;
+	protected void notifyCIAgentEventListeners(AgentEvent e) {
+		Vector<AgentEventListener> l;
 
 		synchronized (this) {
-			l = new Vector<CIAgentEventListener>(listeners);
+			l = new Vector<AgentEventListener>(listeners);
 		}
 
 		for (int i = 0; i < l.size(); i++) {
@@ -212,7 +212,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 */
 	public void trace(String msg) {
 		// create a data event
-		CIAgentEvent event = new CIAgentEvent(this, "trace", msg);
+		AgentEvent event = new AgentEvent(this, "trace", msg);
 
 		// send it to any registered listeners
 		notifyCIAgentEventListeners(event);
@@ -222,7 +222,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Adds an agent as a child of this agent.
 	 * @param child the agent to be added as a child of this agent.
 	 */
-	public void addAgent(CIAgent child) {
+	public void addAgent(Agent child) {
 		children.addElement(child);
 		child.insertParent(this);
 	}
@@ -231,7 +231,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Removes a child agent of this agent.
 	 * @param child the child agent to be removed.
 	 */
-	public void removeAgent(CIAgent child) {
+	public void removeAgent(Agent child) {
 		children.removeElement(child);
 	}
 
@@ -274,7 +274,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * </ul>
 	 * @return the current state of the agent.
 	 */
-	public CIAgentState getState() {
+	public AgentState getState() {
 		return state;
 	}
 
@@ -354,7 +354,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * @return a vector of agents running on the same platform with
 	 * this agent if there exists. Otherwise, <code>null</code>.
 	 */
-	public Vector<CIAgent> getAgents() {
+	public Vector<Agent> getAgents() {
 		return (agentPlatform == null) ?
 				null : agentPlatform.getAgents();
 	}
@@ -366,7 +366,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * @return the agent in the same platform with this agent if it
 	 * exists. Otherwise, <code>null</code> is returned.
 	 */
-	public CIAgent getAgent(String name) {
+	public Agent getAgent(String name) {
 		return (agentPlatform == null) ?
 				null : agentPlatform.getAgent(name);
 	}
@@ -376,7 +376,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * vector {@link #children} of this agent.
 	 * @param children the child agents to be appended.
 	 */
-	public void insertChildren(Vector<CIAgent> children) {
+	public void insertChildren(Vector<Agent> children) {
 		this.children.addAll(children);
 	}
 
@@ -385,7 +385,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * {@link #children} of this agent.
 	 * @param child the child agent to be appended.
 	 */
-	public void insertChild(CIAgent child) {
+	public void insertChild(Agent child) {
 		this.children.addElement(child);
 	}
 
@@ -393,8 +393,8 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Retrieves all child agents of this agent.
 	 * @return a copy of vector of agents contained by this agent.
 	 */
-	public Vector<CIAgent> getChildren() {
-		return new Vector<CIAgent>(children);
+	public Vector<Agent> getChildren() {
+		return new Vector<Agent>(children);
 	}
 
 	/**
@@ -402,7 +402,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * vector {@link #parents} of this agent.
 	 * @param panrents the parent agents to be appended.
 	 */
-	public void insertParents(Vector<CIAgent> panrents) {
+	public void insertParents(Vector<Agent> panrents) {
 		this.parents.addAll(panrents);
 	}
 
@@ -411,7 +411,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * {@link #parents} of this agent.
 	 * @param parent the parent agent to be appended.
 	 */
-	public void insertParent(CIAgent parent) {
+	public void insertParent(Agent parent) {
 		this.parents.addElement(parent);
 	}
 
@@ -419,7 +419,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 	 * Retrieves all parents of this agent.
 	 * @return the reference to the vector of parent agents.
 	 */
-	public Vector<CIAgent> getParents() {
+	public Vector<Agent> getParents() {
 		return parents;
 	}
 
@@ -479,7 +479,7 @@ public abstract class CIAgent implements CIAgentEventListener, Serializable {
 		// restore transient variables
 		changes = new PropertyChangeSupport(this);
 		listeners = new Vector<>();
-		eventQueue = new CIAgentEventQueue();
+		eventQueue = new AgentEventQueue();
 
 		// restore the remaining variables
 		inputStream.defaultReadObject();

@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.util.Vector;
 
@@ -13,7 +13,7 @@ public interface AgentPlatform {
 	 * Returns a list of registered agents.
 	 * @return a vector of agents.
 	 */
-	public Vector<CIAgent> getAgents();
+	public Vector<Agent> getAgents();
 
 	/**
 	 * Retrieves an agent with the specified name.
@@ -21,5 +21,5 @@ public interface AgentPlatform {
 	 * @return the agent having the given name or
 	 * <code>null</code> if not found.
 	 */
-	public CIAgent getAgent(String name);
+	public Agent getAgent(String name);
 } // end interface AgentPlatform

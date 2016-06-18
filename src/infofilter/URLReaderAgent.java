@@ -6,9 +6,9 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import ciagent.CIAgent;
-import ciagent.CIAgentEvent;
-import ciagent.CIAgentState;
+import agent.Agent;
+import agent.AgentEvent;
+import agent.AgentState;
 
 /**
  * The <code>URLReaderAgent</code> class implements an agent that
@@ -17,7 +17,7 @@ import ciagent.CIAgentState;
  * 
  * @author Tran Xuan Hoang
  */
-public class URLReaderAgent extends CIAgent {
+public class URLReaderAgent extends Agent {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +63,7 @@ public class URLReaderAgent extends CIAgent {
 	@Override
 	public void initialize() {
 		setSleepTime(5 * 1000); // every 5 seconds
-		setState(CIAgentState.INITIATED);
+		setState(AgentState.INITIATED);
 	}
 
 	/**
@@ -89,12 +89,12 @@ public class URLReaderAgent extends CIAgent {
 	 * In case the action is <code>getURLText</code>, web page's
 	 * contents will be downloaded and encapsulated as a <code>
 	 * NewsArticle</code> which is then sent to event listeners
-	 * via {@link #sendArticleToListeners(NewsArticle)} method.
+	 * via {@link #sendArticleToListeners(Article)} method.
 	 * @param event the event received by this
 	 * <code>URLReaderAgent</code>.
 	 */
 	@Override
-	public void processCIAgentEvent(CIAgentEvent event) {
+	public void processCIAgentEvent(AgentEvent event) {
 		Object source = event.getSource();
 		Object arg = event.getArgObject();
 		Object action = event.getAction();
@@ -113,11 +113,11 @@ public class URLReaderAgent extends CIAgent {
 
 				// send text back to the event
 				if (text != null) {
-					NewsArticle article = new NewsArticle(
+					Article article = new Article(
 							url.toString(),
-							NewsArticle.FROM_WEB_PAGE);
+							Article.FROM_WEB_PAGE);
 
-					article.setSubject(url.toString(), NewsArticle.FROM_WEB_PAGE);
+					article.setSubject(url.toString(), Article.FROM_WEB_PAGE);
 					article.setBody(text);
 					sendArticleToListeners(article);
 				}
@@ -129,11 +129,11 @@ public class URLReaderAgent extends CIAgent {
 	 * Sends downloaded article to any listener listening for it.
 	 * @param article the article to be sent.
 	 */
-	protected void sendArticleToListeners(NewsArticle article) {
+	protected void sendArticleToListeners(Article article) {
 		System.out.println("URLReaderAgent is sending "
 				+ "download article to listeners.");
-		CIAgentEvent event =
-				new CIAgentEvent(this, "addArticle", article);
+		AgentEvent event =
+				new AgentEvent(this, "addArticle", article);
 		notifyCIAgentEventListeners(event);
 	}
 

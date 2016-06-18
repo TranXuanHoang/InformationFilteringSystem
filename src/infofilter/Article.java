@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * The <code>NewsArticle</code> class defines all of the information
@@ -12,7 +13,10 @@ import java.io.IOException;
  * 
  * @author Tran Xuan Hoang
  */
-public class NewsArticle {
+public class Article implements Serializable {
+	/** The serial version ID. */
+	private static final long serialVersionUID = 1L;
+
 	/** ID of each article. The absolute file path if the article
 	 * is read from a file (text/PDF/MS Word/HTML) in a computer.
 	 * The URL if the article is downloaded from a web page. */
@@ -88,7 +92,7 @@ public class NewsArticle {
 	 * <code>NewsArticle</code> object is create to load article
 	 * in personal computer).
 	 */
-	public NewsArticle(String id, int type) {
+	public Article(String id, int type) {
 		this.id = id;
 		this.type = type;
 		apporved = false;

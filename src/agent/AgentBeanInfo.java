@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.awt.Image;
 import java.beans.BeanInfo;
@@ -13,8 +13,8 @@ import java.beans.SimpleBeanInfo;
  * 
  * @author Tran Xuan Hoang
  */
-public class CIAgentBeanInfo extends SimpleBeanInfo {
-	Class<CIAgent> beanClass = CIAgent.class;
+public class AgentBeanInfo extends SimpleBeanInfo {
+	Class<Agent> beanClass = Agent.class;
 	String iconColor16x16Filename;
 	String iconColor32x32Filename;
 	String iconMono16x16Filename;
@@ -25,7 +25,7 @@ public class CIAgentBeanInfo extends SimpleBeanInfo {
 	 * This no-argument constructor is used within
 	 * editing and activation frameworks of JavaBeans.
 	 */
-	public CIAgentBeanInfo() {
+	public AgentBeanInfo() {
 	}
 
 	/**

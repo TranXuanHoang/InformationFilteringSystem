@@ -19,8 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import ciagent.CIAgentEvent;
-import ciagent.CIAgentEventListener;
+import agent.AgentEvent;
+import agent.AgentEventListener;
 
 /**
  * The <code>URLReaderAgentCustomizer</code> class implements the
@@ -30,7 +30,7 @@ import ciagent.CIAgentEventListener;
  * @author Tran Xuan Hoang
  */
 public class URLReaderAgentCustomizer extends JDialog
-implements Customizer, CIAgentEventListener {
+implements Customizer, AgentEventListener {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
@@ -116,7 +116,7 @@ implements Customizer, CIAgentEventListener {
 							"Error: The URL is not correctly specified.");
 				}
 
-				CIAgentEvent event = new CIAgentEvent(this, "getURLText", null);
+				AgentEvent event = new AgentEvent(this, "getURLText", null);
 				agent.postCIAgentEvent(event); // ask agent to get url
 
 				dispose();
@@ -141,7 +141,7 @@ implements Customizer, CIAgentEventListener {
 	 * @param event the event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(CIAgentEvent event) {
+	public void processCIAgentEvent(AgentEvent event) {
 		Object source = event.getSource();
 		Object arg = event.getArgObject();
 		Object action = event.getAction();
@@ -164,7 +164,7 @@ implements Customizer, CIAgentEventListener {
 	 * event queue.
 	 */
 	@Override
-	public void postCIAgentEvent(CIAgentEvent event) {
+	public void postCIAgentEvent(AgentEvent event) {
 		processCIAgentEvent(event);
 	}
 

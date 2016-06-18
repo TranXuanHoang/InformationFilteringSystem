@@ -14,9 +14,9 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import ciagent.CIAgent;
-import ciagent.CIAgentEvent;
-import ciagent.CIAgentState;
+import agent.Agent;
+import agent.AgentEvent;
+import agent.AgentState;
 import learn.BackProp;
 import learn.DataSet;
 import learn.KMapNet;
@@ -33,7 +33,7 @@ import learn.KMapNet;
  * 
  * @author Tran Xuan Hoang
  */
-public class FilterAgent extends CIAgent {
+public class FilterAgent extends Agent {
 	/** Serial version. */
 	private static final long serialVersionUID = 1L;
 
@@ -109,7 +109,7 @@ public class FilterAgent extends CIAgent {
 	@Override
 	public void initialize() {
 		setSleepTime(5 * 1000); // every 5 seconds
-		setState(CIAgentState.INITIATED);
+		setState(AgentState.INITIATED);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class FilterAgent extends CIAgent {
 
 	/**
 	 * Performs training neural networks if the agent is requested.
-	 * @see {@link ciagent.CIAgent#processTimerPop()}
+	 * @see {@link agent.Agent#processTimerPop()}
 	 */
 	@Override
 	public void processTimerPop() {
@@ -288,7 +288,7 @@ public class FilterAgent extends CIAgent {
 	 * @param e the agent event to be processed.
 	 */
 	@Override
-	public void processCIAgentEvent(CIAgentEvent e) {
+	public void processCIAgentEvent(AgentEvent e) {
 		trace(name + ": CIAgentEvent received by " + name +
 				" from " + e.getSource() +
 				" with argument " + e.getArgObject());
@@ -312,7 +312,7 @@ public class FilterAgent extends CIAgent {
 	 * <li>{@link #USE_CLUSTERS}
 	 * </ul>
 	 */
-	protected void score(NewsArticle article, int filterType) {
+	protected void score(Article article, int filterType) {
 		article.counts = countWordMultiKeys(keywords, article.body);
 		int size = article.counts.length;
 		int sum = 0;
@@ -395,10 +395,10 @@ public class FilterAgent extends CIAgent {
 	 * <li>{@link #USE_PREDICTED_RATING}
 	 * </ul>
 	 */
-	protected void score(Vector<NewsArticle> articles, int filterType) {
+	protected void score(Vector<Article> articles, int filterType) {
 		try {
 			for (int i = 0; i < articles.size(); i++) {
-				NewsArticle article = articles.elementAt(i);
+				Article article = articles.elementAt(i);
 
 				score(article, filterType);
 			}
@@ -418,7 +418,7 @@ public class FilterAgent extends CIAgent {
 	 * @param articles a vector of articles for which the cluster
 	 * score is set.
 	 */
-	protected void computeClusterAverages(Vector<NewsArticle> articles) {
+	protected void computeClusterAverages(Vector<Article> articles) {
 		int numClusters = 4; // we are using 4 for now
 		int sum[] = new int[numClusters];
 		int numArticles[] = new int[numClusters];
@@ -427,7 +427,7 @@ public class FilterAgent extends CIAgent {
 		// compute raw match score sum and
 		// number of articles in each cluster
 		for (int i = 0; i < articles.size(); i++) {
-			NewsArticle article = articles.elementAt(i);
+			Article article = articles.elementAt(i);
 			int cluster = article.getClusterId();
 
 			sum[cluster] += article.getKeywordScore(); // sum of counts
@@ -447,7 +447,7 @@ public class FilterAgent extends CIAgent {
 
 		// set each article's cluster score to the corresponding value
 		for (int i = 0; i < articles.size(); i++) {
-			NewsArticle article = articles.elementAt(i);
+			Article article = articles.elementAt(i);
 
 			article.setClusterScore(avgs[article.clusterId]);
 		}
@@ -554,11 +554,11 @@ public class FilterAgent extends CIAgent {
 	/**
 	 * Appends the filter profile record of an article to the
 	 * <code>infofilter.dat</code> file.<br>
-	 * The {@link NewsArticle#getProfileString()} method formats
+	 * The {@link Article#getProfileString()} method formats
 	 * this information.
 	 * @param currentArt the article to be appended.
 	 */
-	protected void addArticleToProfile(NewsArticle article) {
+	protected void addArticleToProfile(Article article) {
 		try {
 			FileWriter writer = new FileWriter("infofilter.dat", true);
 			BufferedWriter out = new BufferedWriter(writer);
@@ -575,16 +575,16 @@ public class FilterAgent extends CIAgent {
 	/**
 	 * Appends all the filter profile records of a set of articles
 	 * to the <code>infofilter.dat</code> file.<br>
-	 * The {@link NewsArticle#getProfileString()} method formats
+	 * The {@link Article#getProfileString()} method formats
 	 * the appended filter profile records.
 	 * @param articles the articles whose profile records are appended.
 	 */
-	protected void addAllArticlesToProfile(Vector<NewsArticle> articles) {
+	protected void addAllArticlesToProfile(Vector<Article> articles) {
 		try {
 			FileWriter writer = new FileWriter("infofilter.dat", true);
 			BufferedWriter out = new BufferedWriter(writer);
 
-			for (NewsArticle article : articles) {
+			for (Article article : articles) {
 				out.write(article.getProfileString());
 				out.newLine();
 			}
@@ -602,7 +602,7 @@ public class FilterAgent extends CIAgent {
 	 */
 	public void status(String msg) {
 		// create a data event
-		CIAgentEvent event = new CIAgentEvent(this, "status", msg);
+		AgentEvent event = new AgentEvent(this, "status", msg);
 
 		// sent the event to all registered listeners
 		notifyCIAgentEventListeners(event);
@@ -615,7 +615,7 @@ public class FilterAgent extends CIAgent {
 	 */
 	public void displayMSG(String msg) {
 		// create a data event
-		CIAgentEvent event = new CIAgentEvent(this, "displayMSG", msg);
+		AgentEvent event = new AgentEvent(this, "displayMSG", msg);
 
 		// sent the event to all registered listeners
 		notifyCIAgentEventListeners(event);
@@ -628,7 +628,7 @@ public class FilterAgent extends CIAgent {
 	 */
 	public void displayERR(String err) {
 		// create a data event
-		CIAgentEvent event = new CIAgentEvent(this, "displayERR", err);
+		AgentEvent event = new AgentEvent(this, "displayERR", err);
 
 		// sent the event to all registered listeners
 		notifyCIAgentEventListeners(event);

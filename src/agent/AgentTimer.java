@@ -1,4 +1,4 @@
-package ciagent;
+package agent;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,7 +10,7 @@ import java.util.Date;
  * to <code>CIAgent</code>s:
  * <ul>
  * <li>The <i>autonomous behaviors</i> which the agent's
- * {@link CIAgent#processTimerPop()} method gets called every
+ * {@link Agent#processTimerPop()} method gets called every
  * {@link #sleepTime} milliseconds.
  * <li><i>Processing events in an asynchronous manner</i>
  * by queuing them up and then processing them every
@@ -20,11 +20,11 @@ import java.util.Date;
  * 
  * @author Tran Xuan Hoang
  */
-public class CIAgentTimer implements Runnable, Serializable {
+public class AgentTimer implements Runnable, Serializable {
 	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
-	private CIAgent agent;			// owner agent
+	private Agent agent;			// owner agent
 	private int sleepTime = 1000;	// millisecond (default to 1s)
 	private boolean timerEnabled = true;
 	private int asyncTime = 500;	// millisecond (default to 0.5s)
@@ -41,7 +41,7 @@ public class CIAgentTimer implements Runnable, Serializable {
 	 * Creates a timer, specifying the agent that owns the timer.
 	 * @param agent the agent that owns this timer object.
 	 */
-	public CIAgentTimer(CIAgent agent) {
+	public AgentTimer(Agent agent) {
 		this.agent = agent;
 	}
 
