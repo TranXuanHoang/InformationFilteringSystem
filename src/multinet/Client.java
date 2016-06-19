@@ -74,6 +74,10 @@ public class Client extends JPanel implements Serializable {
 			// send message to server
 			public void actionPerformed(ActionEvent event) {
 				sendData(event.getActionCommand());
+
+				// display message on the GUI of server
+				String message = enterField.getText();
+				displayMessage("\nCLIENT>>> " + message);
 				enterField.setText("");
 			}
 		}); // end call to addActionListener
@@ -248,7 +252,7 @@ public class Client extends JPanel implements Serializable {
 	} // end method closeConnection
 
 	/** Checks whether the client is closed. */
-	protected boolean isClosed() {
+	public boolean isClosed() {
 		if (socket == null) {
 			return true;
 		}
@@ -257,11 +261,13 @@ public class Client extends JPanel implements Serializable {
 	}
 
 	/** Sends message to server. */
-	private void sendData(Object message) {
+	public void sendData(Object message) {
 		try {
+			// all reset before writing the same object to ensure
+			// its updated state is serialized
+			output.reset();
 			output.writeObject(message);
 			output.flush(); // flush data to output
-			displayMessage("\nCLIENT>>> " + message);
 		} catch (IOException ioException) {
 			displayArea.append("\nError writing object");
 		}

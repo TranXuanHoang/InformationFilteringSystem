@@ -268,7 +268,7 @@ public class Server extends JPanel implements Serializable {
 		/** Exchanges information with client. */
 		private void processConnection() throws IOException {
 			// send connection successful message
-			String message = "Connection successful";
+			Object message = "Connection successful";
 			sendData(message);
 
 			// enable enterField so server user can send messages
@@ -280,7 +280,7 @@ public class Server extends JPanel implements Serializable {
 			do { 
 				try {
 					// read message and display it
-					message = (String) input.readObject();
+					message = (Object) input.readObject();
 
 					// end connection with client when client user
 					// types TERMINATE
@@ -333,9 +333,10 @@ public class Server extends JPanel implements Serializable {
 		} // end method setTextFieldEditable
 
 		/** Sends message to client. */
-		private void sendData(String message) {
+		public void sendData(Object message) {
 			try {
 				// send object to client
+				output.reset();
 				output.writeObject(message);
 				output.flush();
 			} catch (IOException ioException) {

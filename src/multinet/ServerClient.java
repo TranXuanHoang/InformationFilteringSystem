@@ -46,8 +46,8 @@ public class ServerClient extends JPanel {
 	private ImageIcon connectedIcon;
 	private ImageIcon disconnectedIcon;
 
-	protected Server server;
-	protected Client client;
+	public Server server;
+	public Client client;
 
 	/**
 	 * Create the panel.

@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Customizer;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -812,19 +813,6 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		this.setTitle(titleBarText + " - Using Kohonen Map Neural Network");
 	}
 
-	protected void sendArticles_actionPerformed(ActionEvent e) {
-		System.out.println("Articles: " + articles);
-		// TODO Auto-generated method stub
-		for (int i = 0; i < articles.size(); i++) {
-			Article article = articles.get(i);
-			
-			if (article.apporved) {
-				System.out.println(i + ": " + article);
-			}
-		}
-		System.out.println();
-	}
-
 	/**
 	 * Customize network connections between agent over Internet.
 	 * @param e the event generated when the <b>Network Connections</b>
@@ -852,6 +840,37 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	protected void agentsNetwork_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * Sends selected articles to the other agent that this agent
+	 * is connected to.
+	 * @param e the event generated when the <b>Send Article(s)</b>
+	 * menu item is selected.
+	 */
+	protected void sendArticles_actionPerformed(ActionEvent e) {
+		ArrayList<Article> selectedArticles = new ArrayList<>();
+
+		for (int i = 0; i < articles.size(); i++) {
+			Article article = articles.get(i);
+
+			if (article.apporved) {
+				selectedArticles.add(article);
+			}
+		}
+
+		if (network.client.isClosed()) {
+			displayTaskERR("Network is disconnected - Cannot send articles");
+		} else if (selectedArticles.size() == 0) {
+			displayTaskERR("No articles are selected to send");
+		} else {
+			displayTaskMSG("Sending articles");
+
+			for (Article article : selectedArticles) {
+				network.client.sendData(article);
+				System.out.println(article);
+			}
+		}
 	}
 
 	protected void receiveArticles_actionPerformed(ActionEvent e) {
@@ -929,8 +948,8 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 					String userRating = ((String) value).trim();
 					data[row][col] = userRating;
 
-					if (currentArt != null) {
-						currentArt.setUserRating(userRating);
+					if (articles.size() > 0) {
+						articles.get(row).setUserRating(userRating);
 					}
 
 					break;
@@ -1289,6 +1308,46 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		// RECONSIDER
 		// articleTextArea.append(msg + "\n");
 		// articleEditorPane.setText(articleEditorPane.getText() + msg + "\n");
+	}
+	
+	/**
+	 * Displays message at {@link #taskProgessLabel} while
+	 * performing a task.
+	 * @param msg the message to be displayed.
+	 */
+	protected void displayTaskMSG(String msg) {
+		try {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					taskProgessLabel.setForeground(Color.BLACK);
+					taskProgessLabel.setText(msg);
+					taskProgessLabel.setToolTipText(msg);
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Displays error message at {@link #taskProgessLabel} while
+	 * performing a task.
+	 * @param err the error message to be displayed.
+	 */
+	protected void displayTaskERR(String err) {
+		try {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					taskProgessLabel.setForeground(Color.RED);
+					taskProgessLabel.setText(err);
+					taskProgessLabel.setToolTipText(err);
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
