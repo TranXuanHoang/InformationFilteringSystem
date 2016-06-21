@@ -16,6 +16,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+
+import infofilter.InfoFilterFrame;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -46,6 +49,7 @@ public class ServerClient extends JPanel {
 	private ImageIcon connectedIcon;
 	private ImageIcon disconnectedIcon;
 
+	public InfoFilterFrame infoFilterFrame;
 	public Server server;
 	public Client client;
 
@@ -237,6 +241,11 @@ public class ServerClient extends JPanel {
 		receivePanel.add(server, BorderLayout.CENTER);
 	}
 
+	public ServerClient(InfoFilterFrame infoFilterFrame) {
+		this();
+		this.infoFilterFrame = infoFilterFrame;
+	}
+
 	protected void connectClientToServer(ActionEvent e) {
 		String serverIP = sIPTextField.getText().trim();
 		int serverPort = Integer.parseInt(sPortTextField.getText().trim());
@@ -245,7 +254,7 @@ public class ServerClient extends JPanel {
 			@Override
 			public void run() {
 				if (client.isClosed()) {
-					client.runClient(serverIP, serverPort, ServerClient.this);
+					client.runClient(serverIP, serverPort, ServerClient.this, infoFilterFrame);
 				}
 			}
 		}.start();
@@ -266,7 +275,7 @@ public class ServerClient extends JPanel {
 		new Thread() {
 			@Override
 			public void run() {
-				server.runServer(portNumber, maxConnections, ServerClient.this);
+				server.runServer(portNumber, maxConnections, ServerClient.this, infoFilterFrame);
 			}
 		}.start();
 

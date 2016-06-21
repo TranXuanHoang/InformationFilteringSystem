@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Customizer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -32,7 +33,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+//import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -84,10 +85,9 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 
 	JMenuItem connections;
 	JMenuItem agentsNetwork;
+	JMenuItem agentReliability;
 	JMenuItem sendArticles;
-	JMenuItem receiveArticles;
 	JMenuItem sendFeedback;
-	JMenuItem receiveFeedback;
 
 	JMenuItem aboutMenuItem;
 
@@ -101,7 +101,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	JPanel southPanel;
 	JLabel filterAgentStatusLabel;
 	JLabel taskProgessLabel;
-	JProgressBar taskProgessBar;
+	//JProgressBar taskProgessBar;
 
 	String titleBarText = "Information Filtering Application";
 
@@ -200,7 +200,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					network = new ServerClient();
+					network = new ServerClient(InfoFilterFrame.this);
 				}
 			});
 		} catch (Exception e) {
@@ -380,7 +380,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		menuFilter.add(useFeedbackCheckBoxMenuItem);
 		menuFilter.add(useClustersCheckBoxMenuItem);
 		
-		connections = new JMenuItem("Network Connections");
+		connections = new JMenuItem("Network Connections...");
 		connections.setIcon(getIcon("icons/Exchange_NetworkConnections.png"));
 		connections.addActionListener(new ActionListener() {
 			@Override
@@ -398,20 +398,21 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			}
 		});
 		
+		agentReliability = new JMenuItem("Reliability of Agents...");
+		agentReliability.setIcon(getIcon("icons/Exchange_ReliabilityOfAgents.png"));
+		agentReliability.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				agentReliability_actionPerformed(e);
+			}
+		});
+		
 		sendArticles = new JMenuItem("Send Article(s)");
 		sendArticles.setIcon(getIcon("icons/Exchange_SendArticles.png"));
 		sendArticles.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				sendArticles_actionPerformed(e);
-			}
-		});
-		
-		receiveArticles = new JMenuItem("Receive Article(s)");
-		receiveArticles.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				receiveArticles_actionPerformed(e);
 			}
 		});
 		
@@ -422,23 +423,14 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 				sendFeedback_actionPerformed(e);
 			}
 		});
-		
-		receiveFeedback = new JMenuItem("Receive Feedback");
-		receiveFeedback.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				receiveFeedback_actionPerformed(e);
-			}
-		});
 
 		menuExchange.add(connections);
 		menuExchange.add(agentsNetwork);
 		menuExchange.addSeparator();
-		menuExchange.add(sendArticles);
-		menuExchange.add(receiveArticles);
+		menuExchange.add(agentReliability);
 		menuExchange.addSeparator();
+		menuExchange.add(sendArticles);
 		menuExchange.add(sendFeedback);
-		menuExchange.add(receiveFeedback);
 
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.setIcon(getIcon("icons/Help_About.png"));
@@ -496,12 +488,12 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		filterAgentStatusLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
 		taskProgessLabel = new JLabel();
 		taskProgessLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
-		taskProgessBar = new JProgressBar();
-		taskProgessBar.setStringPainted(true);
-		taskProgessBar.setForeground(Color.GREEN);
+		//taskProgessBar = new JProgressBar();
+		//taskProgessBar.setStringPainted(true);
+		//taskProgessBar.setForeground(Color.GREEN);
 		JPanel progressPanel = new JPanel(new GridLayout(1, 0));
 		progressPanel.add(taskProgessLabel);
-		progressPanel.add(taskProgessBar);
+		//progressPanel.add(taskProgessBar);
 		
 		southPanel = new JPanel(new GridLayout());
 		southPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -819,7 +811,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	 * menu item is selected.
 	 */
 	protected void connections_actionPerformed(ActionEvent e) {
-		JFrame frame = new JFrame("Agent Connections");
+		JFrame frame = new JFrame("Network Connections");
 		frame.setSize(650, 400);
 		frame.setIconImage(getIcon("icons/Exchange_NetworkConnections.png").getImage());
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -840,6 +832,47 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	protected void agentsNetwork_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	protected void agentReliability_actionPerformed(ActionEvent e) {
+		if (network.server.reliabilities == null) {
+			JOptionPane.showMessageDialog(this,
+					"There is no agent connecting to you",
+					"", JOptionPane.ERROR_MESSAGE, null);
+		} else {
+			JPanel panel = new JPanel(new GridLayout(0, 1));
+			ReliabilityGUIHeader header = new ReliabilityGUIHeader();
+			panel.add(header);
+
+			List<Reliability> reliabilities = new ArrayList<Reliability>(
+					network.server.reliabilities.values());
+
+			for (Reliability r : reliabilities) {
+				panel.add(r.gui);
+			}
+
+			JScrollPane scrollPane = new JScrollPane();
+			scrollPane.getViewport().add(panel);
+
+			JFrame frame = new JFrame("Reliability of Client Agents");
+			frame.setIconImage(getIcon("icons/Exchange_ReliabilityOfAgents.png").getImage());
+			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+			frame.add(scrollPane);
+			frame.setSize(460, 140 + reliabilities.size() * 60);
+			frame.setResizable(false);
+
+			// center frame
+			Dimension frameSize = frame.getSize();
+			Dimension appSize = this.getSize();
+			Point appLocation = this.getLocationOnScreen();
+
+			frame.setLocation(
+					appLocation.x + (appSize.width - frameSize.width) / 2,
+					appLocation.y + (appSize.height - frameSize.height) / 2);
+
+			frame.setVisible(true);
+		}
 	}
 
 	/**
@@ -864,26 +897,62 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		} else if (selectedArticles.size() == 0) {
 			displayTaskERR("No articles are selected to send");
 		} else {
-			displayTaskMSG("Sending articles");
-
-			for (Article article : selectedArticles) {
-				network.client.sendData(article);
-				System.out.println(article);
-			}
+			network.client.sendData(selectedArticles);
+			displayTaskMSG("Article" +
+					(selectedArticles.size() > 1 ? "s were " : " was ") + "sent");
 		}
 	}
+	
+	//TODO check reliability
+	public void receiveArticlesFromOtherAgent(
+			ArrayList<Article> receivedArticles,
+			Reliability reliability) {
+		// score received article using the corresponding filter type
+		Vector<Article> newArticles = new Vector<>(receivedArticles);
+		filterAgent.score(newArticles, filterType);
 
-	protected void receiveArticles_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		// select articles that have score higher than or equal to the
+		// threshold of the corresponding filter type
+		int selected = 0;
+		int eliminated = 0;
+
+		for (Article newArticle : newArticles) {
+			if (newArticle.getScore(filterType) >=
+					getAcceptableScoreThreshold(filterType)) {
+				newArticle.apporved = true;
+				selected++;
+			} else {
+				newArticle.apporved = false;
+				eliminated++;
+			}
+		}
+
+		reliability.updateReliability(selected, eliminated);
+
+		// add received articles to the set of articles and view them
+		// in the GUI table of articles
+		articles.addAll(newArticles);
+		refreshTable();
 	}
+	
+	public double getAcceptableScoreThreshold(int filterType) {
+		switch (filterType) {
+		case FilterAgent.USE_KEYWORDS:
+			return keywordThreshold;
+		case FilterAgent.USE_PREDICTED_RATING:
+			return backpropThreshold;
+		case FilterAgent.USE_CLUSTERS:
+			return kmapThreshold;
+		default:
+			return 0;
+		}
+	}
+	
+	public int keywordThreshold = 60;
+	public double backpropThreshold = 0.8;
+	public double kmapThreshold = 0.85;
 
 	protected void sendFeedback_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void receiveFeedback_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
 	}

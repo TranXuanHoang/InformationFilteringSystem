@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +21,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import infofilter.Article;
+import infofilter.InfoFilterFrame;
+import infofilter.Reliability;
 
 /**
  * Server portion of a client/server stream-socket connection.
@@ -40,10 +45,20 @@ public class Server extends JPanel implements Serializable {
 	protected ServerSocket serverSocket;
 
 	/** List of client connections. */
-	private List<ClientConnection> clients;
+	public List<ClientConnection> clients;
 
 	/** To run separate threads for responding clients. */
 	transient private ExecutorService runClients;
+
+	/** Holds all articles received from client. */
+	public Hashtable<ClientConnection, List<List<Article>>> receivedArticles;
+
+	/** Save reliability of each client agent. */
+	public Hashtable<ClientConnection, Reliability> reliabilities;
+
+	/** The GUI of the information filtering application that uses this
+	 * server as its core server. */
+	private InfoFilterFrame infoFilterFrame;
 
 	/**
 	 * Creates GUI and initializes basic foundation data for server.
@@ -115,8 +130,16 @@ public class Server extends JPanel implements Serializable {
 	 * ServerClient</code> class as the core server.
 	 * @param gui the GUI of the <code>ServerClient</code> class that uses
 	 * this class as the core server.
+	 * @param infoFilterFrame the GUI of the information filtering
+	 * application that this server is initialized as core server of
+	 * its <code>ServerClient</code>.
 	 */
-	public void runServer(int port, int maxConnections, ServerClient gui) {
+	public void runServer(int port, int maxConnections,
+			ServerClient gui, InfoFilterFrame infoFilterFrame) {
+		this.infoFilterFrame = infoFilterFrame;
+		receivedArticles = new Hashtable<>();
+		reliabilities = new Hashtable<>();
+
 		try {
 			// set up server to receive connections
 			serverSocket = new ServerSocket(port, maxConnections);
@@ -127,6 +150,8 @@ public class Server extends JPanel implements Serializable {
 			while (true) {
 				ClientConnection client = waitForConnection(); // wait for a connection
 				clients.add(client);
+				receivedArticles.put(client, new ArrayList<List<Article>>());
+				reliabilities.put(client, new Reliability(client.name));
 
 				runClients.execute(client);
 			} // end while
@@ -163,7 +188,7 @@ public class Server extends JPanel implements Serializable {
 
 		ClientConnection client = new ClientConnection(
 				server,
-				"Client " + clients.size());
+				"Client Agent " + clients.size());
 
 		return client;
 	} // end method waitForConnection
@@ -266,6 +291,7 @@ public class Server extends JPanel implements Serializable {
 		} // end method getStreams
 
 		/** Exchanges information with client. */
+		@SuppressWarnings("unchecked")
 		private void processConnection() throws IOException {
 			// send connection successful message
 			Object message = "Connection successful";
@@ -280,7 +306,19 @@ public class Server extends JPanel implements Serializable {
 			do { 
 				try {
 					// read message and display it
-					message = (Object) input.readObject();
+					message = input.readObject();
+
+					//TODO receive articles from client
+					if (message instanceof ArrayList<?> &&
+							((ArrayList<?>) message).get(0) instanceof Article) {
+						List<List<Article>> receivedArticle = receivedArticles.get(this);
+
+						receivedArticle.add((ArrayList<Article>) message);
+						receivedArticles.put(this, receivedArticle);
+
+						infoFilterFrame.receiveArticlesFromOtherAgent(
+								(ArrayList<Article>) message, reliabilities.get(this));
+					}
 
 					// end connection with client when client user
 					// types TERMINATE
@@ -289,7 +327,9 @@ public class Server extends JPanel implements Serializable {
 						break;
 					}
 
-					displayMessage("\n" + name + ">>> " + message);
+					if (message instanceof String) {
+						displayMessage("\n" + name + ">>> " + message);
+					}
 				} catch (ClassNotFoundException classNotFoundException) {
 					displayMessage("\nUnknown object type received from " + name + "\n");
 				} catch (IOException ioException) {
@@ -317,6 +357,9 @@ public class Server extends JPanel implements Serializable {
 			clients.remove(this);
 			displayMessage("\n" + clients.size() +
 					" Remaining client(s): " + clients + "\n");
+
+			receivedArticles.remove(this);
+			reliabilities.remove(this);
 
 			if (clients.isEmpty()) {
 				setTextFieldEditable(false); // disable enterField

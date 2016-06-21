@@ -21,6 +21,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import infofilter.InfoFilterFrame;
+
 /**
  * Client portion of a stream-socket connection between client
  * and server.
@@ -54,6 +56,10 @@ public class Client extends JPanel implements Serializable {
 
 	/** Socket to communicate with server. */
 	private Socket socket;
+
+	/** The GUI of the information filtering application that uses this
+	 * client as its core client. */
+	private InfoFilterFrame infoFilterFrame;
 
 	/**
 	 * Initializes serverIP and sets up GUI.
@@ -158,8 +164,14 @@ public class Client extends JPanel implements Serializable {
 	 * @param serverPort the port of server to which client will connect.
 	 * @param gui the GUI of <code>ServerClient</code> class that uses
 	 * this class as the core client.
+	 * @param infoFilterFrame the GUI of the information filtering
+	 * application that this client is initialized as core client of
+	 * its <code>ServerClient</code>.
 	 */
-	public void runClient(String serverIP, int serverPort, ServerClient gui) {
+	public void runClient(String serverIP, int serverPort,
+			ServerClient gui, InfoFilterFrame infoFilterFrame) {
+		this.infoFilterFrame = infoFilterFrame;
+
 		try	{
 			this.serverIP = serverIP;
 			this.serverPort = serverPort;

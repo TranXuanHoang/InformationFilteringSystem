@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -303,7 +304,7 @@ public class FilterAgent extends Agent {
 	/**
 	 * Calculates the score of interestingness of each article
 	 * with respect to the corresponding filter type
-	 * (frequencies of keywords, Kohonen map, back propagation net).
+	 * (frequencies of keywords, back propagation net, Kohonen map).
 	 * @param article the article to be scored.
 	 * @param filterType the filter type (or filter method):<br>
 	 * <ul>
@@ -387,7 +388,7 @@ public class FilterAgent extends Agent {
 	 * If the filter type is using Kohonen map neural network,
 	 * the average score of all articles that have the same
 	 * <code>clusterID</code> will be calculated.
-	 * @param articles a vector of articles to be scored.
+	 * @param articles a list of articles to be scored.
 	 * @param filterType the filter type (or filter method):<br>
 	 * <ul>
 	 * <li>{@link #USE_KEYWORDS}
@@ -398,7 +399,7 @@ public class FilterAgent extends Agent {
 	protected void score(Vector<Article> articles, int filterType) {
 		try {
 			for (int i = 0; i < articles.size(); i++) {
-				Article article = articles.elementAt(i);
+				Article article = articles.get(i);
 
 				score(article, filterType);
 			}
@@ -415,10 +416,10 @@ public class FilterAgent extends Agent {
 	 * Computes the average score for each cluster and sets the
 	 * cluster score for each article in each cluster to that
 	 * corresponding average value.
-	 * @param articles a vector of articles for which the cluster
+	 * @param articles a list of articles for which the cluster
 	 * score is set.
 	 */
-	protected void computeClusterAverages(Vector<Article> articles) {
+	protected void computeClusterAverages(List<Article> articles) {
 		int numClusters = 4; // we are using 4 for now
 		int sum[] = new int[numClusters];
 		int numArticles[] = new int[numClusters];
@@ -427,7 +428,7 @@ public class FilterAgent extends Agent {
 		// compute raw match score sum and
 		// number of articles in each cluster
 		for (int i = 0; i < articles.size(); i++) {
-			Article article = articles.elementAt(i);
+			Article article = articles.get(i);
 			int cluster = article.getClusterId();
 
 			sum[cluster] += article.getKeywordScore(); // sum of counts
@@ -447,7 +448,7 @@ public class FilterAgent extends Agent {
 
 		// set each article's cluster score to the corresponding value
 		for (int i = 0; i < articles.size(); i++) {
-			Article article = articles.elementAt(i);
+			Article article = articles.get(i);
 
 			article.setClusterScore(avgs[article.clusterId]);
 		}
