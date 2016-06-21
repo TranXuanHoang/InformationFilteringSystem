@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,8 +50,18 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.collections15.Transformer;
+import org.apache.commons.collections15.functors.ChainedTransformer;
+
 import agent.AgentEvent;
 import agent.AgentEventListener;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseGraph;
+import edu.uci.ics.jung.graph.util.EdgeType;
+import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import multinet.ServerClient;
 
 public class InfoFilterFrame extends JFrame implements AgentEventListener {
@@ -389,7 +400,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			}
 		});
 		
-		agentsNetwork = new JMenuItem("Network of Agents");
+		agentsNetwork = new JMenuItem("Network of Agents...");
 		agentsNetwork.setIcon(getIcon("icons/Exchange_NetworkOfAgents.png"));
 		agentsNetwork.addActionListener(new ActionListener() {
 			@Override
@@ -829,11 +840,99 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Graphically shows the network of agents that connect to
+	 * this agent.
+	 * @param e the event generated when the <b>Network of Agent...</b>
+	 * menu item is selected.
+	 */
 	protected void agentsNetwork_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (network.server.reliabilities == null) {
+			JOptionPane.showMessageDialog(this,
+					"There is no agent connecting to you",
+					"", JOptionPane.ERROR_MESSAGE, null);
+		} else {
+			List<Reliability> reliabilities = new ArrayList<Reliability>(
+					network.server.reliabilities.values());
+
+			// create graph of agents
+			Graph<String, String> g;
+
+			// Graph<V, E> where V is the type of the vertices and E is the type of the edges
+			// Note showing the use of a SparseGraph rather than a SparseMultigraph
+			g = new SparseGraph<String, String>();
+
+			// add vertices and edges to the graph
+			String serverNode = "You";
+			g.addVertex(serverNode);
+
+			for (Reliability r : reliabilities) {
+				String clientNode = r.getAgentName();
+				String edgeLabel = r.getIPAddress();
+
+				g.addVertex(clientNode);
+				g.addEdge(edgeLabel, clientNode, serverNode, EdgeType.DIRECTED);
+			}
+
+			// 2. A layout implementation
+			CircleLayout<String, String> layout = new CircleLayout<String, String>(g);
+			layout.setSize(new Dimension(300, 300));
+			BasicVisualizationServer<String, String> vv = new BasicVisualizationServer<>(layout);
+			vv.setPreferredSize(new Dimension(350, 350));
+
+			Transformer<String, Paint> vertexPaint = new Transformer<String, Paint>() {
+				@Override
+				public Paint transform(String vertexName) {
+					if (vertexName.equals("You")) {
+						return Color.RED;
+					} else {
+						return new Color(160, 200, 250);
+					}
+				}
+			};
+			
+			Transformer<String, String> labelTransformer =
+					new ChainedTransformer<String,String>(new Transformer[]{
+					new ToStringLabeller<String>(),
+					new Transformer<String,String>() {
+						public String transform(String input) {
+							return "<html><font color=\"blue\">" + input + "</html>";
+						}}});
+
+
+			vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+			vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<>());
+			vv.getRenderContext().setEdgeLabelTransformer(labelTransformer);
+			vv.getRenderContext().setLabelOffset(20);
+			vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
+			vv.setBackground(Color.WHITE);
+
+			JDialog dialog = new JDialog(this, "Network of Agents", true);
+			dialog.setIconImage(getIcon("icons/Exchange_NetworkOfAgents.png").getImage());
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.getContentPane().add(vv);
+			dialog.pack();
+			dialog.setResizable(false);
+
+			// center dialog
+			Dimension dialogSize = dialog.getSize();
+			Dimension appSize = this.getSize();
+			Point appLocation = this.getLocationOnScreen();
+
+			dialog.setLocation(
+					appLocation.x + (appSize.width - dialogSize.width) / 2,
+					appLocation.y + (appSize.height - dialogSize.height) / 2);
+
+			dialog.setVisible(true);
+		}
 	}
 	
+	/**
+	 * Graphically shows the reliability of all agents that have been
+	 * connecting and sending articles to this agent.
+	 * @param e the event generated when the <b>Reliability of Agent...</b>
+	 * menu item is selected.
+	 */
 	protected void agentReliability_actionPerformed(ActionEvent e) {
 		if (network.server.reliabilities == null) {
 			JOptionPane.showMessageDialog(this,

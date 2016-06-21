@@ -26,13 +26,18 @@ public class Reliability implements Serializable {
 	/** Number of articles selected by server agent (or ranking agent). */
 	private int numOfSelectedArticles;
 
+	/** The GUI object that shows this underlying data <code>Reliability</code> object. */
 	transient public ReliabilityGUI gui;
 
-	public Reliability(String agentName) {
+	/** The IP address of the client whose reliability is represent by this object. */
+	private String ipAddress;
+
+	public Reliability(String agentName, String ipAddress) {
 		this.setAgentName(agentName);
 		this.setSession(0);
 		this.setReliability(0);
 		this.setNumOfSelectedArticles(0);
+		this.setIPAddress(ipAddress);
 
 		gui = new ReliabilityGUI(agentName);
 	}
@@ -48,8 +53,6 @@ public class Reliability implements Serializable {
 			reliability = (numOfSelectedArticles + selected) * reliability /
 					(numOfSelectedArticles + (selected + eliminated) * reliability);
 		}
-
-		//reliability *= 100;
 
 		// update the cumulative number of selected article
 		// from session 0 to current session
@@ -89,6 +92,14 @@ public class Reliability implements Serializable {
 
 	public void setNumOfSelectedArticles(int numOfSelectedArticles) {
 		this.numOfSelectedArticles = numOfSelectedArticles;
+	}
+
+	public String getIPAddress() {
+		return ipAddress;
+	}
+
+	public void setIPAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 
 	public String toString() {

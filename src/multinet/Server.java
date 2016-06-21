@@ -151,7 +151,8 @@ public class Server extends JPanel implements Serializable {
 				ClientConnection client = waitForConnection(); // wait for a connection
 				clients.add(client);
 				receivedArticles.put(client, new ArrayList<List<Article>>());
-				reliabilities.put(client, new Reliability(client.name));
+				reliabilities.put(client,
+						new Reliability(client.name, client.getIPAddress()));
 
 				runClients.execute(client);
 			} // end while
@@ -308,7 +309,7 @@ public class Server extends JPanel implements Serializable {
 					// read message and display it
 					message = input.readObject();
 
-					//TODO receive articles from client
+					// receive articles from clients
 					if (message instanceof ArrayList<?> &&
 							((ArrayList<?>) message).get(0) instanceof Article) {
 						List<List<Article>> receivedArticle = receivedArticles.get(this);
@@ -327,6 +328,7 @@ public class Server extends JPanel implements Serializable {
 						break;
 					}
 
+					// receive String (text) messages from clients
 					if (message instanceof String) {
 						displayMessage("\n" + name + ">>> " + message);
 					}
@@ -386,6 +388,15 @@ public class Server extends JPanel implements Serializable {
 				displayArea.append("\nError writing object");
 			}
 		} // end method sendData
+
+		/**
+		 * Retrieves the IP address and port number of the client to
+		 * which this <code>ClientConnection</code> connects.
+		 * @return the IP address and port number of the client.
+		 */
+		public String getIPAddress() {
+			return "" + connection.getInetAddress() + "/" + connection.getPort();
+		}
 
 		/**
 		 * Retrieves basic information of the connection.
