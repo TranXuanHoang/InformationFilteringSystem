@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * The <code>NewsArticle</code> class defines all of the information
+ * The <code>Article</code> class defines all of the information
  * about a single article that is saved in personal computer or
  * loaded from a web page source.
  * 

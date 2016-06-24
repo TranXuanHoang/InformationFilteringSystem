@@ -14,6 +14,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.Customizer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -27,6 +30,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -34,6 +38,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 //import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -113,8 +118,11 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 
 	JPanel southPanel;
 	JLabel filterAgentStatusLabel;
-	JLabel taskProgessLabel;
-	//JProgressBar taskProgessBar;
+	JLabel taskProgressLabel;
+	JProgressBar taskProgressBar;
+	
+
+	JFileChooser fileChoser;
 
 	String titleBarText = "Information Filtering Application";
 
@@ -219,6 +227,10 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		} catch (Exception e) {
 			System.out.println("Error while creating ServerClient object");
 		}
+
+		fileChoser = new JFileChooser();
+		fileChoser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChoser.setMultiSelectionEnabled(true);
 	}
 
 	/**
@@ -499,14 +511,15 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 
 		filterAgentStatusLabel = new JLabel();
 		filterAgentStatusLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
-		taskProgessLabel = new JLabel();
-		taskProgessLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
-		//taskProgessBar = new JProgressBar();
-		//taskProgessBar.setStringPainted(true);
-		//taskProgessBar.setForeground(Color.GREEN);
+		taskProgressLabel = new JLabel();
+		taskProgressLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
+		taskProgressBar = new JProgressBar();
+		taskProgressBar.setStringPainted(true);
+		taskProgressBar.setForeground(Color.GREEN);
+		taskProgressBar.setVisible(false);
 		JPanel progressPanel = new JPanel(new GridLayout(1, 0));
-		progressPanel.add(taskProgessLabel);
-		//progressPanel.add(taskProgessBar);
+		progressPanel.add(taskProgressLabel);
+		progressPanel.add(taskProgressBar);
 		
 		southPanel = new JPanel(new GridLayout());
 		southPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -587,67 +600,38 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	 * menu item is selected.
 	 */
 	protected void loadArticleMenuItem_actionPerformed(ActionEvent e) {
-		FileDialog openFileDialog = new FileDialog(
-				this, "Open", FileDialog.LOAD);
-		openFileDialog.setVisible(true);
+		int result = fileChoser.showOpenDialog(this);
 
-		String directory = openFileDialog.getDirectory();
-		String fileName = openFileDialog.getFile();
-		String filePath = directory + fileName;
-
-		if (fileName != null) {
-			int type = Article.typeOfFile(fileName);
-			Article article = new Article(filePath, type);
-
-			switch (type) {
-			case Article.FROM_TEXT_FILE:
-				String text = Article.readArticle(filePath);
-				article.setBody(text);
-				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
-				break;
-
-			case Article.FROM_PDF_FILE:
-				String pdf = Utilities.getContentsOfPDFFile(filePath);
-				article.setBody(pdf);
-				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
-				break;
-
-			case Article.FROM_MS_WORD_FILE:
-				String msword = Utilities.getContentsOfWordFile(filePath);
-				article.setBody(msword);
-				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
-				break;
-
-			case Article.FROM_PPTX_FILE:
-				String pptx = Utilities.getContentsOfPPTXFile(filePath);
-				article.setBody(pptx);
-				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
-				break;
-
-			case Article.FROM_HTML_FILE:
-				String html = Article.readArticle(filePath);
-				article.setBody(html);
-				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/html");
-				break;
-
-			default:
-				System.out.println("Error: the type of the selected"
-						+ " file is not allowed to be read.");
-				return;
-			}
-
-			articles.addElement(article);
-			filterAgent.score(article, filterType);
-
-			refreshTable();
-			articleEditorPane.setText(article.getBody());
-			articleEditorPane.setCaretPosition(0);
+		if (result == JFileChooser.CANCEL_OPTION) {
+			return;
 		}
+
+		// save the directory currently articles have just been loaded
+		String currentDir = fileChoser.getSelectedFile().toString();
+		currentDir = currentDir.substring(0, currentDir.lastIndexOf(File.separatorChar));
+		fileChoser.setCurrentDirectory(new File(currentDir));
+		System.out.println(currentDir);
+
+		displayTaskMSG("Loading article(s)");
+		taskProgressBar.setValue(0);
+		taskProgressBar.setVisible(true);
+
+		File[] files = fileChoser.getSelectedFiles();
+
+		LoadArticles loadArticles = new LoadArticles(files,
+				articles, filterAgent, filterType,
+				this, articleEditorPane, taskProgressLabel, taskProgressBar);
+		loadArticles.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getPropertyName().equals("progress")) {
+					int newVal = (Integer) evt.getNewValue();
+					taskProgressBar.setValue(newVal);
+				}
+			}
+		});
+
+		loadArticles.execute();
 	}
 
 	/**
@@ -1009,7 +993,12 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		}
 	}
 	
-	//TODO check reliability
+	/**
+	 * Receive articles sent by other information filtering agent through
+	 * the network of agents.
+	 * @param receivedArticles the list of articles from another agent.
+	 * @param reliability represents the reliability of the sending agent.
+	 */
 	public void receiveArticlesFromOtherAgent(
 			ArrayList<Article> receivedArticles,
 			Reliability reliability) {
@@ -1319,7 +1308,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	}
 
 	/** Refresh the table of articles with changed data. */
-	private void refreshTable() {
+	public void refreshTable() {
 		data = getTableData();
 		updateTable();
 	}
@@ -1486,7 +1475,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	}
 	
 	/**
-	 * Displays message at {@link #taskProgessLabel} while
+	 * Displays message at {@link #taskProgressLabel} while
 	 * performing a task.
 	 * @param msg the message to be displayed.
 	 */
@@ -1495,9 +1484,9 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					taskProgessLabel.setForeground(Color.BLACK);
-					taskProgessLabel.setText(msg);
-					taskProgessLabel.setToolTipText(msg);
+					taskProgressLabel.setForeground(Color.BLACK);
+					taskProgressLabel.setText(msg);
+					taskProgressLabel.setToolTipText(msg);
 				}
 			});
 		} catch (Exception e) {
@@ -1506,7 +1495,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	}
 	
 	/**
-	 * Displays error message at {@link #taskProgessLabel} while
+	 * Displays error message at {@link #taskProgressLabel} while
 	 * performing a task.
 	 * @param err the error message to be displayed.
 	 */
@@ -1515,9 +1504,9 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					taskProgessLabel.setForeground(Color.RED);
-					taskProgessLabel.setText(err);
-					taskProgessLabel.setToolTipText(err);
+					taskProgressLabel.setForeground(Color.RED);
+					taskProgressLabel.setText(err);
+					taskProgressLabel.setToolTipText(err);
 				}
 			});
 		} catch (Exception e) {
