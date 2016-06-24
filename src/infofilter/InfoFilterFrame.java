@@ -59,7 +59,9 @@ import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import multinet.ServerClient;
@@ -877,8 +879,13 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			// 2. A layout implementation
 			CircleLayout<String, String> layout = new CircleLayout<String, String>(g);
 			layout.setSize(new Dimension(300, 300));
-			BasicVisualizationServer<String, String> vv = new BasicVisualizationServer<>(layout);
+			VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
 			vv.setPreferredSize(new Dimension(350, 350));
+			
+			// Create a graph mouse and add it to the visualization component
+			DefaultModalGraphMouse<String, String> gm = new DefaultModalGraphMouse<>();
+			gm.setMode(ModalGraphMouse.Mode.TRANSFORMING);
+			vv.setGraphMouse(gm);
 
 			Transformer<String, Paint> vertexPaint = new Transformer<String, Paint>() {
 				@Override
