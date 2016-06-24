@@ -17,7 +17,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
-import infofilter.InfoFilterFrame;
+import filter.InfoFilterFrame;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;

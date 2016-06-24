@@ -22,9 +22,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import infofilter.Article;
-import infofilter.InfoFilterFrame;
-import infofilter.Reliability;
+import filter.Article;
+import filter.InfoFilterFrame;
+import filter.Reliability;
 
 /**
  * Server portion of a client/server stream-socket connection.

@@ -21,7 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import infofilter.InfoFilterFrame;
+import filter.InfoFilterFrame;
 
 /**
  * Client portion of a stream-socket connection between client

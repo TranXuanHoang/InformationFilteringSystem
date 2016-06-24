@@ -1,4 +1,4 @@
-package infofilter;
+package filter;
 
 /**
  * The <code>Constants</code> class defines constants that are

@@ -1,4 +1,4 @@
-package infofilter;
+package filter;
 
 import java.io.Serializable;
 
