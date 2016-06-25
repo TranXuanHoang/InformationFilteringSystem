@@ -62,6 +62,9 @@ public class LoadArticles extends SwingWorker<Integer, Article> {
 			setProgress(100 * (i + 1) / files.length);
 
 			if (article != null) {
+				articles.addElement(article);
+				filterAgent.score(article, filterType);
+
 				publish(article);
 				loadedArts++;
 			}
@@ -73,14 +76,20 @@ public class LoadArticles extends SwingWorker<Integer, Article> {
 	/**
 	 * Updates the loaded articled in the article table on GUI.
 	 */
+	@Override
 	protected void process(List<Article> publishedVals) {
 		for (int i = 0; i < publishedVals.size(); i++) {
 			Article article = publishedVals.get(i);
 
-			articles.addElement(article);
-			filterAgent.score(article, filterType);
-
 			infoFilterFrame.refreshTable();
+			infoFilterFrame.flipToShowEditorPane();
+
+			if (article.type == Article.FROM_HTML_FILE) {
+				articleEditorPane.setContentType("text/html");
+			} else {
+				articleEditorPane.setContentType("text/plain");
+			}
+
 			articleEditorPane.setText(article.getBody());
 			articleEditorPane.setCaretPosition(0);
 		}
@@ -89,6 +98,7 @@ public class LoadArticles extends SwingWorker<Integer, Article> {
 	/**
 	 * Update the GUI when finish reading all articles.
 	 */
+	@Override
 	protected void done() {
 		taskProgressBar.setVisible(false);
 
@@ -114,35 +124,30 @@ public class LoadArticles extends SwingWorker<Integer, Article> {
 				String text = Article.readArticle(filePath);
 				article.setBody(text);
 				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case Article.FROM_PDF_FILE:
 				String pdf = Utilities.getContentsOfPDFFile(filePath);
 				article.setBody(pdf);
 				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case Article.FROM_MS_WORD_FILE:
 				String msword = Utilities.getContentsOfWordFile(filePath);
 				article.setBody(msword);
 				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case Article.FROM_PPTX_FILE:
 				String pptx = Utilities.getContentsOfPPTXFile(filePath);
 				article.setBody(pptx);
 				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/plain");
 				break;
 
 			case Article.FROM_HTML_FILE:
 				String html = Article.readArticle(filePath);
 				article.setBody(html);
 				article.setSubject(fileName, type);
-				articleEditorPane.setContentType("text/html");
 				break;
 
 			default:

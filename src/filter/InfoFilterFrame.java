@@ -2,6 +2,7 @@ package filter;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -116,11 +117,14 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	JTable articleTable;
 	JEditorPane articleEditorPane;
 
+	JPanel contentPanel;
+	WebViewFXPanel webpageViewFXPanel;
+
 	JPanel southPanel;
 	JLabel filterAgentStatusLabel;
 	JLabel taskProgressLabel;
 	JProgressBar taskProgressBar;
-	
+
 
 	JFileChooser fileChoser;
 
@@ -162,7 +166,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	 * </ul>
 	 */
 	int filterType = 0;
-	
+
 	/** Contains methods for exchanging information with other
 	 * agents over the Internet. */
 	protected ServerClient network;
@@ -404,7 +408,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		menuFilter.add(useKeywordsCheckBoxMenuItem);
 		menuFilter.add(useFeedbackCheckBoxMenuItem);
 		menuFilter.add(useClustersCheckBoxMenuItem);
-		
+
 		connections = new JMenuItem("Network Connections...");
 		connections.setIcon(getIcon("icons/Exchange_NetworkConnections.png"));
 		connections.addActionListener(new ActionListener() {
@@ -413,7 +417,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 				connections_actionPerformed(e);
 			}
 		});
-		
+
 		agentsNetwork = new JMenuItem("Network of Agents...");
 		agentsNetwork.setIcon(getIcon("icons/Exchange_NetworkOfAgents.png"));
 		agentsNetwork.addActionListener(new ActionListener() {
@@ -422,7 +426,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 				agentsNetwork_actionPerformed(e);
 			}
 		});
-		
+
 		agentReliability = new JMenuItem("Reliability of Agents...");
 		agentReliability.setIcon(getIcon("icons/Exchange_ReliabilityOfAgents.png"));
 		agentReliability.addActionListener(new ActionListener() {
@@ -431,7 +435,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 				agentReliability_actionPerformed(e);
 			}
 		});
-		
+
 		sendArticles = new JMenuItem("Send Article(s)");
 		sendArticles.setIcon(getIcon("icons/Exchange_SendArticles.png"));
 		sendArticles.addActionListener(new ActionListener() {
@@ -440,7 +444,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 				sendArticles_actionPerformed(e);
 			}
 		});
-		
+
 		sendFeedback = new JMenuItem("Send Feedback");
 		sendFeedback.addActionListener(new ActionListener() {
 			@Override
@@ -495,19 +499,6 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 				new Font("Calibri", Font.PLAIN, 16), Color.BLUE));
 		jScrollPane2.getViewport().add(articleEditorPane);
 
-		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				jScrollPane1, jScrollPane2);
-		splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation((int) (this.getHeight() * 0.4));
-		splitPane.setDividerSize(10);
-		BasicSplitPaneDivider divider =
-				((BasicSplitPaneUI) splitPane.getUI()).getDivider();
-		divider.setBorder(null);
-		Dimension minimumSize = new Dimension(this.getWidth(),
-				(int) (this.getHeight() * 0.5 / 2));
-		jScrollPane1.setMinimumSize(minimumSize);
-		jScrollPane2.setMinimumSize(minimumSize);
 
 		filterAgentStatusLabel = new JLabel();
 		filterAgentStatusLabel.setFont(new Font("Calibri", Font.PLAIN, 14));
@@ -520,7 +511,26 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		JPanel progressPanel = new JPanel(new GridLayout(1, 0));
 		progressPanel.add(taskProgressLabel);
 		progressPanel.add(taskProgressBar);
-		
+
+		webpageViewFXPanel = new WebViewFXPanel(taskProgressLabel, taskProgressBar, this);
+		contentPanel = new JPanel(new CardLayout());
+		contentPanel.add(jScrollPane2, "EditorPane");
+		contentPanel.add(webpageViewFXPanel, "WebView");
+
+		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				jScrollPane1, contentPanel);
+		splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation((int) (this.getHeight() * 0.4));
+		splitPane.setDividerSize(10);
+		BasicSplitPaneDivider divider =
+				((BasicSplitPaneUI) splitPane.getUI()).getDivider();
+		divider.setBorder(null);
+		Dimension minimumSize = new Dimension(this.getWidth(),
+				(int) (this.getHeight() * 0.5 / 2));
+		jScrollPane1.setMinimumSize(minimumSize);
+		contentPanel.setMinimumSize(minimumSize);
+
 		southPanel = new JPanel(new GridLayout());
 		southPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		southPanel.add(filterAgentStatusLabel);
@@ -549,6 +559,8 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		} else {
 			articleEditorPane.setText("");
 		}
+
+		webpageViewFXPanel.loadURL("");
 
 		addArticleMenuItem.setEnabled(false);
 		addAllMenuItem.setEnabled(false);
@@ -610,11 +622,18 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		String currentDir = fileChoser.getSelectedFile().toString();
 		currentDir = currentDir.substring(0, currentDir.lastIndexOf(File.separatorChar));
 		fileChoser.setCurrentDirectory(new File(currentDir));
-		System.out.println(currentDir);
 
 		displayTaskMSG("Loading article(s)");
-		taskProgressBar.setValue(0);
-		taskProgressBar.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				taskProgressBar.setValue(0);
+				taskProgressBar.setVisible(true);
+
+				CardLayout contentPanelCards = (CardLayout) contentPanel.getLayout();
+				contentPanelCards.show(contentPanel, "EditorPane");
+			}
+		});
 
 		File[] files = fileChoser.getSelectedFiles();
 
@@ -626,7 +645,12 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (evt.getPropertyName().equals("progress")) {
 					int newVal = (Integer) evt.getNewValue();
-					taskProgressBar.setValue(newVal);
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							taskProgressBar.setValue(newVal);
+						}
+					});
 				}
 			}
 		});
@@ -678,6 +702,8 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		} else {
 			articleEditorPane.setText("");
 		}
+
+		webpageViewFXPanel.loadURL("");
 
 		refreshTable(); // update the table model and refresh display
 
@@ -865,7 +891,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			layout.setSize(new Dimension(300, 300));
 			VisualizationViewer<String, String> vv = new VisualizationViewer<>(layout);
 			vv.setPreferredSize(new Dimension(350, 350));
-			
+
 			// Create a graph mouse and add it to the visualization component
 			DefaultModalGraphMouse<String, String> gm = new DefaultModalGraphMouse<>();
 			gm.setMode(ModalGraphMouse.Mode.TRANSFORMING);
@@ -881,15 +907,14 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 					}
 				}
 			};
-			
+
 			Transformer<String, String> labelTransformer =
 					new ChainedTransformer<String,String>(new Transformer[]{
-					new ToStringLabeller<String>(),
-					new Transformer<String,String>() {
-						public String transform(String input) {
-							return "<html><font color=\"blue\">" + input + "</html>";
-						}}});
-
+							new ToStringLabeller<String>(),
+							new Transformer<String,String>() {
+								public String transform(String input) {
+									return "<html><font color=\"blue\">" + input + "</html>";
+								}}});
 
 			vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
 			vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<>());
@@ -917,7 +942,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			dialog.setVisible(true);
 		}
 	}
-	
+
 	/**
 	 * Graphically shows the reliability of all agents that have been
 	 * connecting and sending articles to this agent.
@@ -992,7 +1017,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 					(selectedArticles.size() > 1 ? "s were " : " was ") + "sent");
 		}
 	}
-	
+
 	/**
 	 * Receive articles sent by other information filtering agent through
 	 * the network of agents.
@@ -1029,7 +1054,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		articles.addAll(newArticles);
 		refreshTable();
 	}
-	
+
 	public double getAcceptableScoreThreshold(int filterType) {
 		switch (filterType) {
 		case FilterAgent.USE_KEYWORDS:
@@ -1042,14 +1067,14 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			return 0;
 		}
 	}
-	
+
 	public int keywordThreshold = 60;
 	public double backpropThreshold = 0.8;
 	public double kmapThreshold = 0.85;
 
 	protected void sendFeedback_actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
@@ -1177,22 +1202,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 					if (articles.size() > 0) {
 						currentArt = articles.get(selectedRow);
 
-						if (currentArt.getType() == Article.FROM_WEB_PAGE) {
-							articleEditorPane.setContentType("text/html");
-							try {
-								articleEditorPane.setPage(currentArt.getID());
-							} catch (Exception exception) {
-								articleEditorPane.setText(currentArt.getBody());
-							}
-						} else if (currentArt.getType() == Article.FROM_HTML_FILE) {
-							articleEditorPane.setContentType("text/html");
-							articleEditorPane.setText(currentArt.getBody());
-						} else {
-							articleEditorPane.setContentType("text/plain");
-							articleEditorPane.setText(currentArt.getBody());
-						}
-
-						articleEditorPane.setCaretPosition(0);
+						displayArticleContent(currentArt);
 					} else {
 						currentArt = null;
 					}
@@ -1394,28 +1404,88 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		refreshTable();
 
 		// display article in editor pane, set cursor at beginning
-		if (art.getType() == Article.FROM_WEB_PAGE) {
-			articleEditorPane.setContentType("text/html");
-			try {
-				articleEditorPane.setPage(art.getID());
-			} catch (Exception exception) {
-				articleEditorPane.setText(art.getBody());
-			}
-		} else if (art.getType() == Article.FROM_HTML_FILE) {
-			articleEditorPane.setContentType("text/html");
-			articleEditorPane.setText(art.getBody());
-		} else {
-			articleEditorPane.setContentType("text/plain");
-			articleEditorPane.setText(art.getBody());
-		}
-
-		articleEditorPane.setCaretPosition(0);
+		displayArticleContent(art);
 
 		// enable menu items so that user can add the article to
 		// the profile if desired
-		addArticleMenuItem.setEnabled(true);
-		addAllMenuItem.setEnabled(true);
-		saveArticleMenuItem.setEnabled(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				addArticleMenuItem.setEnabled(true);
+				addAllMenuItem.setEnabled(true);
+				saveArticleMenuItem.setEnabled(true);
+			}
+		});
+	}
+
+	/**
+	 * Displays the web page in the web view area, or the article
+	 * loaded from computer in the text editor.
+	 * @param article the article (web page/loaded article) to be displayed.
+	 */
+	protected void displayArticleContent(Article article) {
+		if (article.getType() == Article.FROM_WEB_PAGE) {
+			try {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						taskProgressBar.setValue(0);
+						taskProgressBar.setVisible(true);
+						flipToShowWebView();
+					}
+				});
+
+				webpageViewFXPanel.loadURL(article.getSubject());
+			} catch (Exception exception) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						flipToShowEditorPane();
+						articleEditorPane.setContentType("text/html");
+						articleEditorPane.setText(article.getBody());
+						articleEditorPane.setCaretPosition(0);
+					}
+				});
+			}
+		} else if (article.getType() == Article.FROM_HTML_FILE) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					taskProgressBar.setVisible(false);
+					flipToShowEditorPane();
+					articleEditorPane.setContentType("text/html");
+					articleEditorPane.setText(article.getBody());
+					articleEditorPane.setCaretPosition(0);
+				}
+			});
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					taskProgressBar.setVisible(false);
+					flipToShowEditorPane();
+					articleEditorPane.setContentType("text/plain");
+					articleEditorPane.setText(article.getBody());
+					articleEditorPane.setCaretPosition(0);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Changes the area displaying articles' content to view web page.
+	 */
+	protected void flipToShowWebView() {
+		CardLayout contentPanelCards = (CardLayout) contentPanel.getLayout();
+		contentPanelCards.show(contentPanel, "WebView");
+	}
+
+	/**
+	 * Changes the area displaying articles' content to editor pane.
+	 */
+	protected void flipToShowEditorPane() {
+		CardLayout contentPanelCards = (CardLayout) contentPanel.getLayout();
+		contentPanelCards.show(contentPanel, "EditorPane");
 	}
 
 	/**
@@ -1473,7 +1543,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		// articleTextArea.append(msg + "\n");
 		// articleEditorPane.setText(articleEditorPane.getText() + msg + "\n");
 	}
-	
+
 	/**
 	 * Displays message at {@link #taskProgressLabel} while
 	 * performing a task.
@@ -1493,7 +1563,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Displays error message at {@link #taskProgressLabel} while
 	 * performing a task.
@@ -1523,7 +1593,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		ImageIcon icon = new ImageIcon(
 				getClass().getResource(fileName));
 		icon = ServerClient.resizeIcon(icon, 16, 16);
-		
+
 		return icon;
 	}
 } // end class InfoFilterFrame
