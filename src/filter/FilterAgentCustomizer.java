@@ -296,7 +296,7 @@ public class FilterAgentCustomizer extends JDialog implements Customizer {
 		String text = keywordTextField.getText().trim();
 
 		if (text != null && text.length() > 0) {
-			String[] newKeywords = text.split(" ");
+			String[] newKeywords = text.split("[, ]+");
 
 			for (String newKeyword : newKeywords) {
 				addKeyword(newKeyword);

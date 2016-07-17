@@ -17,8 +17,8 @@ public class Article implements Serializable {
 	/** The serial version ID. */
 	private static final long serialVersionUID = 1L;
 
-	/** ID of each article. The absolute file path if the article
-	 * is read from a file (text/PDF/MS Word/HTML) in a computer.
+	/** ID of each article. The absolute file path if the article is read
+	 * from a file (text/PDF/MS Word/MS PowerPoint/HTML) in a computer.
 	 * The URL if the article is downloaded from a web page. */
 	protected String id;
 

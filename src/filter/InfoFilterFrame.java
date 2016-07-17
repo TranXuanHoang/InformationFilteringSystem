@@ -243,7 +243,7 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	 */
 	private void initializeGUI() throws Exception {
 		// set size before to allow set up the split pane's divider
-		setSize(700, 500);
+		setSize(750, 500);
 
 		menuFile = new JMenu("File");
 		menuEdit = new JMenu("Edit");
@@ -1243,11 +1243,11 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 		articleTable.getColumnModel().getColumn(COL_RATING_ID).
 		setCellEditor(new DefaultCellEditor(userRatings));
 
-		articleTable.getColumn(COL_SUBJECT).setPreferredWidth(300);
+		articleTable.getColumn(COL_SUBJECT).setPreferredWidth(280);
 		articleTable.getColumn(COL_APPROVE).setMaxWidth(70);
 		articleTable.getColumn(COL_APPROVE).setMinWidth(70);
 		articleTable.getColumn(COL_SCORE).setPreferredWidth(30);
-		articleTable.getColumn(COL_RATING).setPreferredWidth(30);
+		articleTable.getColumn(COL_RATING).setPreferredWidth(50);
 
 		articleTable.setRowHeight(20);
 		articleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

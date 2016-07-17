@@ -195,7 +195,7 @@ public class BackProp implements Serializable {
 		}
 	}
 
-	/**(TODO understand algorithm)
+	/**
 	 * Starting at the output layer and working backward to the
 	 * input layer, computes the following:
 	 * <ol>

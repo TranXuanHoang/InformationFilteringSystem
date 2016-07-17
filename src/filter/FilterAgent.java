@@ -64,11 +64,11 @@ public class FilterAgent extends Agent {
 	public static final int USE_CLUSTERS = 1;
 	public static final int USE_PREDICTED_RATING = 2;
 
-	public static final String USELESS_RATING = "Useless";
-	public static final String NOTVERY_RATING = "Almost useless";//"Not very useful";
-	public static final String NEUTRAL_RATING = "Neutral";
-	public static final String MILDLY_RATING = "Mildly interesting";
-	public static final String INTERESTING_RATING = "Interesting";
+	public static final String USELESS_RATING = "[0 - 20]% Interesting"; //"Useless";
+	public static final String NOTVERY_RATING = "[21 - 40]% Interesting"; //"Almost useless";//"Not very useful";
+	public static final String NEUTRAL_RATING = "[41 - 60]% Interesting"; //"Neutral";
+	public static final String MILDLY_RATING = "[61 - 80]% Interesting"; //"Mildly interesting";
+	public static final String INTERESTING_RATING = "[81 - 100]% Interesting"; //"Interesting";
 	public static final String[] RATINGS = {
 			USELESS_RATING,
 			NOTVERY_RATING,
