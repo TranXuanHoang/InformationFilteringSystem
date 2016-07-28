@@ -37,7 +37,7 @@ public class KMapNet implements Serializable {
 	private double initLearnRate = 1.0;
 	private double finalLearnRate = 0.05;
 	private double sigma; 			// used in the computation of neighborhood function
-	private int maxNumPasses = 20;  // default
+	private int maxNumPasses = 1000;  // default
 
 	// network data
 	private int winner;             // index of the winning unit

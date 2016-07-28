@@ -260,7 +260,7 @@ public class FilterAgent extends Agent {
 		clusterNet.createNetwork(clusterNet.getFieldsPerRec(), 2, 2);
 
 		// train the network
-		int maxNumPasses = 20;
+		int maxNumPasses = 1000;
 		int numRecs = clusterNet.getNumRecs();
 
 		for (int i = 0; i < maxNumPasses; i++) {
