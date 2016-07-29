@@ -106,7 +106,6 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	JMenuItem agentsNetwork;
 	JMenuItem agentReliability;
 	JMenuItem sendArticles;
-	JMenuItem sendFeedback;
 
 	JMenuItem aboutMenuItem;
 
@@ -445,21 +444,12 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 			}
 		});
 
-		sendFeedback = new JMenuItem("Send Feedback");
-		sendFeedback.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sendFeedback_actionPerformed(e);
-			}
-		});
-
 		menuExchange.add(connections);
 		menuExchange.add(agentsNetwork);
 		menuExchange.addSeparator();
 		menuExchange.add(agentReliability);
 		menuExchange.addSeparator();
 		menuExchange.add(sendArticles);
-		menuExchange.add(sendFeedback);
 
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.setIcon(getIcon("icons/Help_About.png"));
@@ -1071,11 +1061,6 @@ public class InfoFilterFrame extends JFrame implements AgentEventListener {
 	public int keywordThreshold = 60;
 	public double backpropThreshold = 0.8;
 	public double kmapThreshold = 0.85;
-
-	protected void sendFeedback_actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-
-	}
 
 	/**
 	 * Shows a dialog box that contains general information about
