@@ -3,9 +3,9 @@ This software is used to rank the interestingness and/or usefulness of webpages 
 
 ## Getting Started
 This repository contains all source code of the software that implement the theory of my research. The research focused on finding out information that is useful with respect to users. Here is the slide I used to introduce my research to the others
-[Information Filtering System with Reliability-ranked Agents](https://drive.google.com/file/d/0B42twD7zF0cwUk9KOTlldVZnb3M/view?usp=sharing)
+[Information Filtering System with Reliability-ranked Agents](https://drive.google.com/file/d/0B42twD7zF0cwUk9KOTlldVZnb3M/view?usp=sharing).
 
-And my full thesis can be downloaded from the JAIST Repository: [Click Here](http://hdl.handle.net/10119/13737)
+And my full thesis can be downloaded from the JAIST Repository ([Click Here](http://hdl.handle.net/10119/13737)).
 The thesis is a detailed explanation of all algorithms (type of neural networks used, how probablistic reasoning is applied, ...) that are implemented in this source code repo.
 
 ## Installation and Usage of the Information Filtering System
